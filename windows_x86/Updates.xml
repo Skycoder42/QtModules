@@ -13,6 +13,6 @@
   <SHA1>3d78650480d7b59ecd4a4bb831c5939476459db3</SHA1>
  </PackageUpdate>
  <RepositoryUpdate>
-	 <Repository action="add" url="https://raw.githubusercontent.com/Skycoder42/QJsonSerializer/repository/linux_x64" displayname="QJsonSerializer Linux Repository"/>
+	 <Repository action="add" url="https://raw.githubusercontent.com/Skycoder42/QJsonSerializer/repository/windows_x86" displayname="QJsonSerializer Windows Repository"/>
  </RepositoryUpdate>
 </Updates>
