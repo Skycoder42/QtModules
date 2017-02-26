@@ -114,7 +114,7 @@ def createSubPkg(dirName, pkgName, patchName):
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
-	pkgFullList = []
+	pkgFullList = [pkgBase]
 	for pkgItem in pkgList:
 		pkgFullList.append(pkgBase + "." + pkgItem)
 	repoInc = ",".join(pkgFullList)
