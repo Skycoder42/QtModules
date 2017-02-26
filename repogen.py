@@ -123,10 +123,10 @@ def repogen(archName, pkgList):
 	if not os.path.exists(repoPath):
 		print("WARNING: No existing repository found! It will be created as a new one, and not updated")
 		
-	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath], stdout=subprocess.PIPE)
+	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath])
 
 # create packages
-shutil.rmtree("packages")
+shutil.rmtree("packages", ignore_errors=True)
 os.mkdir("packages")
 
 # meta package
