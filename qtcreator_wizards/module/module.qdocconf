@@ -1,0 +1,53 @@
+include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
+
+project                                             = %{QtModuleName}
+description                                         = Qt %{ModuleName} Reference Documentation
+version                                             = %{ModuleVersion}
+
+examplesinstallpath                                 = %{ModuleBase}
+
+qhp.projects                                        = %{QtModuleName}
+
+qhp.%{QtModuleName}.file                               = %{QtModuleNameLower}.qhp
+qhp.%{QtModuleName}.namespace                          = %{BundlePrefix}.%{QtModuleNameLower}.%{ModuleVersionTag}
+qhp.%{QtModuleName}.virtualFolder                      = %{QtModuleNameLower}
+qhp.%{QtModuleName}.indexTitle                         = Qt %{ModuleName}
+qhp.%{QtModuleName}.indexRoot                          =
+
+qhp.%{QtModuleName}.filterAttributes                   = %{QtModuleNameLower} %{ModuleVersion} qtrefdoc
+qhp.%{QtModuleName}.customFilters.Qt.name              = %{ModuleName} %{ModuleVersion}
+qhp.%{QtModuleName}.customFilters.Qt.filterAttributes  = %{QtModuleNameLower} %{ModuleVersion}
+
+qhp.%{QtModuleName}.subprojects                        = classes examples
+qhp.%{QtModuleName}.subprojects.classes.title          = C++ Classes
+qhp.%{QtModuleName}.subprojects.classes.indexTitle     = Qt %{ModuleName} C++ Classes
+qhp.%{QtModuleName}.subprojects.classes.selectors      = class fake:headerfile
+qhp.%{QtModuleName}.subprojects.classes.sortPages      = true
+
+qhp.%{QtModuleName}.subprojects.examples.title         = Examples
+qhp.%{QtModuleName}.subprojects.examples.indexTitle    = Qt %{ModuleName} Examples
+qhp.%{QtModuleName}.subprojects.examples.selectors     = fake:example
+qhp.%{QtModuleName}.subprojects.examples.sortPages     = true
+
+
+tagfile                                             = ../../../doc/%{QtModuleNameLower}/%{QtModuleNameLower}.tags
+
+depends                                             += qtcore qtdoc qmake
+
+headerdirs                                          += ..
+
+sourcedirs                                          += .. \\
+                                                       src \\
+                                                       ../../../tests/doc
+
+
+exampledirs                                         += ../../../examples/%{ModuleBase} \\
+                                                       snippets
+
+examples.fileextensions                             += "*.html"
+
+imagedirs                                           += ../../../examples/%{ModuleBase}/doc/images \\
+                                                       images
+
+navigation.landingpage                              = "Qt %{ModuleName}"
+navigation.cppclassespage                           = "Qt %{ModuleName} C++ Classes"

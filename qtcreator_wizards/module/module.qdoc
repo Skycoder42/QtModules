@@ -1,0 +1,22 @@
+/*!
+    \\module %{QtModuleName}
+    \\title Qt %{ModuleName} C++ Classes
+    \\ingroup modules
+    \\qtvariable %{ModuleBase}
+    \\since 5.8
+    \\brief Brief description here
+
+    To use these classes in your application, use the following include
+    statement:
+
+    \\code
+    #include <%{QtModuleName}/%{QtModuleName}>
+    \\endcode
+
+    To link against the module, add this line to your \\l qmake \\c
+    .pro file:
+
+    \\code
+    QT += %{ModuleBase}
+    \\endcode
+*/

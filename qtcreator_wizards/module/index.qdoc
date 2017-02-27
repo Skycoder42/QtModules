@@ -1,0 +1,33 @@
+/*!
+    \\page %{QtModuleNameLower}-index.html
+    \\since 5.8
+    \\title Qt %{ModuleName}
+    \\brief Brief description here
+
+    Long description here
+
+    \\section1 Getting Started
+
+    To include the definitions of the module's classes, use the following directive:
+
+    \\code
+    #include <%{QtModuleName}/%{QtModuleName}>
+    \\endcode
+
+    To link against the module, add this line to your qmake .pro file:
+
+    \\code
+    QT += %{ModuleBase}
+    \\endcode
+
+    \\section1 Reference Documentation
+    \\list
+    \\li \\l{Qt %{ModuleName} Overview}{Overview}
+    \\li \\l{Qt %{ModuleName} C++ Classes}{C++ Classes}
+    \\endlist
+
+    \\section1 Examples
+
+    The module provides the following \\l{Qt %{ModuleName} Examples}{Examples} as a guide to using
+    the API.
+*/
