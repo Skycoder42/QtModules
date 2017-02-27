@@ -82,7 +82,18 @@
 					"mandatory": false,
 					"type": "LineEdit",
 					"data": {}
-				}
+				},
+                {
+                    "name": "AddDocs",
+                    "trDisplayName": "Add QDoc template files",
+                    "type": "CheckBox",
+                    "data":
+                    {
+                        "checkedValue": "AddDocs",
+                        "uncheckedValue": "",
+						"checked": "false"
+                    }
+                }
 			]
 		},
 		{
@@ -136,19 +147,23 @@
 				},
 				{
 					"source": "module.qdocconf",
-					"target": "src/%{ModuleBase}/doc/%{QtModuleNameLower}.qdocconf"
+					"target": "src/%{ModuleBase}/doc/%{QtModuleNameLower}.qdocconf",
+					"condition": "%{JS: '%{AddDocs}' !== ''}"
 				},
 				{
 					"source": "index.qdoc",
-					"target": "src/%{ModuleBase}/doc/src/index.qdoc"
+					"target": "src/%{ModuleBase}/doc/src/index.qdoc",
+					"condition": "%{JS: '%{AddDocs}' !== ''}"
 				},
 				{
 					"source": "module.qdoc",
-					"target": "src/%{ModuleBase}/doc/src/module.qdoc"
+					"target": "src/%{ModuleBase}/doc/src/module.qdoc",
+					"condition": "%{JS: '%{AddDocs}' !== ''}"
 				},
 				{
 					"source": "overview.qdoc",
-					"target": "src/%{ModuleBase}/doc/src/overview.qdoc"
+					"target": "src/%{ModuleBase}/doc/src/overview.qdoc",
+					"condition": "%{JS: '%{AddDocs}' !== ''}"
 				},
 				{
 					"source": "tests.pro",

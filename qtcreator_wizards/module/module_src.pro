@@ -2,10 +2,12 @@ TARGET = %{QtModuleName}
 
 QT = core
 
+@if '%{AddDocs}' !== ''
 QMAKE_DOCS = $$PWD/doc/%{QtModuleNameLower}.qdocconf
 OTHER_FILES += doc/src/*.qdoc   # show .qdoc files in Qt Creator
 OTHER_FILES += doc/snippets/*.cpp
 OTHER_FILES += doc/%{QtModuleNameLower}.qdocconf
+@endif
 
 PUBLIC_HEADERS += \\
 	%{GlobalHeaderName}
