@@ -84,12 +84,12 @@
 					"data": {}
 				},
                 {
-                    "name": "AddDocs",
-                    "trDisplayName": "Add QDoc template files",
+                    "name": "UseQDoc",
+                    "trDisplayName": "Use QDoc instead of doxygen",
                     "type": "CheckBox",
                     "data":
                     {
-                        "checkedValue": "AddDocs",
+                        "checkedValue": "UseQDoc",
                         "uncheckedValue": "",
 						"checked": "false"
                     }
@@ -148,22 +148,32 @@
 				{
 					"source": "module.qdocconf",
 					"target": "src/%{ModuleBase}/doc/%{QtModuleNameLower}.qdocconf",
-					"condition": "%{JS: '%{AddDocs}' !== ''}"
+					"condition": "%{JS: '%{UseQDoc}' !== ''}"
 				},
 				{
 					"source": "index.qdoc",
 					"target": "src/%{ModuleBase}/doc/src/index.qdoc",
-					"condition": "%{JS: '%{AddDocs}' !== ''}"
+					"condition": "%{JS: '%{UseQDoc}' !== ''}"
 				},
 				{
 					"source": "module.qdoc",
 					"target": "src/%{ModuleBase}/doc/src/module.qdoc",
-					"condition": "%{JS: '%{AddDocs}' !== ''}"
+					"condition": "%{JS: '%{UseQDoc}' !== ''}"
 				},
 				{
 					"source": "overview.qdoc",
 					"target": "src/%{ModuleBase}/doc/src/overview.qdoc",
-					"condition": "%{JS: '%{AddDocs}' !== ''}"
+					"condition": "%{JS: '%{UseQDoc}' !== ''}"
+				},
+				{
+					"source": "Doxyfile",
+					"target": "src/%{ModuleBase}/doc/Doxyfile",
+					"condition": "%{JS: '%{UseQDoc}' === ''}"
+				},
+				{
+					"source": "makedoc.sh",
+					"target": "src/%{ModuleBase}/doc/makedoc.sh",
+					"condition": "%{JS: '%{UseQDoc}' === ''}"
 				},
 				{
 					"source": "tests.pro",
