@@ -5,6 +5,7 @@
 # $4 Version
 # $5 License file
 # $6 License name
+# $7 skip doc (optional)
 
 import sys
 import os
@@ -26,6 +27,29 @@ fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	</Licenses>
 	<Default>true</Default>
 </Package>"""
+
+docPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+	<Name>{}</Name>
+	<DisplayName>{} Documentation</DisplayName>
+	<Version>{}</Version>
+	<ReleaseDate>{}</ReleaseDate>
+	<Virtual>true</Virtual>
+	<AutoDependOn>{}</AutoDependOn>
+	<Dependencies>qt.tools</Dependencies>
+	<Script>installscript.qs</Script>
+</Package>"""
+
+docPkgScript = """// constructor
+function Component()
+{{
+}}
+
+Component.prototype.createOperations = function()
+{{
+    component.createOperations();
+    registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
+}}"""
 
 subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
@@ -78,12 +102,56 @@ desc = sys.argv[3]
 vers = sys.argv[4]
 licenseFile = sys.argv[5]
 licenseName = sys.argv[6]
+skipDoc = bool(sys.argv[7]) if len(sys.argv) > 7 else False
 
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
 modBase = modName.lower()
 qtVers = qtDir.replace(".", "")
 pkgBase = "qt.{}.skycoder42.{}".format(qtVers, modBase)
+
+def createBasePkg():
+	pkgBasePath = os.path.join("packages", pkgBase)
+	pkgBaseMeta = os.path.join(pkgBasePath, "meta")
+	pkgBaseData = os.path.join(pkgBasePath, "data")
+	pkgBaseXml = os.path.join(pkgBaseMeta, "package.xml")
+	pkgBaseLicense = os.path.join(pkgBaseMeta, "LICENSE.txt")
+
+	print("Creating meta package", pkgBase)
+	os.mkdir(pkgBasePath)
+	os.mkdir(pkgBaseData)
+	os.mkdir(pkgBaseMeta)
+
+	pgkBaseXmlFile = open(pkgBaseXml, "w")
+	pgkBaseXmlFile.write(fullPkgXml.format(pkgBase, modTitle, desc, vers, datetime.date.today(), licenseName))
+	pgkBaseXmlFile.close()
+
+	shutil.copy(licenseFile, pkgBaseLicense)
+
+def createDocPkg():
+	baseDocDir = os.path.join(baseDir, "doc")
+	pkgDoc = pkgBase + ".doc"
+	pkgDocPath = os.path.join("packages", pkgDoc)
+	pkgDocMeta = os.path.join(pkgDocPath, "meta")
+	pkgDocData = os.path.join(pkgDocPath, "data/Docs")
+	pkgDocDataDoc = os.path.join(pkgDocData, "Qt-{}".format(baseDir))
+	pkgDocXml = os.path.join(pkgDocMeta, "package.xml")
+	pkgDocScript = os.path.join(pkgDocMeta, "installscript.qs")
+
+	print("Creating documentation package", pkgDoc)
+	os.mkdir(pkgDocPath)
+	os.mkdir(pkgDocMeta)
+	os.makedirs(pkgDocData)
+
+	pgkDocXmlFile = open(pkgDocXml, "w")
+	pgkDocXmlFile.write(docPkgXml.format(pkgDoc, modTitle, vers, datetime.date.today(), pkgBase))
+	pgkDocXmlFile.close()
+	
+	pgkDocScriptFile = open(pkgDocScript, "w")
+	pgkDocScriptFile.write(docPkgScript.format(baseDir))
+	pgkDocScriptFile.close()
+	
+	shutil.copytree(baseDocDir, pkgDocDataDoc)
 
 def createSubPkg(dirName, pkgName, patchName):	
 	baseDataDir = os.path.join(baseDir, dirName)
@@ -97,14 +165,14 @@ def createSubPkg(dirName, pkgName, patchName):
 	pkgXml = os.path.join(pkgMeta, "package.xml")
 	pkgScript = os.path.join(pkgMeta, "installscript.qs")
 	
-	print(" Creating sub package", pkg)
+	print("Creating sub package", pkg)
 	os.mkdir(pkgPath)
 	os.mkdir(pkgMeta)
 	os.makedirs(pkgData)
 	
 	pgkXmlFile = open(pkgXml, "w")
 	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit, pkgKit))
-	pgkXmlFile.close()	
+	pgkXmlFile.close()
 	
 	pgkScriptFile = open(pkgScript, "w")
 	pgkScriptFile.write(subPkgScript.format(pkgKit, pkgFolder, patchName))
@@ -114,12 +182,11 @@ def createSubPkg(dirName, pkgName, patchName):
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
-	pkgFullList = [pkgBase]
+	pkgFullList = [pkgBase, pkgBase + ".doc"]
 	for pkgItem in pkgList:
 		pkgFullList.append(pkgBase + "." + pkgItem)
 	repoInc = ",".join(pkgFullList)
 	
-	print("Building repository for", archName)
 	if not os.path.exists(repoPath):
 		print("WARNING: No existing repository found! It will be created as a new one, and not updated")
 		
@@ -128,26 +195,9 @@ def repogen(archName, pkgList):
 # create packages
 shutil.rmtree("packages", ignore_errors=True)
 os.mkdir("packages")
-
-# meta package
-pkgBasePath = os.path.join("packages", pkgBase)
-pkgBaseMeta = os.path.join(pkgBasePath, "meta")
-pkgBaseData = os.path.join(pkgBasePath, "data")
-pkgBaseXml = os.path.join(pkgBaseMeta, "package.xml")
-pkgBaseLicense = os.path.join(pkgBaseMeta, "LICENSE.txt")
-
-print("Creating base package", pkgBase)
-os.mkdir(pkgBasePath)
-os.mkdir(pkgBaseData)
-os.mkdir(pkgBaseMeta)
-
-pgkBaseXmlFile = open(pkgBaseXml, "w")
-pgkBaseXmlFile.write(fullPkgXml.format(pkgBase, modTitle, desc, vers, datetime.date.today(), licenseName))
-pgkBaseXmlFile.close()
-
-shutil.copy(licenseFile, pkgBaseLicense)
-
-# sub packages
+createBasePkg()
+if not skipDoc:
+	createDocPkg()
 createSubPkg("android_armv7", "android_armv7", "emb-arm-qt5")
 createSubPkg("android_x86", "android_x86", "emb-arm-qt5")
 createSubPkg("clang_64", "clang_64", "qt5")
