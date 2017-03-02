@@ -6,7 +6,7 @@
 	"trDescription": "Creates a qt module project skeleton, for easy creation of new Qt module projects.",
 	"trDisplayName": "Qt Module",
 	"trDisplayCategory": "Library",
-	"icon": "../../../global/consoleapplication.png",
+	"icon": "QtIcon.png",
 	"featuresRequired": [ "QtSupport.Wizards.FeatureQt" ],
 	"enabled": "%{JS: [ %{Plugins} ].indexOf('QmakeProjectManager') >= 0}",
 	"options":

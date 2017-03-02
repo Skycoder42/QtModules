@@ -37,7 +37,7 @@ win32 {
 }
 
 @if '%{UseQDoc}' === ''
-docTarget.target = docs
+docTarget.target = doxygen
 docTarget.commands = chmod u+x $$PWD/doc/makedoc.sh && $$PWD/doc/makedoc.sh "$$PWD" "$$VERSION" "$$[QT_INSTALL_BINS]" "$$[QT_INSTALL_HEADERS]" "$$[QT_INSTALL_DOCS]"
 QMAKE_EXTRA_TARGETS += docTarget
 @endif
