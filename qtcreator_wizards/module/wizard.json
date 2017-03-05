@@ -166,13 +166,18 @@
 					"condition": "%{JS: '%{UseQDoc}' !== ''}"
 				},
 				{
+					"source": "doc.pro",
+					"target": "doc/doc.pro",
+					"condition": "%{JS: '%{UseQDoc}' === ''}"
+				},
+				{
 					"source": "Doxyfile",
-					"target": "src/%{ModuleBase}/doc/Doxyfile",
+					"target": "doc/Doxyfile",
 					"condition": "%{JS: '%{UseQDoc}' === ''}"
 				},
 				{
 					"source": "makedoc.sh",
-					"target": "src/%{ModuleBase}/doc/makedoc.sh",
+					"target": "doc/makedoc.sh",
 					"condition": "%{JS: '%{UseQDoc}' === ''}"
 				},
 				{

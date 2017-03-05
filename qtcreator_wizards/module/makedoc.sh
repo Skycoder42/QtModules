@@ -6,27 +6,24 @@
 # $5: $$[QT_INSTALL_DOCS]
 # $pwd: dest dir
 
-destDir="$(pwd)/../../doc"
-srcDir="$1/doc"
+destDir="$(pwd)"
+srcDir=$1
 version=$2
-verTag=$(echo "$version" | sed -e 's/\\.//g')
+verTag=$(echo "$version" | sed -e 's/\.//g')
 qtBins=$3
 qtHeaders=$4
 qtDocs=$5
-doxyTmp="$destDir/Doxyfile"
+doxyTemplate="$srcDir/Doxyfile"
 
-cd $srcDir
-
-mkdir $destDir
-cat Doxyfile > "$doxyTmp"
-echo "PROJECT_NUMBER = \\"$version\\"" >> "$doxyTmp"
-echo "OUTPUT_DIRECTORY = \\"$destDir\\"" >> "$doxyTmp"
-echo "QHP_NAMESPACE = \\"de.skycoder42.qtrestclient.$verTag\\"" >> "$doxyTmp"
-echo "QHP_CUST_FILTER_NAME = \\"RestClient $version\\"" >> "$doxyTmp"
-echo "QHP_CUST_FILTER_ATTRS = \\"qtrestclient $version\\"" >> "$doxyTmp"
-echo "QHG_LOCATION = \\"$qtBins/qhelpgenerator\\"" >> "$doxyTmp"
-echo "INCLUDE_PATH += \\"$qtHeaders\\"" >> "$doxyTmp"
-echo "GENERATE_TAGFILE = \\"$destDir/%{QtModuleNameLower}/%{QtModuleNameLower}.tags\\"" >> "$doxyTmp"
+cat "$doxyTemplate" > Doxyfile
+echo "PROJECT_NUMBER = \\"$version\\"" >> Doxyfile
+echo "OUTPUT_DIRECTORY = \\"$destDir\\"" >> Doxyfile
+echo "QHP_NAMESPACE = \\"%{BundlePrefix}.%{QtModuleNameLower}.$verTag\\"" >> Doxyfile
+echo "QHP_CUST_FILTER_NAME = \\"%{ModuleName} $version\\"" >> Doxyfile
+echo "QHP_CUST_FILTER_ATTRS = \\"%{QtModuleNameLower} $version\\"" >> Doxyfile
+echo "QHG_LOCATION = \\"$qtBins/qhelpgenerator\\"" >> Doxyfile
+echo "INCLUDE_PATH += \\"$qtHeaders\\"" >> Doxyfile
+echo "GENERATE_TAGFILE = \\"$destDir/%{QtModuleNameLower}/%{QtModuleNameLower}.tags\\"" >> Doxyfile
 if [ "$DOXY_STYLE" ]; then
 	echo "HTML_STYLESHEET = \\"$DOXY_STYLE\\"" >> "$doxyTmp"
 fi
@@ -38,4 +35,5 @@ for tagFile in $(find "$qtDocs" -name *.tags); do
 	echo "TAGFILES += \\"$tagFile=https://doc.qt.io/qt-5\\"" >> "$doxyTmp"
 done
 
-doxygen "$doxyTmp"
+cd "$srcDir"
+doxygen "$destDir/Doxyfile"
