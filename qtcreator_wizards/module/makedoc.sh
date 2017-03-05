@@ -25,14 +25,16 @@ echo "QHG_LOCATION = \\"$qtBins/qhelpgenerator\\"" >> Doxyfile
 echo "INCLUDE_PATH += \\"$qtHeaders\\"" >> Doxyfile
 echo "GENERATE_TAGFILE = \\"$destDir/%{QtModuleNameLower}/%{QtModuleNameLower}.tags\\"" >> Doxyfile
 if [ "$DOXY_STYLE" ]; then
-	echo "HTML_STYLESHEET = \\"$DOXY_STYLE\\"" >> "$doxyTmp"
+	echo "HTML_STYLESHEET = \\"$DOXY_STYLE\\"" >> Doxyfile
 fi
 if [ "$DOXY_STYLE_EXTRA" ]; then
-	echo "HTML_EXTRA_STYLESHEET = \\"$DOXY_STYLE_EXTRA\\"" >> "$doxyTmp"
+	echo "HTML_EXTRA_STYLESHEET = \\"$DOXY_STYLE_EXTRA\\"" >> Doxyfile
 fi
 
 for tagFile in $(find "$qtDocs" -name *.tags); do
-	echo "TAGFILES += \\"$tagFile=https://doc.qt.io/qt-5\\"" >> "$doxyTmp"
+	if [ $(basename "$tagFile") != "%{QtModuleNameLower}/.tags" ]; then
+		echo "TAGFILES += \"$tagFile=https://doc.qt.io/qt-5\"" >> Doxyfile
+	fi
 done
 
 cd "$srcDir"
