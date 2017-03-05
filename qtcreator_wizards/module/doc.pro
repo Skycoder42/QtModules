@@ -1,9 +1,10 @@
 TEMPLATE = aux
 
-OTHER_FILES += Doxyfile \
-	makedoc.sh \
-	*.dox \
-	snippets/*.cpp \
+OTHER_FILES += Doxyfile \\
+	makedoc.sh \\
+	../README.md \\
+	*.dox \\
+	snippets/*.cpp \\
 	images/*
 
 docTarget.target = doxygen
