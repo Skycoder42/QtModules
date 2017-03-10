@@ -7,6 +7,7 @@ QMAKE_DOCS = $$PWD/doc/%{QtModuleNameLower}.qdocconf
 OTHER_FILES += doc/src/*.qdoc   # show .qdoc files in Qt Creator
 OTHER_FILES += doc/%{QtModuleNameLower}.qdocconf
 OTHER_FILES += doc/snippets/*.cpp
+@endif
 
 PUBLIC_HEADERS += \\
 	%{GlobalHeaderName}
