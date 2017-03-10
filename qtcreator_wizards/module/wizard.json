@@ -181,6 +181,11 @@
 					"condition": "%{JS: '%{UseQDoc}' === ''}"
 				},
 				{
+					"source": "doxme.py",
+					"target": "doc/doxme.py",
+					"condition": "%{JS: '%{UseQDoc}' === ''}"
+				},
+				{
 					"source": "tests.pro",
 					"target": "tests/tests.pro"
 				},
