@@ -5,7 +5,7 @@
 # $4 Version
 # $5 License file
 # $6 License name
-# $7 skip doc (optional)
+# $7 skip packages (comma seperated)
 
 import sys
 import os
@@ -102,7 +102,7 @@ desc = sys.argv[3]
 vers = sys.argv[4]
 licenseFile = sys.argv[5]
 licenseName = sys.argv[6]
-skipDoc = bool(sys.argv[7]) if len(sys.argv) > 7 else False
+skipPacks = sys.argv[7].split(",") if len(sys.argv) > 7 else []
 
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
@@ -196,18 +196,28 @@ def repogen(archName, pkgList):
 shutil.rmtree("packages", ignore_errors=True)
 os.mkdir("packages")
 createBasePkg()
-if not skipDoc:
+if "doc" not in skipPacks:
 	createDocPkg()
-createSubPkg("android_armv7", "android_armv7", "emb-arm-qt5")
-createSubPkg("android_x86", "android_x86", "emb-arm-qt5")
-createSubPkg("clang_64", "clang_64", "qt5")
-createSubPkg("gcc_64", "gcc_64", "qt5")
-createSubPkg("ios", "ios", "emb-arm-qt5")
-createSubPkg("mingw53_32", "win32_mingw53", "qt5")
-createSubPkg("msvc2015", "win32_msvc2015", "qt5")
-createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
-createSubPkg("winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7", "emb-arm-qt5")
-createSubPkg("winrt_x64_msvc2015", "win64_msvc2015_winrt_x64", "emb-arm-qt5")
+if "android_armv7" not in skipPacks:
+	createSubPkg("android_armv7", "android_armv7", "emb-arm-qt5")
+if "android_x86" not in skipPacks:
+	createSubPkg("android_x86", "android_x86", "emb-arm-qt5")
+if "clang_64" not in skipPacks:
+	createSubPkg("clang_64", "clang_64", "qt5")
+if "gcc_64" not in skipPacks:
+	createSubPkg("gcc_64", "gcc_64", "qt5")
+if "ios" not in skipPacks:
+	createSubPkg("ios", "ios", "emb-arm-qt5")
+if "mingw53_32" not in skipPacks:
+	createSubPkg("mingw53_32", "win32_mingw53", "qt5")
+if "msvc2015" not in skipPacks:
+	createSubPkg("msvc2015", "win32_msvc2015", "qt5")
+if "msvc2015_64" not in skipPacks:
+	createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
+if "winrt_armv7_msvc2015" not in skipPacks:
+	createSubPkg("winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7", "emb-arm-qt5")
+if "winrt_x64_msvc2015" not in skipPacks:
+	createSubPkg("winrt_x64_msvc2015", "win64_msvc2015_winrt_x64", "emb-arm-qt5")
 
 # build repositories
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
