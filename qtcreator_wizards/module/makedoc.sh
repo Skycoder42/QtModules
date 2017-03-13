@@ -40,7 +40,7 @@ if [ "$DOXY_STYLE_EXTRA" ]; then
 fi
 
 for tagFile in $(find "$qtDocs" -name *.tags); do
-	if [ $(basename "$tagFile") != "%{QtModuleNameLower}/.tags" ]; then
+	if [ $(basename "$tagFile") != "%{QtModuleNameLower}.tags" ]; then
 		echo "TAGFILES += \"$tagFile=https://doc.qt.io/qt-5\"" >> Doxyfile
 	fi
 done

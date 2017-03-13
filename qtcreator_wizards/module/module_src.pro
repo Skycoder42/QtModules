@@ -7,16 +7,12 @@ QMAKE_DOCS = $$PWD/doc/%{QtModuleNameLower}.qdocconf
 OTHER_FILES += doc/src/*.qdoc   # show .qdoc files in Qt Creator
 OTHER_FILES += doc/%{QtModuleNameLower}.qdocconf
 OTHER_FILES += doc/snippets/*.cpp
-@endif
 
-PUBLIC_HEADERS += \\
+@endif
+HEADERS += \\
 	%{GlobalHeaderName}
 
-PRIVATE_HEADERS +=
-
 SOURCES +=
-
-HEADERS += $$PUBLIC_HEADERS $$PRIVATE_HEADERS
 
 load(qt_module)
 
