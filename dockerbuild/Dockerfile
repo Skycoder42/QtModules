@@ -1,10 +1,9 @@
 ## Based on: https://gitlab.com/csprenger/docker-qt-gcc
 
-FROM debian:jessie-slim
+FROM ubuntu:latest
 
 ENV QT_PATH="/opt/qt"
 ENV QT_TMP_PATH="/tmp/qt"
-ENV QT_SCRIPT_PATH="/tmp/qt"
 ENV PATH="${PATH}:${QT_PATH}/5.8/gcc_64/bin"
 ENV QT_DEPS="libgl1-mesa-dev libglib2.0-0 libpulse-dev g++ make git ca-certificates"
 ENV QT_INSTALLATION_DEPS="curl xvfb xauth libx11-xcb1 libfontconfig1 libdbus-1-3"
@@ -21,8 +20,8 @@ RUN rm -rf ${QT_PATH}/Examples
 RUN rm -rf ${QT_PATH}/Docs
 RUN rm -rf ${QT_PATH}/Tools
 
-ADD qt-make-test.sh ${QT_SCRIPT_PATH}/qt-make-test.sh
-RUN chmod +x ${QT_SCRIPT_PATH}/qt-make-test.sh && ${QT_SCRIPT_PATH}/qt-make-test.sh
+ADD qt-make-test.sh ${QT_TMP_PATH}/qt-make-test.sh
+RUN chmod +x ${QT_TMP_PATH}/qt-make-test.sh && ${QT_TMP_PATH}/qt-make-test.sh
 
 RUN rm -rf /tmp/*
 RUN rm -rf /var/lib/apt/lists/*

@@ -1,7 +1,0 @@
-Package: *
-Pin: release n=wheezy
-Pin-Priority: 900
-
-Package: gcc*
-Pin: release n=jessie
-Pin-Priority: 910
