@@ -3,10 +3,6 @@
 DIR=`mktemp -d`
 cd $DIR
 
-gcc -v
-echo
-qmake -v
-
 echo "#include <QCoreApplication>\n" \
      "#include <QDebug>\n" \
      "\n" \
