@@ -28,8 +28,9 @@ ADD qt-installer-update-script.qs ${QT_PATH}/qt-installer-update-script.qs
 ADD qt-installer-update.sh ${QT_PATH}/qt-installer-update.sh
 ADD qt-installer-modify-script.qs ${QT_PATH}/qt-installer-modify-script.qs
 ADD qt-installer-modify.sh ${QT_PATH}/qt-installer-modify.sh
+RUN chmod +x ${QT_PATH}/qt-installer-update.sh && chmod +x ${QT_PATH}/qt-installer-modify.sh
 
 ENV BUILD_INSTALL_DIR="/tmp/qt-build/inst"
 ADD qt-build.sh ${QT_PATH}/qt-build.sh
 RUN chmod +x ${QT_PATH}/qt-build.sh
-ENTRYPOINT ${QT_PATH}/qt-build.sh
+CMD ${QT_PATH}/qt-build.sh

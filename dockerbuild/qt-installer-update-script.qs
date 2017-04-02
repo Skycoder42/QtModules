@@ -2,17 +2,12 @@
 
 function Controller() {
     installer.autoRejectMessageBoxes();
-    installer.installationFinished.connect(function() {
-		if(gui.isButtonEnabled(buttons.NextButton))
-			gui.clickButton(buttons.NextButton);
-		else
-			gui.rejectWithoutPrompt();
-    });
+	installer.statusChanged.connect(function(status) {
+		if(status == QInstaller.Success)
+			gui.clickButton(buttons.CancelButton);
+	});
     installer.updateFinished.connect(function() {
-		if(gui.isButtonEnabled(buttons.NextButton))
-			gui.clickButton(buttons.NextButton);
-		else
-			gui.rejectWithoutPrompt();
+		gui.clickButton(buttons.NextButton);
     });
 }
 

@@ -2,7 +2,7 @@
 
 function Controller() {
     installer.autoRejectMessageBoxes();
-    installer.installationFinished.connect(function() {
+    installer.updateFinished.connect(function() {
         gui.clickButton(buttons.NextButton);
     })
 }
