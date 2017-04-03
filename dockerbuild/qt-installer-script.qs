@@ -33,6 +33,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
     widget.deselectAll();
     widget.selectComponent("qt.58.gcc_64");
+	widget.selectComponent("qt.58.skycoder42");
     gui.clickButton(buttons.NextButton);
 }
 
