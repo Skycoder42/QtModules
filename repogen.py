@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # $1 modules folder (e.g. "5.8")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
-# $3 Description
-# $4 Version
-# $5 License file
-# $6 License name
-# $7 skip packages (comma seperated)
+# $3 comma seperate dependencies (e.g. "qt.58.examples, qt.tools.qtcreator")
+# $4 Description
+# $5 Version
+# $6 License file
+# $7 License name
+# $8 skip packages (comma seperated)
 
 import sys
 import os
@@ -20,6 +21,7 @@ fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<Name>{}</Name>
 	<DisplayName>{}</DisplayName>
 	<Description>{}</Description>
+	<Dependencies>{}</Dependencies>
 	<Version>{}</Version>
 	<ReleaseDate>{}</ReleaseDate>
 	<Licenses>
@@ -98,11 +100,12 @@ Component.prototype.createOperations = function()
 #read args
 baseDir = sys.argv[1]
 modName = sys.argv[2]
-desc = sys.argv[3]
-vers = sys.argv[4]
-licenseFile = sys.argv[5]
-licenseName = sys.argv[6]
-skipPacks = sys.argv[7].split(",") if len(sys.argv) > 7 else []
+depends = sys.argv[3]
+desc = sys.argv[4]
+vers = sys.argv[5]
+licenseFile = sys.argv[6]
+licenseName = sys.argv[7]
+skipPacks = sys.argv[8].split(",") if len(sys.argv) > 8 else []
 
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
@@ -123,7 +126,7 @@ def createBasePkg():
 	os.mkdir(pkgBaseMeta)
 
 	pgkBaseXmlFile = open(pkgBaseXml, "w")
-	pgkBaseXmlFile.write(fullPkgXml.format(pkgBase, modTitle, desc, vers, datetime.date.today(), licenseName))
+	pgkBaseXmlFile.write(fullPkgXml.format(pkgBase, modTitle, desc, depends, vers, datetime.date.today(), licenseName))
 	pgkBaseXmlFile.close()
 
 	shutil.copy(licenseFile, pkgBaseLicense)
