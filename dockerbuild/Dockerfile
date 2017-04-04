@@ -35,3 +35,7 @@ ENV BUILD_INSTALL_DIR="/tmp/qt-build/inst"
 ADD qt-build.sh ${QT_PATH}/qt-build.sh
 RUN chmod +x ${QT_PATH}/qt-build.sh
 CMD ${QT_PATH}/qt-build.sh
+
+## final step --> do updates. modify echo to rebuild
+RUN echo rebuild 0
+RUN ${QT_PATH}/qt-installer-update.sh
