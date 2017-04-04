@@ -2,11 +2,12 @@
 # $1 modules folder (e.g. "5.8")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
 # $3 comma seperate dependencies (e.g. "qt.58.examples, qt.tools.qtcreator")
-# $4 Description
-# $5 Version
-# $6 License file
-# $7 License name
-# $8 skip packages (comma seperated)
+# $4 tool names (comma seperated)
+# $5 Description
+# $6 Version
+# $7 License file
+# $8 License name
+# $9 skip packages (comma seperated)
 
 import sys
 import os
@@ -101,11 +102,12 @@ Component.prototype.createOperations = function()
 baseDir = sys.argv[1]
 modName = sys.argv[2]
 depends = sys.argv[3]
-desc = sys.argv[4]
-vers = sys.argv[5]
-licenseFile = sys.argv[6]
-licenseName = sys.argv[7]
-skipPacks = sys.argv[8].split(",") if len(sys.argv) > 8 else []
+tools = sys.argv[4].split(",")
+desc = sys.argv[5]
+vers = sys.argv[6]
+licenseFile = sys.argv[7]
+licenseName = sys.argv[8]
+skipPacks = sys.argv[9].split(",") if len(sys.argv) > 9 else []
 
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
@@ -182,6 +184,24 @@ def createSubPkg(dirName, pkgName, patchName):
 	pgkScriptFile.close()
 	
 	shutil.copytree(baseDataDir, pkgDataKit)
+	
+def prepareTools(masterPath, fixPkgs):
+	if len(tools) == 0:
+		return
+	
+	for fixPkgInfo in fixPkgs:
+		fixPkgName = fixPkgInfo[0];
+		fixPkgDir = fixPkgInfo[1];
+		if fixPkgName not in skipPacks:
+			fixPkg = pkgBase + "." + fixPkgName
+			fixPkgPath = os.path.join("packages", fixPkg, "data", qtDir, fixPkgDir)
+			binPath = os.path.join(fixPkgPath, "bin")
+			os.makedirs(binPath, exist_ok=True);
+			for tool in tools:
+				toolPath = os.path.join(binPath, tool)
+				if os.path.lexists(toolPath):
+					os.remove(toolPath)
+				os.symlink(os.path.join("../..", masterPath, "bin", tool), toolPath)
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
@@ -223,6 +243,21 @@ if "winrt_x64_msvc2015" not in skipPacks:
 	createSubPkg("winrt_x64_msvc2015", "win64_msvc2015_winrt_x64", "emb-arm-qt5")
 
 # build repositories
+prepareTools("gcc_64", [
+	["android_armv7", "android_armv7"],
+	["android_x86", "android_x86"]
+])
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
+prepareTools("msvc2015", [
+	["winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7"],
+	["winrt_x64_msvc2015", "win64_msvc2015_winrt_x64"],
+	["android_armv7", "android_armv7"],
+	["android_x86", "android_x86"]
+])
 repogen("windows_x86", ["win32_mingw53", "win32_msvc2015", "win64_msvc2015_64", "win64_msvc2015_winrt_armv7", "win64_msvc2015_winrt_x64", "android_armv7", "android_x86"])
+prepareTools("clang_64", [
+	["ios", "ios"],
+	["android_armv7", "android_armv7"],
+	["android_x86", "android_x86"]
+])
 repogen("mac_x64", ["clang_64", "ios", "android_armv7", "android_x86"])
