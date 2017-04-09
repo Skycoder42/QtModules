@@ -185,7 +185,7 @@ def createSubPkg(dirName, pkgName, patchName):
 	
 	shutil.copytree(baseDataDir, pkgDataKit)
 	
-def prepareTools(masterPath, fixPkgs):
+def prepareTools(masterPath, fixPkgs, suffix):
 	if len(tools) == 0:
 		return
 	
@@ -197,7 +197,8 @@ def prepareTools(masterPath, fixPkgs):
 			fixPkgPath = os.path.join("packages", fixPkg, "data", qtDir, fixPkgDir)
 			binPath = os.path.join(fixPkgPath, "bin")
 			os.makedirs(binPath, exist_ok=True);
-			for tool in tools:
+			for toolName in tools:
+				tool = toolName + suffix
 				toolPath = os.path.join(binPath, tool)
 				if os.path.lexists(toolPath):
 					os.remove(toolPath)
@@ -246,18 +247,18 @@ if "winrt_x64_msvc2015" not in skipPacks:
 prepareTools("gcc_64", [
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-])
+], "")
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
 prepareTools("msvc2015", [
 	["winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7"],
 	["winrt_x64_msvc2015", "win64_msvc2015_winrt_x64"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-])
+], ".exe")
 repogen("windows_x86", ["win32_mingw53", "win32_msvc2015", "win64_msvc2015_64", "win64_msvc2015_winrt_armv7", "win64_msvc2015_winrt_x64", "android_armv7", "android_x86"])
 prepareTools("clang_64", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-])
+], "")
 repogen("mac_x64", ["clang_64", "ios", "android_armv7", "android_x86"])
