@@ -12,7 +12,7 @@ RUN apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 lib
 RUN mkdir $QT_TMP_PATH
 RUN curl -Lo ${QT_TMP_PATH}/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 ADD qt-installer-script.qs ${QT_TMP_PATH}/qt-installer-script.qs
-RUN chmod +x ${QT_TMP_PATH}/installer.run && QT_QPA_PLATFORM=minimal xvfb-run ${QT_TMP_PATH}/installer.run --script ${QT_TMP_PATH}/qt-installer-script.qs
+RUN chmod +x ${QT_TMP_PATH}/installer.run && QT_QPA_PLATFORM=minimal xvfb-run ${QT_TMP_PATH}/installer.run --script ${QT_TMP_PATH}/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64 
 
 RUN rm -rf ${QT_PATH}/Examples
 RUN rm -rf ${QT_PATH}/Docs
