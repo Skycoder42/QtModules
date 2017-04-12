@@ -10,9 +10,7 @@
 	"featuresRequired": [ "QtSupport.Wizards.FeatureQt" ],
 	"enabled": "%{JS: [ %{Plugins} ].indexOf('QmakeProjectManager') >= 0}",
 	"options":
-	[
-		{ "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" },
-		
+	[		
 		{ "key": "ModuleBase", "value": "%{JS: '%{ModuleName}'.toLowerCase()}" },
 		{ "key": "ModuleDefine", "value": "%{JS: '%{ModuleName}'.toUpperCase()}" },
 		{ "key": "QtModuleName", "value": "Qt%{ModuleName}" },
@@ -129,7 +127,7 @@
 					"target": "sync.profile"
 				},
 				{
-					"source": "../../git.ignore",
+					"source": "git.ignore",
 					"target": "%{ProjectDirectory}/.gitignore",
 					"condition": "%{JS: %{IsTopLevelProject} && '%{VersionControl}' === 'G.Git'}"
 				},
