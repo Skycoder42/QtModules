@@ -35,3 +35,4 @@ Select `Add or remove components` and start the setup
 ![](./images/add_repo_05.png "Go to repositories")
 
 New entries will have appeared for each supported Qt Version, simply select the ones you want and proceed with the installation
+
