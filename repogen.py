@@ -103,6 +103,8 @@ baseDir = sys.argv[1]
 modName = sys.argv[2]
 depends = sys.argv[3]
 tools = sys.argv[4].split(",")
+if tools == [""]:
+	tools = []
 desc = sys.argv[5]
 vers = sys.argv[6]
 licenseFile = sys.argv[7]
