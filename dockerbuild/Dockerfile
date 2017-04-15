@@ -10,6 +10,7 @@ RUN apt-get update
 RUN apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev g++ make git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3
 
 RUN mkdir $QT_TMP_PATH
+RUN curl -Lo ${QT_TMP_PATH}/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm && install -m 755 ${QT_TMP_PATH}/qpm /usr/local/bin/
 RUN curl -Lo ${QT_TMP_PATH}/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 ADD qt-installer-script.qs ${QT_TMP_PATH}/qt-installer-script.qs
 RUN chmod +x ${QT_TMP_PATH}/installer.run && QT_QPA_PLATFORM=minimal ${QT_TMP_PATH}/installer.run --script ${QT_TMP_PATH}/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64 
@@ -31,9 +32,10 @@ ADD qt-installer-modify.sh ${QT_PATH}/qt-installer-modify.sh
 RUN chmod +x ${QT_PATH}/qt-installer-update.sh && chmod +x ${QT_PATH}/qt-installer-modify.sh
 
 ENV BUILD_INSTALL_DIR="/tmp/qt-build/inst"
+ENV QPM_PATH="."
 ADD qt-build.sh ${QT_PATH}/qt-build.sh
 RUN chmod +x ${QT_PATH}/qt-build.sh
 CMD ${QT_PATH}/qt-build.sh
 
-#RUN echo update_rev 1
-#RUN QT_QPA_PLATFORM=minimal ${QT_PATH}/MaintenanceTool --script ${QT_PATH}/qt-installer-update-script.qs
+RUN echo update_rev 0
+RUN QT_QPA_PLATFORM=minimal ${QT_PATH}/MaintenanceTool --script ${QT_PATH}/qt-installer-update-script.qs
