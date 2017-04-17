@@ -11,6 +11,10 @@ mkdir build
 cd build
 git clone --recurse-submodules "$BUILD_GIT_SRC" .
 
+cd $QPM_PATH
+qpm install
+cd ~/build
+
 qmake
 make qmake_all
 make

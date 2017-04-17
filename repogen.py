@@ -103,6 +103,8 @@ baseDir = sys.argv[1]
 modName = sys.argv[2]
 depends = sys.argv[3]
 tools = sys.argv[4].split(",")
+if tools == [""]:
+	tools = []
 desc = sys.argv[5]
 vers = sys.argv[6]
 licenseFile = sys.argv[7]
@@ -185,7 +187,7 @@ def createSubPkg(dirName, pkgName, patchName):
 	
 	shutil.copytree(baseDataDir, pkgDataKit)
 	
-def prepareTools(masterPath, fixPkgs, suffix):
+def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 	if len(tools) == 0:
 		return
 	
@@ -199,10 +201,18 @@ def prepareTools(masterPath, fixPkgs, suffix):
 			os.makedirs(binPath, exist_ok=True);
 			for toolName in tools:
 				tool = toolName + suffix
+				toolBasePath = os.path.join(binPath, toolName)
 				toolPath = os.path.join(binPath, tool)
+				
+				if os.path.lexists(toolBasePath):
+					os.remove(toolBasePath)
 				if os.path.lexists(toolPath):
 					os.remove(toolPath)
-				os.symlink(os.path.join("../..", masterPath, "bin", tool), toolPath)
+					
+				if doCopy:
+					shutil.copy(os.path.join(baseDir, masterPath, "bin", tool), toolPath)
+				else:
+					os.symlink(os.path.join("../..", masterPath, "bin", tool), toolPath)
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
@@ -247,18 +257,18 @@ if "winrt_x64_msvc2015" not in skipPacks:
 prepareTools("gcc_64", [
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-], "")
+], "", False)
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
 prepareTools("msvc2015", [
 	["winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7"],
 	["winrt_x64_msvc2015", "win64_msvc2015_winrt_x64"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-], ".exe")
+], ".exe", True)
 repogen("windows_x86", ["win32_mingw53", "win32_msvc2015", "win64_msvc2015_64", "win64_msvc2015_winrt_armv7", "win64_msvc2015_winrt_x64", "android_armv7", "android_x86"])
 prepareTools("clang_64", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
-], "")
+], "", False)
 repogen("mac_x64", ["clang_64", "ios", "android_armv7", "android_x86"])
