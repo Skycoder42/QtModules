@@ -185,7 +185,7 @@ def createSubPkg(dirName, pkgName, patchName):
 	pgkScriptFile.write(subPkgScript.format(pkgKit, pkgFolder, patchName))
 	pgkScriptFile.close()
 	
-	shutil.copytree(baseDataDir, pkgDataKit)
+	shutil.copytree(baseDataDir, pkgDataKit, symlinks=True)
 	
 def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 	if len(tools) == 0:
