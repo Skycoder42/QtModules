@@ -37,5 +37,9 @@ ADD qt-build.sh ${QT_PATH}/qt-build.sh
 RUN chmod +x ${QT_PATH}/qt-build.sh
 CMD ${QT_PATH}/qt-build.sh
 
-RUN echo update_rev 0
+RUN echo update_rev 2
 RUN QT_QPA_PLATFORM=minimal ${QT_PATH}/MaintenanceTool --script ${QT_PATH}/qt-installer-update-script.qs
+
+RUN rm -rf ${QT_PATH}/Examples
+RUN rm -rf ${QT_PATH}/Docs
+RUN rm -rf ${QT_PATH}/Tools
