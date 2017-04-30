@@ -2,7 +2,7 @@ FROM ubuntu:rolling
 
 ADD build.sh /tmp/qt/build.sh
 ADD qt-installer-script.qs /tmp/qt/qt-installer-script.qs
-RUN /tmp/qt/build.sh
+RUN chmod +x /tmp/qt/build.sh && /tmp/qt/build.sh
 
 ADD qt-installer-update-script.qs /opt/qt/qt-installer-update-script.qs
 ADD qt-installer-update.sh /opt/qt/qt-installer-update.sh
