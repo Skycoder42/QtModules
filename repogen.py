@@ -51,7 +51,8 @@ function Component()
 Component.prototype.createOperations = function()
 {{
     component.createOperations();
-    registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
+    if (typeof registerQtCreatorDocumentation === "function")
+    	registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
 }}"""
 
 subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -62,7 +63,6 @@ subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<ReleaseDate>{}</ReleaseDate>
 	<Virtual>true</Virtual>
 	<AutoDependOn>{}, {}</AutoDependOn>
-	<Dependencies>{}</Dependencies>
 	<Script>installscript.qs</Script>
 </Package>"""
 
@@ -178,7 +178,7 @@ def createSubPkg(dirName, pkgName, patchName):
 	os.makedirs(pkgData)
 	
 	pgkXmlFile = open(pkgXml, "w")
-	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit, pkgKit))
+	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit))
 	pgkXmlFile.close()
 	
 	pgkScriptFile = open(pkgScript, "w")
