@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cd ~
 rm -rf build
@@ -11,9 +11,11 @@ mkdir build
 cd build
 git clone --recurse-submodules "$BUILD_GIT_SRC" .
 
-cd $QPM_PATH
-qpm install
-cd ~/build
+for path in ${QPM_PATH//:/ }; do
+	cd $path
+	qpm install
+	cd ~/build
+done
 
 qmake
 make qmake_all
