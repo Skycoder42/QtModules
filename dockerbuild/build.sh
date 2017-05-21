@@ -12,6 +12,6 @@ chmod +x ${QT_TMP_PATH}/installer.run && QT_QPA_PLATFORM=minimal ${QT_TMP_PATH}/
 
 rm -rf ${QT_PATH}/Examples
 rm -rf ${QT_PATH}/Docs
-rm -rf ${QT_PATH}/Tools
+rm -rf ${QT_PATH}/Tools/QtCreator
 rm -rf /tmp/*
 rm -rf /var/lib/apt/lists/*

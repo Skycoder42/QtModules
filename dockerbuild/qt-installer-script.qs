@@ -34,6 +34,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
     widget.deselectAll();
     widget.selectComponent("qt.58.gcc_64");
 	widget.selectComponent("qt.58.skycoder42");
+	widget.selectComponent("qt.tools.ifw.20");
     gui.clickButton(buttons.NextButton);
 }
 
