@@ -17,6 +17,7 @@ for path in ${QPM_PATH//:/ }; do
 	cd ~/build
 done
 
+echo QMAKE_LFLAGS += -no-pie >> .qmake.conf
 qmake
 make qmake_all
 make
