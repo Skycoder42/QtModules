@@ -244,14 +244,12 @@ if "ios" not in skipPacks:
 	createSubPkg("ios", "ios", "emb-arm-qt5")
 if "mingw53_32" not in skipPacks:
 	createSubPkg("mingw53_32", "win32_mingw53", "qt5")
-if "msvc2015" not in skipPacks:
-	createSubPkg("msvc2015", "win32_msvc2015", "qt5")
-if "msvc2015_64" not in skipPacks:
-	createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
-if "winrt_armv7_msvc2015" not in skipPacks:
-	createSubPkg("winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7", "emb-arm-qt5")
-if "winrt_x64_msvc2015" not in skipPacks:
-	createSubPkg("winrt_x64_msvc2015", "win64_msvc2015_winrt_x64", "emb-arm-qt5")
+if "msvc2017_64" not in skipPacks:
+	createSubPkg("msvc2017_64", "win64_msvc2017_64", "qt5")
+if "winrt_x86_msvc2017" not in skipPacks:
+	createSubPkg("winrt_x86_msvc2017", "win64_msvc2017_winrt_x86", "emb-arm-qt5")
+if "winrt_x64_msvc2017" not in skipPacks:
+	createSubPkg("winrt_x64_msvc2017", "win64_msvc2017_winrt_x64", "emb-arm-qt5")
 
 # build repositories
 prepareTools("gcc_64", [
@@ -259,13 +257,13 @@ prepareTools("gcc_64", [
 	["android_x86", "android_x86"]
 ], "", False)
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
-prepareTools("msvc2015", [
-	["winrt_armv7_msvc2015", "win64_msvc2015_winrt_armv7"],
-	["winrt_x64_msvc2015", "win64_msvc2015_winrt_x64"],
+prepareTools("msvc2017", [
+	["winrt_x86_msvc2017", "win64_msvc2017_winrt_x86"],
+	["winrt_x64_msvc2017", "win64_msvc2017_winrt_x64"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
 ], ".exe", True)
-repogen("windows_x86", ["win32_mingw53", "win32_msvc2015", "win64_msvc2015_64", "win64_msvc2015_winrt_armv7", "win64_msvc2015_winrt_x64", "android_armv7", "android_x86"])
+repogen("windows_x86", ["win32_mingw53", "win64_msvc2017_64", "win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "android_armv7", "android_x86"])
 prepareTools("clang_64", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
