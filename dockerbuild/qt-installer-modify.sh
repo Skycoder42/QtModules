@@ -18,4 +18,4 @@ echo $componentsRemove >> $tmpFile
 
 cat ${QT_PATH}/qt-installer-modify-script.qs >> $tmpFile
 
-QT_QPA_PLATFORM=minimal xvfb-run ${QT_PATH}/MaintenanceTool --script "$tmpFile"
+QT_QPA_PLATFORM=minimal ${QT_PATH}/MaintenanceTool --script "$tmpFile"
