@@ -257,7 +257,7 @@ prepareTools("gcc_64", [
 	["android_x86", "android_x86"]
 ], "", False)
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
-prepareTools("msvc2017", [
+prepareTools("msvc2017_64", [
 	["winrt_x86_msvc2017", "win64_msvc2017_winrt_x86"],
 	["winrt_x64_msvc2017", "win64_msvc2017_winrt_x64"],
 	["android_armv7", "android_armv7"],
