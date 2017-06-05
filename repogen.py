@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# $1 modules folder (e.g. "5.8")
+# $1 modules folder (e.g. "5.9")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
 # $3 comma seperate dependencies (e.g. "qt.58.examples, qt.tools.qtcreator")
 # $4 tool names (comma seperated)
@@ -258,8 +258,8 @@ prepareTools("gcc_64", [
 ], "", False)
 repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
 prepareTools("msvc2017_64", [
-	["winrt_x86_msvc2017", "win64_msvc2017_winrt_x86"],
-	["winrt_x64_msvc2017", "win64_msvc2017_winrt_x64"],
+	["win64_msvc2017_winrt_x86", "winrt_x86_msvc2017"],
+	["win64_msvc2017_winrt_x64", "winrt_x64_msvc2017"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
 ], ".exe", True)
