@@ -14,6 +14,10 @@ HEADERS += \\
 
 SOURCES +=
 
+@if '%{Translations}' !== ''
+include(./translations/translations.pri)
+
+@endif
 load(qt_module)
 
 win32 {
