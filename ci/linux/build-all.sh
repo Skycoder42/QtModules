@@ -1,7 +1,7 @@
 #!/bin/bash
 # $1 platform
 # $2 compiler
-set -ex
+set -e
 
 platform=$1
 compiler=$2
