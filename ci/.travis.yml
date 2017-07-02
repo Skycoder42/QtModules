@@ -11,7 +11,7 @@ matrix:
 
 env:
   global:
-    - QT_VER=5.9.1
+    - QT_VER=5.9
     - PROJECT=myprojectname
 
 before_install:

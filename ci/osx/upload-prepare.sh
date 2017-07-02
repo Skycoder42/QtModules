@@ -4,4 +4,4 @@ set -e
 export XZ_OPT=-9
 
 cd install/opt
-tar cJf build_osx_5.9.1.tar.xz qt
+tar cJf build_osx_$QT_VER.tar.xz qt

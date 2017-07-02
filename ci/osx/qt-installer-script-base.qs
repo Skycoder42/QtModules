@@ -32,9 +32,11 @@ Controller.prototype.TargetDirectoryPageCallback = function() {
 Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
 	widget.deselectAll();
-	widget.selectComponent("qt.591.clang_64");
-	widget.selectComponent("qt.591.ios");
-	widget.selectComponent("qt.591.skycoder42");
+	if(pfMac)
+		widget.selectComponent("qt." + qtVersion + ".clang_64");
+	if(pfIos)
+		widget.selectComponent("qt." + qtVersion + ".ios");
+	widget.selectComponent("qt." + qtVersion + ".skycoder42");
     gui.clickButton(buttons.NextButton);
 }
 
