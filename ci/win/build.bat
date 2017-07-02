@@ -21,8 +21,8 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 
 	echo.%EXCLUDE_PLATFORMS% | findstr /C:"win32" 1>nul
 	if errorlevel 0 (
-		call %~dp0\build-msvc-first.bat amd64 msvc2015_64 || exit /B 1
-		call %~dp0\build-msvc-first.bat amd64_x86 msvc2015 || exit /B 1
 		call %~dp0\build-mingw.bat || exit /B 1
+		call %~dp0\build-msvc-all.bat amd64 msvc2015_64 || exit /B 1
+		call %~dp0\build-msvc-all.bat amd64_x86 msvc2015 || exit /B 1
 	)
 )
