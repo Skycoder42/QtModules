@@ -5,8 +5,8 @@ image:
 version: <version>-{build}
 
 environment:
-  - QT_VER=5.9
-  - PROJECT=myprojectname
+  QT_VER: 5.9
+  PROJECT: myprojectname
 
 install:
   - git clone https://github.com/Skycoder42/QtModules.git .\qtmodules-travis

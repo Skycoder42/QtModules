@@ -1,6 +1,7 @@
 :: %1 varsall type
 :: %2 platform
 setlocal
+@echo on
 
 call %~dp0\build-msvc-first.bat %*
 

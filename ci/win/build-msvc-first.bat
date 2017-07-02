@@ -1,6 +1,7 @@
 :: %1 varsall type
 :: %2 platform
 setlocal
+@echo on
 
 set varsall=%1
 set platform=%2
