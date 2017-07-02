@@ -5,14 +5,14 @@ setlocal
 call %~dp0\build-msvc-first.bat %* || exit /B 1
 
 set varsall=%1
-set platform=%2
+set qtplatform=%2
 
 call %VC_DIR% %varsall% || exit /B 1
 
-cd build-%platform%
+cd build-%qtplatform%
 nmake all || exit /B 1
 
-set PATH=C:\Qt\%QT_VER%\%platform%\bin;%CD%\lib;%PATH%;
+set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
 cd tests\auto
 set QT_QPA_PLATFORM=minimal
 for /r %%f in (tst_*.exe) do (

@@ -4,16 +4,16 @@ setlocal
 @echo on
 
 set varsall=%1
-set platform=%2
+set qtplatform=%2
 
 call %VC_DIR% %varsall% || exit /B 1
 
-echo BUILDDDDD build-%platform%
-mkdir build-%platform%
-cd build-%platform%
+echo BUILDDDDD build-%qtplatform%
+mkdir build-%qtplatform%
+cd build-%qtplatform%
 
-echo about to qmake C:\Qt\%QT_VER%\%platform%\bin\qmake
-C:\Qt\%QT_VER%\%platform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
+echo about to qmake C:\Qt\%QT_VER%\%qtplatform%\bin\qmake
+C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
 
 for %%* in (.) do set CurrDirName=%%~nx*
