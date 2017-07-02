@@ -6,11 +6,13 @@ setlocal
 set varsall=%1
 set platform=%2
 
-call %VC_DIR% %varsall%
+call %VC_DIR% %varsall% || exit /B 1
 
+echo BUILDDDDD build-%platform%
 mkdir build-%platform%
 cd build-%platform%
 
+echo about to qmake C:\Qt\%QT_VER%\%platform%\bin\qmake
 C:\Qt\%QT_VER%\%platform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
 

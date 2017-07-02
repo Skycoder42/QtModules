@@ -1,14 +1,13 @@
 :: %1 varsall type
 :: %2 platform
 setlocal
-@echo on
 
-call %~dp0\build-msvc-first.bat %*
+call %~dp0\build-msvc-first.bat %* || exit /B 1
 
 set varsall=%1
 set platform=%2
 
-call %VC_DIR% %varsall%
+call %VC_DIR% %varsall% || exit /B 1
 
 cd build-%platform%
 nmake all || exit /B 1
