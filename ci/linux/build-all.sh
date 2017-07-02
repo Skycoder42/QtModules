@@ -3,6 +3,9 @@
 # $2 compiler
 set -e
 
+platform=$1
+compiler=$2
+
 $(dirname $0)/build-first.sh "$@"
 
 cd build-$platform
