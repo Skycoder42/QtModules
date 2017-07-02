@@ -22,7 +22,7 @@ function test_include {
 	fi
 }
 
-qtvid=$(echo $QT_VER | sed 's/\\.//g')
+qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
 echo qtvid $qtvid
 echo pfLinux = \"$(test_include linux)\" > $scriptdir/qt-installer-script.qs
 echo pfAndroid = \"$(test_include android)\" >> $scriptdir/qt-installer-script.qs
