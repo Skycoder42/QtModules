@@ -5,6 +5,7 @@ set -e
 
 $(dirname $0)/build-first.sh "$@"
 
+cd build-$platform
 make all
 
 export LD_LIBRARY_PATH="$(pwd)/lib:$LD_LIBRARY_PATH"
