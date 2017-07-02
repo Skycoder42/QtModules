@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 export MAKEFLAGS="-j$(nproc)"
 export ANDROID_HOME=$HOME/android/sdk
