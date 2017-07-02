@@ -14,7 +14,7 @@ mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
 :: tests
-nmake all || exit /B 1
+mingw32-make all || exit /B 1
 
 set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
 cd tests\auto
