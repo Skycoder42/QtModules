@@ -10,8 +10,9 @@ matrix:
       sudo: required
 
 env:
-  - QT_VER=5.9.1
-  - PROJECT=myprojectname
+  global:
+    - QT_VER=5.9.1
+    - PROJECT=myprojectname
 
 before_install:
   - git clone https://github.com/Skycoder42/QtModules.git ./qtmodules-travis

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+scriptdir=$(dirname $0)
+
 # install build deps
 sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test 
 sudo apt-get -qq update
@@ -22,15 +24,15 @@ function test_include {
 
 qtvid=$(echo $QT_VER | sed 's/\\.//g')
 echo qtvid $qtvid
-echo pfLinux = \"$(test_include linux)\" > qt-installer-script.qs
-echo pfAndroid = \"$(test_include android)\" >> qt-installer-script.qs
-echo qtVersion = \"$qtvid\" >> qt-installer-script.qs
-cat qt-installer-script-base.qs >> qt-installer-script.qs
+echo pfLinux = \"$(test_include linux)\" > $scriptdir/qt-installer-script.qs
+echo pfAndroid = \"$(test_include android)\" >> $scriptdir/qt-installer-script.qs
+echo qtVersion = \"$qtvid\" >> $scriptdir/qt-installer-script.qs
+cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 
 # install Qt
 curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 chmod +x /tmp/installer.run
-QT_QPA_PLATFORM=minimal sudo /tmp/installer.run --script tests/travis/linux/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
+QT_QPA_PLATFORM=minimal sudo /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
 
 if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	# android skd/ndk
