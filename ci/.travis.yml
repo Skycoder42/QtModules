@@ -1,0 +1,44 @@
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      dist: trusty
+      sudo: required
+    - os: osx
+      osx_image: xcode8.3
+      sudo: required
+
+env:
+  - QT_VER=5.9.1
+  - PROJECT=myprojectname
+
+before_install:
+  - git clone https://github.com/Skycoder42/QtModules.git ./qtmodules-travis
+  - travis_wait 30 ./qtmodules-travis/ci/$TRAVIS_OS_NAME/setup.sh
+
+script:
+  - ./qtmodules-travis/ci/$TRAVIS_OS_NAME/build.sh
+
+before_deploy:
+  - ./qtmodules-travis/ci/$TRAVIS_OS_NAME/upload-prepare.sh
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key:
+    secure: <travis encrypted key>
+  file:
+    - install/opt/build_linux_$QT_VER.tar.xz
+    - install/opt/build_osx_$QT_VER.tar.xz
+  on:
+    repo: <user/repository>
+    tags: true
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
