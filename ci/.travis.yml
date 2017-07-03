@@ -29,8 +29,10 @@ deploy:
   api_key:
     secure: <travis encrypted key>
   file:
-    - install/opt/build_linux_$QT_VER.tar.xz
-    - install/opt/build_osx_$QT_VER.tar.xz
+    - install/opt/qt/$QT_VER/build_linux_$QT_VER.tar.xz
+    - install/opt/qt/$QT_VER/build_android_$QT_VER.tar.xz
+    - install/opt/qt/$QT_VER/build_osx_$QT_VER.tar.xz
+    - install/opt/qt/Docs/build_doc_$QT_VER.tar.xz
   on:
     repo: <user/repository>
     tags: true
