@@ -19,10 +19,13 @@ after_build:
   - .\qtmodules-travis\ci\win\upload-prepare.bat
 
 artifacts:
-  - path: install\Qt\%QT_VER%\build_win_msvc2017_%QT_VER%.zip
-    name: build_win_msvc2017_%QT_VER%.zip
-  - path: install\Qt\%QT_VER%\build_win_msvc2015_%QT_VER%.zip
-    name: build_win_msvc2015_%QT_VER%.zip
-  - path: install\Qt\%QT_VER%\build_win_mingw_%QT_VER%.zip
-    name: build_win_mingw_%QT_VER%.zip
+  - path: install\build_*_%QT_VER%.zip
 
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: <your encrypted token>
+  artifact: /.*\.zip/
+  force_update: true
+  on:
+    appveyor_repo_tag: true

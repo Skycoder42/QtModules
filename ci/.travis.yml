@@ -28,8 +28,8 @@ deploy:
   skip_cleanup: true
   api_key:
     secure: <travis encrypted key>
-  file:
-    - install/opt/build_*_$QT_VER.tar.xz
+  file_glob: true
+  file: install/opt/build_*_$QT_VER.tar.xz
   on:
     repo: <user/repository>
     tags: true
