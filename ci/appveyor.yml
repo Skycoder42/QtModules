@@ -15,7 +15,11 @@ install:
 build_script:
   - .\qtmodules-travis\ci\win\build.bat
 
+after_build:
+  - .\qtmodules-travis\ci\win\upload-prepare.bat
+
 artifacts:
-  - path: install\Qt
-    name: build_win_5.9.0
-    type: zip
+  - path: install\Qt\%QT_VER%\build_win_msvc2017_%QT_VER%.zip
+    name: build_win_msvc2017_%QT_VER%.zip
+  - path: install\Qt\%QT_VER%\build_win_msvc2015_%QT_VER%.zip
+    name: build_win_msvc2015_%QT_VER%.zip

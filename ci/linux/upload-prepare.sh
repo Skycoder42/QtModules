@@ -15,6 +15,3 @@ fi
 
 cd ../Docs
 tar cJf build_doc_$QT_VER.tar.xz ./*
-
-cd ..
-find . -name "*.tar.xz"
