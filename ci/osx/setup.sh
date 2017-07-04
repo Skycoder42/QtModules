@@ -4,7 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 # install qpm
-curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/darwin_386/qpm
+curl -Lo /tmp/qpm https://storage.googleapis.com/www.qpm.io/download/latest/darwin_386/qpm
 sudo install -m 755 /tmp/qpm /usr/local/bin/
 
 # prepare installer script
