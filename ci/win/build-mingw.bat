@@ -13,12 +13,14 @@ C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
-:: tests
-mingw32-make all || exit /B 1
+if "%~NO_TESTS%" == "" (
+	:: tests
+	mingw32-make all || exit /B 1
 
-set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
-cd tests\auto
-set QT_QPA_PLATFORM=minimal
-for /r %%f in (tst_*.exe) do (
-	%%f || exit /B 1
+	set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
+	cd tests\auto
+	set QT_QPA_PLATFORM=minimal
+	for /r %%f in (tst_*.exe) do (
+		%%f || exit /B 1
+	)
 )
