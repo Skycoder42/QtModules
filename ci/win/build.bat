@@ -7,8 +7,7 @@ if "%TEST_DIR%" == "" (
 setlocal
 set olddir=%CD%
 for /R %%F in (*qpm.json) do (
-	echo.%%F | findstr /C:"vendor" 1>nul
-	if errorlevel 0 (
+	echo %%F | findstr /C:"vendor" > nul && (
 		echo qpm dir is %%~dpF
 		cd %%~dpF
 		C:\projects\qpm.exe install
