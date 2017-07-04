@@ -13,7 +13,7 @@ C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
-if "%~NO_TESTS%" == "" (
+if "%NO_TESTS%" == "" (
 	:: tests
 	mingw32-make all || exit /B 1
 
