@@ -7,9 +7,27 @@ export ANDROID_NDK=$HOME/android/sdk/ndk-bundle
 export ANDROID_SDK_ROOT=$ANDROID_HOME
 export ANDROID_NDK_ROOT=$ANDROID_NDK
 
+if [[ -z "$TEST_DIR" ]]; then
+	export TEST_DIR=./tests/auto
+fi
+
+olddir=$(pwd)
+for file in $(find . -name "qpm.json"); do
+	qpmdir=$(dirname $file)
+	if [[ "$qpmdir" != *"vendor"* ]]; then
+		cd $qpmdir
+		qpm install
+	fi
+done
+cd $olddir
+
 scriptdir=$(dirname $0)
 if [[ $EXCLUDE_PLATFORMS != *"linux"* ]]; then
-	$scriptdir/build-all.sh gcc_64 "QMAKE_CXX=g++-5"
+	if [[ -z "$NO_TESTS" ]]; then
+		$scriptdir/build-all.sh gcc_64 "QMAKE_CXX=g++-5"
+	else
+		$scriptdir/build-first.sh gcc_64 "QMAKE_CXX=g++-5"
+	fi
 fi
 
 if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
@@ -17,4 +35,6 @@ if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	$scriptdir/build-first.sh android_x86
 fi
 
-$scriptdir/build-doc.sh
+if [[ $EXCLUDE_PLATFORMS != *"doc"* ]]; then
+	$scriptdir/build-doc.sh
+fi
