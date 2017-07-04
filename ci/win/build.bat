@@ -9,14 +9,15 @@ set olddir=%CD%
 for /R %%F in (*qpm.json) do (
 	set qpmdir=%%~dpF
 	echo file found %%F
+	echo dir is %%~dpF
 	echo.%qpmdir% | findstr /C:"vendor" 1>nul
 	if errorlevel 0 (
 		echo qpm dir is %qpmdir%
 		cd %qpmdir%
 		C:\projects\qpm.exe install
+		cd %olddir%
 	)
 )
-cd %olddir%
 endlocal
 
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
