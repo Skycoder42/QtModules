@@ -6,7 +6,7 @@ if "%TEST_DIR%" == "" (
 
 setlocal
 set olddir=%CD%
-for %%F in (qpm.json) do (
+for /R %%F in (*qpm.json) do (
 	set qpmdir=%%~dpF
 	echo file found %%F
 	echo.%qpmdir% | findstr /C:"vendor" 1>nul
