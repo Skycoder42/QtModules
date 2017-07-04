@@ -17,9 +17,9 @@ for file in $(find . -name "qpm.json"); do
 	if [[ "$qpmdir" != *"vendor"* ]]; then
 		cd $qpmdir
 		qpm install
+		cd $olddir
 	fi
 done
-cd $olddir
 
 scriptdir=$(dirname $0)
 if [[ $EXCLUDE_PLATFORMS != *"linux"* ]]; then
