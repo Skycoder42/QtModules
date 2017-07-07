@@ -31,6 +31,11 @@ curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_inst
 chmod +x /tmp/installer.run
 QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
 
+# make some space
+rm -rf /opt/qt/Examples
+rm -rf /opt/qt/Docs
+rm -rf /opt/qt/Tools/QtCreator
+
 if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	# android skd/ndk
 	curl -Lo /tmp/android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
