@@ -43,6 +43,8 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 			widget.selectComponent("qt." + qtVersion + ".win32_mingw53");
 		}
 	}
+	if(pfWin32)
+		widget.selectComponent("qt.tools.ifw.20");
 	widget.selectComponent("qt." + qtVersion + ".skycoder42");
 	
 	if(gui.isButtonEnabled(buttons.NextButton))
