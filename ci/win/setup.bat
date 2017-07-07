@@ -1,5 +1,6 @@
+@echo on
 :: install qpm
-powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
+:: powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
 :: prepare installer script
 set command=echo %QT_VER% | call %~dp0\BatchSubstitute.bat "." ""
