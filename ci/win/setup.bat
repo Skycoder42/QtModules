@@ -4,7 +4,7 @@
 
 :: prepare installer script
 echo qtVersion = "%QT_VER%" > %~dp0\qt-installer-script.qs
-powershell -File %~dp0\replace.ps1
+powershell -File %~dp0\replace.ps1 %~dp0\qt-installer-script.qs
 
 call :test_include pfWin32 win32
 call :test_include pfWinrt winrt

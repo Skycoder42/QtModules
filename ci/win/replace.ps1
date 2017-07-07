@@ -1,2 +1,2 @@
-echo %~dp0\qt-installer-script.qs
-Get-Content %~dp0\qt-installer-script.qs | ForEach-Object {$_ -replace "\.", ""} | Set-Content %~dp0\qt-installer-script.qs
+echo $args[0] $args[1]
+Get-Content $args[0] | ForEach-Object {$_ -replace "\.", ""} | Set-Content $args[0]
