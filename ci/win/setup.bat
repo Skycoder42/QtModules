@@ -6,8 +6,8 @@
 echo qtVersion = "%QT_VER%" > %~dp0\qt-installer-script.qs
 powershell -File %~dp0\replace.ps1
 
-call :test_include "pfWin32" "win32"
-call :test_include "pfWinrt" "winrt"
+call :test_include pfWin32 win32
+call :test_include pfWinrt winrt
 
 type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
 
