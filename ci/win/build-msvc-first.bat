@@ -11,7 +11,6 @@ call %VC_DIR% %varsall% || exit /B 1
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
-echo about to qmake C:\Qt\%QT_VER%\%qtplatform%\bin\qmake
 C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
