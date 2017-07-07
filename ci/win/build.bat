@@ -4,6 +4,8 @@ if "%TEST_DIR%" == "" (
 	set TEST_DIR=.\tests\auto
 )
 
+set PATH=C:\Python36-x64;%PATH%
+
 setlocal
 set olddir=%CD%
 for /R %%F in (*qpm.json) do (
