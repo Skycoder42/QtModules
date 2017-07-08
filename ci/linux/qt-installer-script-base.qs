@@ -32,14 +32,11 @@ Controller.prototype.TargetDirectoryPageCallback = function() {
 Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
 	widget.deselectAll();
-	widget.selectComponent("qt." + qtVersion + ".gcc_64"); //always install gcc, for doc at least
-	if(pfLinux)
-		widget.selectComponent("qt.tools.ifw.20");
-	if(pfAndroid) {
-		widget.selectComponent("qt." + qtVersion + ".android_armv7");
-		widget.selectComponent("qt." + qtVersion + ".android_x86");
-	}
+	widget.selectComponent("qt." + qtVersion + ".gcc_64");
+	widget.selectComponent("qt." + qtVersion + ".android_armv7");
+	widget.selectComponent("qt." + qtVersion + ".android_x86");
 	widget.selectComponent("qt." + qtVersion + ".skycoder42");
+	widget.selectComponent("qt.tools.ifw.20");
     gui.clickButton(buttons.NextButton);
 }
 

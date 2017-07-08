@@ -1,17 +1,9 @@
 FROM ubuntu:rolling
 
-ADD build.sh /tmp/qt/build.sh
-ADD qt-installer-script.qs /tmp/qt/qt-installer-script.qs
-RUN chmod +x /tmp/qt/build.sh && /tmp/qt/build.sh
+ENV QT_VER=5.9.1
 
-ADD qt-installer-update-script.qs /opt/qt/qt-installer-update-script.qs
-ADD qt-installer-update.sh /opt/qt/qt-installer-update.sh
-ADD qt-installer-modify-script.qs /opt/qt/qt-installer-modify-script.qs
-ADD qt-installer-modify.sh /opt/qt/qt-installer-modify.sh
-ADD qt-build.sh /opt/qt/qt-build.sh
+ADD setup-docker.sh /tmp/qt/setup.sh
+ADD qt-installer-script-base.qs /tmp/qt/qt-installer-script-base.qs
+RUN /tmp/qt/setup.sh
 
-ENV PATH="${PATH}:/opt/qt:/opt/qt/5.9.1/gcc_64/bin:/opt/qt/Tools/QtInstallerFramework/2.0/bin"
-ENV BUILD_INSTALL_DIR="/tmp/qt-build/inst"
-ENV QPM_PATH="."
-
-CMD /opt/qt/qt-build.sh
+CMD cd /root/project && /root/project/qtmodules-travis/ci/linux/build-docker.sh

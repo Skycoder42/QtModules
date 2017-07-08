@@ -32,9 +32,6 @@ chmod +x /tmp/installer.run
 QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
 
 # make some space
-rm -rf /opt/qt/Examples
-rm -rf /opt/qt/Docs
-rm -rf /opt/qt/Tools/QtCreator
 
 if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	# android skd/ndk
@@ -44,3 +41,9 @@ if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	echo y | $HOME/android/sdk/tools/bin/sdkmanager --update
 	echo y | $HOME/android/sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.0" "extras;google;m2repository" "extras;android;m2repository" "ndk-bundle"
 fi
+
+rm -rf /opt/qt/Examples
+rm -rf /opt/qt/Docs
+rm -rf /opt/qt/Tools/QtCreator
+rm -rf /tmp/*
+rm -rf /var/lib/apt/lists/*
