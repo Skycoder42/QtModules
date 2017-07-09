@@ -6,8 +6,6 @@ scriptdir=$(dirname $0)
 # install build deps
 apt-get -qq update
 apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen openjdk-8-jdk unzip patchelf
-# to make ldqt work...
-apt-get -qq install --no-install-recommends libjasper1 libsm6 mysql-client
 
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
@@ -33,8 +31,37 @@ curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_inst
 chmod +x /tmp/installer.run
 QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
 
-# make some space
+# required to make linuxdeployqt work
+apt-get -qq install --no-install-recommends libjasper1 libsm6 libpq5
+rm -f /opt/qt/$QT_VER/gcc_64/plugins/sqldrivers/libqsqlmysql.so
 
+# install linuxdeployqt
+pdir=$(pwd)
+
+cd $(mktemp -d)
+
+mkdir build
+git clone https://github.com/probonopd/linuxdeployqt.git
+
+cd linuxdeployqt
+
+rm -rf tests
+mkdir tests
+echo 'TEMPLATE = aux' > tests/tests.pro
+
+echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licudata' >> tools/linuxdeployqt/linuxdeployqt.pro
+echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licui18n' >> tools/linuxdeployqt/linuxdeployqt.pro
+echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licuuc' >> tools/linuxdeployqt/linuxdeployqt.pro
+
+cd ../build
+
+/opt/qt/$QT_VER/gcc_64/bin/qmake -r ../linuxdeployqt/linuxdeployqt.pro
+make
+make install
+
+cd "$pdir"
+
+# install android deps
 if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
 	# android skd/ndk
 	curl -Lo /tmp/android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-3859397.zip
