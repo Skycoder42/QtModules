@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-ENV QT_VER=5.9.1
+ENV QT_VER=5.9
 
 ADD setup-docker.sh /tmp/qt/setup.sh
 ADD qt-installer-script-base.qs /tmp/qt/qt-installer-script-base.qs
