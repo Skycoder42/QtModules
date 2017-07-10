@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-	sudo chown -r $USER ./install
-fi
-
 export XZ_OPT=-9
 
 cd install/opt/qt/$QT_VER
