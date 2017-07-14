@@ -4,6 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 # common setup
+export SUDO=sudo
 $scriptdir/setup-common.sh
 
 # install android deps
