@@ -1,5 +1,4 @@
 :: build
-@echo on
 setlocal
 
 set qtplatform=%PLATFORM%

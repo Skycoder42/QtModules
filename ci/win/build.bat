@@ -1,6 +1,4 @@
 :: builds
-@echo on
-
 set PATH=C:\Python36-x64;%PATH%
 
 :: install QPM dependencies
@@ -24,6 +22,11 @@ if "%PLATFORM%" == "mingw53_32" (
 	)
 	if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 		set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+	)
+
+	:: winrt: skip tests
+	echo %PLATFORM% | findstr /C:"winrt" > nul || (
+		set NO_TESTS=true
 	)
 
 	:: find the varsall parameters
