@@ -5,16 +5,11 @@ export XZ_OPT=-9
 
 cd install/opt/qt/$QT_VER
 
-if [[ $EXCLUDE_PLATFORMS != *"linux"* ]]; then
-	tar cJf build_linux_$QT_VER.tar.xz gcc_64
-	mv build_linux_$QT_VER.tar.xz ../../
-fi
+tar cJf build_${PLATFORM}_${QT_VER}.tar.xz $PLATFORM
+mv build_${PLATFORM}_${QT_VER}.tar.xz ../../
 
-if [[ $EXCLUDE_PLATFORMS != *"android"* ]]; then
-	tar cJf build_android_$QT_VER.tar.xz android_armv7 android_x86
-	mv build_android_$QT_VER.tar.xz ../../
+if [[ -n "$BUILD_DOC" ]]; then
+	cd ../Docs
+	tar cJf build_doc_$QT_VER.tar.xz ./*
+	mv build_doc_$QT_VER.tar.xz ../../
 fi
-
-cd ../Docs
-tar cJf build_doc_$QT_VER.tar.xz ./*
-mv build_doc_$QT_VER.tar.xz ../../

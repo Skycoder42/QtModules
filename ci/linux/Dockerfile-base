@@ -1,4 +1,5 @@
 ADD setup-docker.sh /tmp/qt/setup.sh
+ADD setup-common.sh /tmp/qt/setup-common.sh
 ADD qt-installer-script-base.qs /tmp/qt/qt-installer-script-base.qs
 RUN /tmp/qt/setup.sh
 

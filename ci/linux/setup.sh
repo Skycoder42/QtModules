@@ -1,5 +1,12 @@
 #!/bin/bash
 set -e
 
-qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
-docker pull skycoder42/qt-build:qt$qtvid
+scriptdir=$(dirname $0)
+
+if [[ $PLATFORM == "gcc_64" ]]; then
+	$scriptdir/setup-gcc.sh
+fi
+
+if [[ $PLATFORM == "android_"* ]]; then
+	$scriptdir/setup-android.sh
+fi
