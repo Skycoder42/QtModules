@@ -17,12 +17,9 @@ echo "qtVersion = \"$qtvid\";" > $scriptdir/qt-installer-script.qs
 echo "platform = \"$PLATFORM\";" >> $scriptdir/qt-installer-script.qs
 echo "extraMods = [];" >> $scriptdir/qt-installer-script.qs
 for mod in $EXTRA_MODULES; do
-	echo "extraMods.push(\"$mod\");"
+	echo "extraMods.push(\"$mod\");" >> $scriptdir/qt-installer-script.qs
 done
 cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
-
-# DEBUG
-cat $scriptdir/qt-installer-script.qs
 
 # install Qt
 curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run

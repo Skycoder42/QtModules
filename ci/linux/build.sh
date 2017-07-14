@@ -4,7 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 if [[ $PLATFORM == "gcc_64" ]]; then
-	docker run --rm --name docker-qt-build -e PROJECT -e BUILD_DOC -e TEST_DIR -e NO_TESTS -v "$(pwd):/root/project" skycoder42/qt-build:qt
+	docker run --rm --name docker-qt-build -e PROJECT -e BUILD_DOC -e TEST_DIR -e NO_TESTS -v "$(pwd):/root/project" skycoder42/qt-build
 	sudo chown -R $USER $(pwd)
 fi
 
