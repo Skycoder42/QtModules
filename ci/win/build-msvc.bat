@@ -15,26 +15,24 @@ nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
 :: build and run test
-if "%NO_TESTS%" == "" echo WHAT THE HELL
-
-	echo pre make all
+if "%NO_TESTS%" == "" (
 	nmake all || exit /B 1
 
-	setlocal
 	set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
 	if "%TEST_DIR%" == "" (
 		set TEST_DIR=.\tests\auto
 	)
+)
+
 	cd %TEST_DIR%
 	set QT_QPA_PLATFORM=minimal
 	for /r %%f in (tst_*.exe) do (
 		%%f || exit /B 1
 	)
-	endlocal
 
 echo pre doc
 :: build documentation
-if "%BUILD_DOC%" != "" (
+if NOT "%BUILD_DOC%" == "" (
 	echo pre doc real
 	cd \projects\%CurrDirName%
 	mkdir build-doc
