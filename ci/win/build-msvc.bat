@@ -13,7 +13,7 @@ cd build-%qtplatform%
 C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
 dir .\doc
-nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
+nmake INSTALL_ROOT=\projects\%CurrDirName%\install install
 
 :: build and run test
 if "%NO_TESTS%" == "" (
