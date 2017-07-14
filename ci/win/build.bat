@@ -1,11 +1,8 @@
 :: builds
 
-if "%TEST_DIR%" == "" (
-	set TEST_DIR=.\tests\auto
-)
-
 set PATH=C:\Python36-x64;%PATH%
 
+:: install QPM dependencies
 setlocal
 set olddir=%CD%
 for /R %%F in (*qpm.json) do (
@@ -17,35 +14,25 @@ for /R %%F in (*qpm.json) do (
 )
 endlocal
 
-if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
-	set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
-
-	echo %EXCLUDE_PLATFORMS% | findstr /C:"win32" > nul || (
-		if "%NO_TESTS%" == "" (
-			call %~dp0\build-msvc-all.bat amd64 msvc2017_64 || exit /B 1
-		) else (
-			call %~dp0\build-msvc-first.bat amd64 msvc2017_64 || exit /B 1
-		)
+if "%PLATFORM%" == "mingw53_32" (
+	call %~dp0\build-mingw.bat || exit /B 1
+) else (
+	:: prepare vcvarsall
+	if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
+		set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
+	)
+	if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
+		set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
 	)
 
-	echo %EXCLUDE_PLATFORMS% | findstr /C:"winrt" > nul || (
-		call %~dp0\build-msvc-first.bat amd64 winrt_x64_msvc2017 || exit /B 1
-		call %~dp0\build-msvc-first.bat amd64_x86 winrt_x86_msvc2017 || exit /B 1
-		call %~dp0\build-msvc-first.bat amd64_arm winrt_armv7_msvc2017 || exit /B 1
-	)
-)
+	:: find the varsall parameters
+	if "%PLATFORM%" == "msvc2017_64" set VC_VARSALL=amd64
+	if "%PLATFORM%" == "winrt_x64_msvc2017" set VC_VARSALL=amd64
+	if "%PLATFORM%" == "winrt_x86_msvc2017" set VC_VARSALL=amd64_x86
+	if "%PLATFORM%" == "winrt_armv7_msvc2017" set VC_VARSALL=amd64_arm
+	if "%PLATFORM%" == "msvc2015_64" set VC_VARSALL=amd64
+	if "%PLATFORM%" == "msvc2015" set VC_VARSALL=amd64_x86
 
-if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
-	set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
-
-	echo %EXCLUDE_PLATFORMS% | findstr /C:"win32" > nul || (
-		if "%NO_TESTS%" == "" (
-			call %~dp0\build-msvc-all.bat amd64 msvc2015_64 || exit /B 1
-			call %~dp0\build-msvc-all.bat amd64_x86 msvc2015 || exit /B 1
-		) else (
-			call %~dp0\build-msvc-first.bat amd64 msvc2015_64 || exit /B 1
-			call %~dp0\build-msvc-first.bat amd64_x86 msvc2015 || exit /B 1
-		)
-		call %~dp0\build-mingw.bat || exit /B 1
-	)
+	:: build
+	call %~dp0\build-msvc.bat || exit /B 1
 )

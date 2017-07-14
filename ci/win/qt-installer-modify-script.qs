@@ -27,26 +27,13 @@ Controller.prototype.IntroductionPageCallback = function() {
 // select the components to install
 Controller.prototype.ComponentSelectionPageCallback = function() {
 	var widget = gui.currentPageWidget();
-	if(image == "Visual Studio 2017") {
-		if(pfWin32)
-			widget.selectComponent("qt." + qtVersion + ".win64_msvc2017_64");
-		if(pfWinrt) {
-			widget.selectComponent("qt." + qtVersion + ".win64_msvc2017_winrt_armv7");
-			widget.selectComponent("qt." + qtVersion + ".win64_msvc2017_winrt_x64");
-			widget.selectComponent("qt." + qtVersion + ".win64_msvc2017_winrt_x86");
-		}
-	}
-	if(image == "Visual Studio 2015") {
-		if(pfWin32) {
-			widget.selectComponent("qt." + qtVersion + ".win64_msvc2015_64");
-			widget.selectComponent("qt." + qtVersion + ".win32_msvc2015");
-			widget.selectComponent("qt." + qtVersion + ".win32_mingw53");
-		}
-	}
-	if(pfWin32)
-		widget.selectComponent("qt.tools.ifw.20");
-	widget.selectComponent("qt." + qtVersion + ".skycoder42");
-	
+	widget.selectComponent("qt." + qtVersion + "." + platform);
+	extraMods.forEach(function(element){
+		if(element.startsWith("."))
+			element = "qt." + qtVersion + element;
+		widget.selectComponent(element);
+	});
+
 	if(gui.isButtonEnabled(buttons.NextButton))
 		gui.clickButton(buttons.NextButton);
 	else
