@@ -10,23 +10,26 @@ brew install python3
 curl -Lo /tmp/qpm https://storage.googleapis.com/www.qpm.io/download/latest/darwin_386/qpm
 sudo install -m 755 /tmp/qpm /usr/local/bin/
 
-# prepare installer script
-function test_include {
-	if [[ $EXCLUDE_PLATFORMS != *"$1"* ]]; then
-		echo true
-	else
-		echo false
-	fi
-}
+# clang only -> install qtifw
+if [[ $PLATFORM == "clang_64" ]]; then
+	export EXTRA_MODULES="qt.tools.ifw.20 $EXTRA_MODULES"
+fi
 
+# prepare installer script
 qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
-echo pfMac = \"$(test_include mac)\" > $scriptdir/qt-installer-script.qs
-echo pfIos = \"$(test_include ios)\" >> $scriptdir/qt-installer-script.qs
-echo qtVersion = \"$qtvid\" >> $scriptdir/qt-installer-script.qs
+echo "qtVersion = \"$qtvid\";" > $scriptdir/qt-installer-script.qs
+echo "platform = \"$PLATFORM\";" >> $scriptdir/qt-installer-script.qs
+echo "extraMods = [];" >> $scriptdir/qt-installer-script.qs
+for mod in $EXTRA_MODULES; do
+	echo "extraMods.push(\"$mod\");" >> $scriptdir/qt-installer-script.qs
+done
 cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 
 # install Qt
 curl -Lo /tmp/installer.dmg https://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
 hdiutil attach /tmp/installer.dmg
-find /Volumes/qt-unified-mac-x64-3.0.0-online
 QT_QPA_PLATFORM=minimal sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents/MacOS/qt-unified-mac-* --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/mac_x64/
+
+sudo rm -rf /opt/qt/Examples
+sudo rm -rf /opt/qt/Docs
+sudo rm -rf /opt/qt/Tools/QtCreator
