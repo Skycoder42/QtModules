@@ -5,20 +5,20 @@ powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
-	set EXTRA_MODULES="qt.tools.ifw.20 %EXTRA_MODULES%"
+	set EXTRA_MODULES=qt.tools.ifw.20;%EXTRA_MODULES%
 )
 
 :: prepare installer script
 echo qtVersion = "%QT_VER%"; > %~dp0\tmp.qs
 powershell -File %~dp0\replace.ps1 %~dp0\tmp.qs %~dp0\qt-installer-script.qs
 
-if %PLATFORM% == "msvc2017_64" set PACKAGE=win64_msvc2017_64
-if %PLATFORM% == "winrt_x64_msvc2017" set PACKAGE=win64_msvc2017_winrt_x64
-if %PLATFORM% == "winrt_x86_msvc2017" set PACKAGE=win64_msvc2017_winrt_x86
-if %PLATFORM% == "winrt_armv7_msvc2017" set PACKAGE=win64_msvc2017_winrt_armv7
-if %PLATFORM% == "msvc2015_64" set PACKAGE=win64_msvc2015_64
-if %PLATFORM% == "msvc2015" set PACKAGE=win32_msvc2015
-if %PLATFORM% == "mingw53_32" set PACKAGE=win32_mingw53
+if "%PLATFORM%" == "msvc2017_64" set PACKAGE=win64_msvc2017_64
+if "%PLATFORM%" == "winrt_x64_msvc2017" set PACKAGE=win64_msvc2017_winrt_x64
+if "%PLATFORM%" == "winrt_x86_msvc2017" set PACKAGE=win64_msvc2017_winrt_x86
+if "%PLATFORM%" == "winrt_armv7_msvc2017" set PACKAGE=win64_msvc2017_winrt_armv7
+if "%PLATFORM%" == "msvc2015_64" set PACKAGE=win64_msvc2015_64
+if "%PLATFORM%" == "msvc2015" set PACKAGE=win32_msvc2015
+if "%PLATFORM%" == "mingw53_32" set PACKAGE=win32_mingw53
 
 echo platform = "%PACKAGE%"; >> %~dp0\qt-installer-script.qs
 echo extraMods = []; >> %~dp0\qt-installer-script.qs
