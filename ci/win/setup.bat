@@ -23,7 +23,7 @@ if "%PLATFORM%" == "mingw53_32" set PACKAGE=win32_mingw53
 echo platform = "%PACKAGE%"; >> %~dp0\qt-installer-script.qs
 echo extraMods = []; >> %~dp0\qt-installer-script.qs
 for %%x in (%EXTRA_MODULES%) do (
-	echo extraMods.push("%%x"); >> %~dp0\qt-installer-script.qs
+	echo extraMods.push("%%x"^); >> %~dp0\qt-installer-script.qs
 )
 type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
 
