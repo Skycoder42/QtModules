@@ -25,7 +25,7 @@ if "%PLATFORM%" == "mingw53_32" (
 	)
 
 	:: winrt: skip tests
-	echo %PLATFORM% | findstr /C:"winrt" > nul || (
+	echo %PLATFORM% | findstr /C:"winrt" > nul && (
 		set NO_TESTS=true
 	)
 
