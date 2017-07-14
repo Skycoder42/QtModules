@@ -14,12 +14,9 @@ C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
-echo pre test 1
 :: build and run test
-echo pre test 2
-if "true" == "false" echo pre test 3
-echo pre test 4 %NO_TESTS%
-if "%NO_TESTS%" == "" (
+if "%NO_TESTS%" == "" echo WHAT THE HELL
+
 	echo pre make all
 	nmake all || exit /B 1
 
@@ -34,7 +31,6 @@ if "%NO_TESTS%" == "" (
 		%%f || exit /B 1
 	)
 	endlocal
-)
 
 echo pre doc
 :: build documentation
