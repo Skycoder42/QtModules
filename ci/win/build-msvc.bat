@@ -12,12 +12,12 @@ cd build-%qtplatform%
 
 C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
 nmake || exit /B 1
-echo AFTER MAKE
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
-echo AFTER INSTALL
-exit \B 0
+
+echo pre test
 :: build and run test
 if "%NO_TESTS%" == "" (
+	echo pre make all
 	nmake all || exit /B 1
 
 	setlocal
@@ -33,8 +33,10 @@ if "%NO_TESTS%" == "" (
 	endlocal
 )
 
+echo pre doc
 :: build documentation
 if "%BUILD_DOC%" != "" (
+	echo pre doc real
 	cd \projects\%CurrDirName%
 	mkdir build-doc
 	cd build-doc
