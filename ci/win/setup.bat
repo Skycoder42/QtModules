@@ -1,4 +1,6 @@
 :: install qpm
+@echo on
+
 powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
 :: except winrt -> qtifw
@@ -17,6 +19,8 @@ for %%x in (%string%) do (
 	echo extraMods.push("%%x"); >> %~dp0\qt-installer-script.qs
 )
 type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
+
+type %~dp0\qt-installer-script.qs
 
 :: update and install Qt modules
 C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
