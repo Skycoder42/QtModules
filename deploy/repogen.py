@@ -63,6 +63,7 @@ subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<ReleaseDate>{}</ReleaseDate>
 	<Virtual>true</Virtual>
 	<AutoDependOn>{}, {}</AutoDependOn>
+	<Dependencies>{}</Dependencies>
 	<Script>installscript.qs</Script>
 </Package>"""
 
@@ -136,12 +137,13 @@ def createBasePkg():
 	shutil.copy(licenseFile, pkgBaseLicense)
 
 def createDocPkg():
-	baseDocDir = os.path.join(baseDir, "doc")
+	docName = "Qt-{}".format(baseDir);
+	baseDocDir = os.path.join(baseDir, docName)
 	pkgDoc = pkgBase + ".doc"
 	pkgDocPath = os.path.join("packages", pkgDoc)
 	pkgDocMeta = os.path.join(pkgDocPath, "meta")
 	pkgDocData = os.path.join(pkgDocPath, "data/Docs")
-	pkgDocDataDoc = os.path.join(pkgDocData, "Qt-{}".format(baseDir))
+	pkgDocDataDoc = os.path.join(pkgDocData, docName)
 	pkgDocXml = os.path.join(pkgDocMeta, "package.xml")
 	pkgDocScript = os.path.join(pkgDocMeta, "installscript.qs")
 
@@ -153,14 +155,14 @@ def createDocPkg():
 	pgkDocXmlFile = open(pkgDocXml, "w")
 	pgkDocXmlFile.write(docPkgXml.format(pkgDoc, modTitle, vers, datetime.date.today(), pkgBase))
 	pgkDocXmlFile.close()
-	
+
 	pgkDocScriptFile = open(pkgDocScript, "w")
 	pgkDocScriptFile.write(docPkgScript.format(baseDir))
 	pgkDocScriptFile.close()
-	
+
 	shutil.copytree(baseDocDir, pkgDocDataDoc)
 
-def createSubPkg(dirName, pkgName, patchName):	
+def createSubPkg(dirName, pkgName, patchName):
 	baseDataDir = os.path.join(baseDir, dirName)
 	pkg = pkgBase + "." + pkgName
 	pkgKit = "qt.{}.{}".format(qtVers, pkgName)
@@ -171,26 +173,26 @@ def createSubPkg(dirName, pkgName, patchName):
 	pkgDataKit = os.path.join(pkgData, dirName)
 	pkgXml = os.path.join(pkgMeta, "package.xml")
 	pkgScript = os.path.join(pkgMeta, "installscript.qs")
-	
+
 	print("Creating sub package", pkg)
 	os.mkdir(pkgPath)
 	os.mkdir(pkgMeta)
 	os.makedirs(pkgData)
-	
+
 	pgkXmlFile = open(pkgXml, "w")
-	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit))
+	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit, pkgKit))
 	pgkXmlFile.close()
-	
+
 	pgkScriptFile = open(pkgScript, "w")
 	pgkScriptFile.write(subPkgScript.format(pkgKit, pkgFolder, patchName))
 	pgkScriptFile.close()
-	
+
 	shutil.copytree(baseDataDir, pkgDataKit, symlinks=True)
-	
+
 def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 	if len(tools) == 0:
 		return
-	
+
 	for fixPkgInfo in fixPkgs:
 		fixPkgName = fixPkgInfo[0];
 		fixPkgDir = fixPkgInfo[1];
@@ -203,12 +205,12 @@ def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 				tool = toolName + suffix
 				toolBasePath = os.path.join(binPath, toolName)
 				toolPath = os.path.join(binPath, tool)
-				
+
 				if os.path.lexists(toolBasePath):
 					os.remove(toolBasePath)
 				if os.path.lexists(toolPath):
 					os.remove(toolPath)
-					
+
 				if doCopy:
 					shutil.copy(os.path.join(baseDir, masterPath, "bin", tool), toolPath)
 				else:
@@ -220,11 +222,16 @@ def repogen(archName, pkgList):
 	for pkgItem in pkgList:
 		pkgFullList.append(pkgBase + "." + pkgItem)
 	repoInc = ",".join(pkgFullList)
-	
+
 	if not os.path.exists(repoPath):
 		print("WARNING: No existing repository found! It will be created as a new one, and not updated")
-		
+
 	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath])
+
+# unpack packages
+if os.path.exists("archives"):
+	scriptDir = os.path.dirname(__file__)
+	subprocess.run([os.path.join(scriptDir, "unpack.sh"), baseDir])
 
 # create packages
 shutil.rmtree("packages", ignore_errors=True)
@@ -250,23 +257,51 @@ if "winrt_x86_msvc2017" not in skipPacks:
 	createSubPkg("winrt_x86_msvc2017", "win64_msvc2017_winrt_x86", "emb-arm-qt5")
 if "winrt_x64_msvc2017" not in skipPacks:
 	createSubPkg("winrt_x64_msvc2017", "win64_msvc2017_winrt_x64", "emb-arm-qt5")
+if "winrt_armv7_msvc2017" not in skipPacks:
+	createSubPkg("winrt_armv7_msvc2017", "win64_msvc2017_winrt_armv7", "emb-arm-qt5")
+if "msvc2015_64" not in skipPacks:
+	createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
+if "msvc2015" not in skipPacks:
+	createSubPkg("msvc2015", "win32_msvc2015", "qt5")
 
 # build repositories
 prepareTools("gcc_64", [
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
 ], "", False)
-repogen("linux_x64", ["gcc_64", "android_armv7", "android_x86"])
+repogen("linux_x64", [
+	"gcc_64",
+	"android_armv7",
+	"android_x86"
+])
+
 prepareTools("msvc2017_64", [
 	["win64_msvc2017_winrt_x86", "winrt_x86_msvc2017"],
 	["win64_msvc2017_winrt_x64", "winrt_x64_msvc2017"],
+	["win64_msvc2017_winrt_armv7", "winrt_armv7_msvc2017"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
 ], ".exe", True)
-repogen("windows_x86", ["win32_mingw53", "win64_msvc2017_64", "win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "android_armv7", "android_x86"])
+repogen("windows_x86", [
+	"win32_mingw53",
+	"win64_msvc2017_64",
+	"win64_msvc2017_winrt_x86",
+	"win64_msvc2017_winrt_x64",
+	"win64_msvc2017_winrt_armv7",
+	"win64_msvc2015_64",
+	"win32_msvc2015",
+	"android_armv7",
+	"android_x86"
+])
+
 prepareTools("clang_64", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
 	["android_x86", "android_x86"]
 ], "", False)
-repogen("mac_x64", ["clang_64", "ios", "android_armv7", "android_x86"])
+repogen("mac_x64", [
+	"clang_64",
+	"ios",
+	"android_armv7",
+	"android_x86"
+])
