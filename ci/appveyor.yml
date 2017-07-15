@@ -7,6 +7,7 @@ version: build-{build}
 environment:
   QT_VER: 5.9
   PROJECT: myprojectname
+  EXTRA_MODULES: .skycoder42
 
   matrix:
     - PLATFORM: msvc2017_64

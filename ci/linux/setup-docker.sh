@@ -7,7 +7,7 @@ scriptdir=$(dirname $0)
 $scriptdir/setup-common.sh
 
 # install gcc  and linuxdeployqt deps
-apt-get -qq install --no-install-recommends patchelf libjasper1 libsm6 libpq5
+apt-get -qq install --no-install-recommends patchelf libjasper1 libxi6 libsm6 libpq5
 rm -f /opt/qt/$QT_VER/gcc_64/plugins/sqldrivers/libqsqlmysql.so
 
 # install linuxdeployqt
