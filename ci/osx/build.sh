@@ -5,6 +5,11 @@ scriptdir=$(dirname $0)
 
 export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 
+# ios: no tests
+if [[ $PLATFORM == "ios" ]]; then
+	export NO_TESTS=true
+fi
+
 # install QPM dependencies
 olddir=$(pwd)
 for file in $(find . -name "qpm.json"); do
