@@ -13,7 +13,7 @@ mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install
 
 :: build and run test
-if "%NO_TESTS%" == "" (
+if NOT "%NO_TESTS%" == "" goto no_tests
 	mingw32-make all || exit /B 1
 
 	setlocal
@@ -27,10 +27,10 @@ if "%NO_TESTS%" == "" (
 		%%f || exit /B 1
 	)
 	endlocal
-)
+:no_tests
 
 :: build documentation
-if "%BUILD_DOC%" != "" (
+if "%BUILD_DOC%" == "" goto no_doc
 	cd \projects\%CurrDirName%
 	mkdir build-doc
 	cd build-doc
@@ -38,4 +38,4 @@ if "%BUILD_DOC%" != "" (
 	C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake -r ../doc/doc.pro || exit /B 1
 	mingw32-make doxygen || exit /B 1
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
-)
+:no_doc
