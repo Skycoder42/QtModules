@@ -29,13 +29,14 @@ make INSTALL_ROOT="$rootdir/install" install
 if [[ -z "$NO_TESTS" ]]; then
 	make all
 
-	export LD_LIBRARY_PATH="$(pwd)/lib:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
 
 	if [[ -z "$TEST_DIR" ]]; then
 		export TEST_DIR=./tests/auto
 	fi
 	cd "$TEST_DIR"
 	for test in $(find . -type f -executable -name "tst_*"); do
+		ldd $test
 		QT_QPA_PLATFORM=minimal $test
 	done
 fi
