@@ -40,7 +40,7 @@ if [[ -z "$NO_TESTS" ]]; then
 		export TEST_DIR=./tests/auto
 	fi
 	cd "$TEST_DIR"
-	for test in $(find . -type f -executable -name "tst_*"); do
+	for test in $(find . -type f -perm +0111 -name "tst_*"); do
 		QT_QPA_PLATFORM=minimal $test
 	done
 fi
