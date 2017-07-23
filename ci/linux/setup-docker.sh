@@ -16,7 +16,7 @@ pdir=$(pwd)
 cd $(mktemp -d)
 
 mkdir build
-git clone https://github.com/probonopd/linuxdeployqt.git
+git clone https://github.com/probonopd/linuxdeployqt.git --branch continuous
 
 cd linuxdeployqt
 
