@@ -41,7 +41,8 @@ if [[ -z "$NO_TESTS" ]]; then
 	fi
 	cd "$TEST_DIR"
 	for test in $(find . -type f -perm +0111 -name "tst_*"); do
-		QT_QPA_PLATFORM=minimal $test
+		#QT_QPA_PLATFORM=minimal
+		$test
 	done
 fi
 
