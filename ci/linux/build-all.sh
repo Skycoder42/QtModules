@@ -36,7 +36,6 @@ if [[ -z "$NO_TESTS" ]]; then
 	fi
 	cd "$TEST_DIR"
 	for test in $(find . -type f -executable -name "tst_*"); do
-		ldd $test
 		QT_QPA_PLATFORM=minimal $test
 	done
 fi

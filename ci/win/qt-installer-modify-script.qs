@@ -36,8 +36,10 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 
 	if(gui.isButtonEnabled(buttons.NextButton))
 		gui.clickButton(buttons.NextButton);
-	else
+	else {
+		console.log("no_modules_changed");
 		gui.rejectWithoutPrompt();
+	}
 }
 
 // accept the license agreement
