@@ -21,7 +21,7 @@ rootdir=$(pwd)
 mkdir build-$PLATFORM
 cd build-$PLATFORM
 
-/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r $QMAKE_FLAGS ../$PROJECT.pro
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r $QMAKE_FLAGS ../
 make
 make INSTALL_ROOT="$rootdir/install" install
 

@@ -9,7 +9,7 @@ call %VC_DIR% %VC_VARSALL% || exit /B 1
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
-C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ..\%PROJECT%.pro || exit /B 1
+C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ../ || exit /B 1
 nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
