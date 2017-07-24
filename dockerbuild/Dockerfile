@@ -1,9 +1,0 @@
-FROM ubuntu:latest
-
-ENV QT_VER=5.9.1
-
-ADD setup-docker.sh /tmp/qt/setup.sh
-ADD qt-installer-script-base.qs /tmp/qt/qt-installer-script-base.qs
-RUN /tmp/qt/setup.sh
-
-CMD cd /root/project && /root/project/qtmodules-travis/ci/linux/build-docker.sh

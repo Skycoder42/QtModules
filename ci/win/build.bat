@@ -1,4 +1,5 @@
 :: builds
+@echo on
 set PATH=C:\Python36-x64;%PATH%
 
 :: install QPM dependencies
