@@ -3,4 +3,4 @@ ADD setup-common.sh /tmp/qt/setup-common.sh
 ADD qt-installer-script-base.qs /tmp/qt/qt-installer-script-base.qs
 RUN /tmp/qt/setup.sh
 
-CMD cd /root/project && /root/project/qtmodules-travis/ci/linux/build-docker.sh
+CMD cd /root/project && /root/project/qtmodules-travis/ci/linux/build-all.sh
