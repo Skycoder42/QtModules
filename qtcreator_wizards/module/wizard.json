@@ -81,28 +81,39 @@
 					"type": "LineEdit",
 					"data": {}
 				},
-                {
-                    "name": "UseQDoc",
-                    "trDisplayName": "Use QDoc instead of doxygen",
-                    "type": "CheckBox",
-                    "data":
-                    {
-                        "checkedValue": "UseQDoc",
-                        "uncheckedValue": "",
+				{
+					"name": "UseQDoc",
+					"trDisplayName": "Use QDoc instead of doxygen",
+					"type": "CheckBox",
+					"data":
+					{
+						"checkedValue": "UseQDoc",
+						"uncheckedValue": "",
 						"checked": "false"
-                    }
-                },
-                {
-                    "name": "Translations",
-                    "trDisplayName": "Prepare Translations",
-                    "type": "CheckBox",
-                    "data":
-                    {
-                        "checkedValue": "Translations",
-                        "uncheckedValue": "",
+					}
+				},
+				{
+					"name": "Translations",
+					"trDisplayName": "Prepare Translations",
+					"type": "CheckBox",
+					"data":
+					{
+						"checkedValue": "Translations",
+						"uncheckedValue": "",
 						"checked": "false"
-                    }
-                }
+					}
+				},
+				{
+					"name": "CI",
+					"trDisplayName": "Add CI Files",
+					"type": "CheckBox",
+					"data":
+					{
+						"checkedValue": "CI",
+						"uncheckedValue": "",
+						"checked": "true"
+					}
+				}
 			]
 		},
 		{
@@ -139,8 +150,18 @@
 				},
 				{
 					"source": "git.ignore",
-					"target": "%{ProjectDirectory}/.gitignore",
+					"target": ".gitignore",
 					"condition": "%{JS: %{IsTopLevelProject} && '%{VersionControl}' === 'G.Git'}"
+				},
+				{
+					"source": "travis.yml",
+					"target": ".travis.yml",
+					"condition": "%{JS: '%{CI}' !== ''}"
+				},
+				{
+					"source": "appveyor.yml",
+					"target": "appveyor.yml",
+					"condition": "%{JS: '%{CI}' !== ''}"
 				},
 				{
 					"source": "src.pro",
