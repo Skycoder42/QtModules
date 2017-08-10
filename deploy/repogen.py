@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # $1 modules folder (e.g. "5.9")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
 # $3 comma seperate dependencies (e.g. "qt.58.examples, qt.tools.qtcreator")
