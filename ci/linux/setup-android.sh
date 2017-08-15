@@ -18,6 +18,4 @@ rm -f /tmp/android-sdk.zip
 echo y | $HOME/android/sdk/tools/bin/sdkmanager --update
 echo y | $HOME/android/sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.1" "extras;google;m2repository" "extras;android;m2repository" "ndk-bundle"
 
-find "$HOME/android" -name apksigner
-
 sudo rm -rf /tmp/*
