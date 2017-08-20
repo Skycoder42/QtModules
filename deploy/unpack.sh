@@ -25,7 +25,7 @@ cd archives
 for arch in android_armv7 android_x86 clang_64 doc gcc_64 ios; do
 	if [ "$skip" != *"$arch"* ]; then
 		file=build_${arch}_${qtVer}.tar.xz
-		echo downloading andextracting $file
+		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${version}/$file"
 		tar -xf "$file" -C "../$qtVer/"
 	fi
@@ -35,7 +35,7 @@ done
 for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 winrt_x64_msvc2017 winrt_x86_msvc2017; do
 	if [ "$skip" != *"$arch"* ]; then
 		file=build_${arch}_${qtVer}.zip
-		echo downloading andextracting $file
+		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${version}/$file"
 		unzip -qq "$file" -d "../$qtVer/"
 	fi
