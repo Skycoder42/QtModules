@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# $1 modules folder (e.g. "5.9")
+# $1 Qt Version (e.g. "5.9")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
-# $3 comma seperate dependencies (e.g. "qt.58.examples, qt.tools.qtcreator")
+# $3 comma seperate dependencies (e.g. ".examples, qt.tools.qtcreator")
 # $4 tool names (comma seperated)
 # $5 Description
 # $6 Version
@@ -112,11 +112,20 @@ licenseFile = sys.argv[7]
 licenseName = sys.argv[8]
 skipPacks = sys.argv[9].split(",") if len(sys.argv) > 9 else []
 
+# prepare extra vars
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
 modBase = modName.lower()
 qtVers = qtDir.replace(".", "")
 pkgBase = "qt.{}.skycoder42.{}".format(qtVers, modBase)
+
+# fix dependencies
+deps = depends.split(",")
+for i in range(0, len(deps), 1):
+	deps[i] = deps[i].strip();
+	if deps[i][0:1] == ".":
+		deps[i] = "qt.{}{}".format(qtVers, deps[i])
+depends = ",".join(deps)
 
 def createBasePkg():
 	pkgBasePath = os.path.join("packages", pkgBase)
@@ -226,12 +235,7 @@ def repogen(archName, pkgList):
 	if not os.path.exists(repoPath):
 		print("WARNING: No existing repository found! It will be created as a new one, and not updated")
 
-	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath])
-
-# unpack packages
-if os.path.exists("archives"):
-	scriptDir = os.path.dirname(__file__)
-	subprocess.run([os.path.join(scriptDir, "unpack.sh"), baseDir])
+	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath], check=True)
 
 # create packages
 shutil.rmtree("packages", ignore_errors=True)
