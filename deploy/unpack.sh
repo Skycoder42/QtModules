@@ -11,9 +11,9 @@ version=$3
 skip=$4
 
 # get the repogen script
-git clone "https://github.com/${repoId}" --branch "$version"
-mv "./${repoId}/repogen.sh" ./
-rm -rf "./${repoId}"
+git clone "https://github.com/${repoId}" --branch "$version" ./gitrepo
+mv ./gitrepo/repogen.sh ./
+rm -rf ./gitrepo
 
 #prepare dirs
 mkdir -p "$qtVer"
