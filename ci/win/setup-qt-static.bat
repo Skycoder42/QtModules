@@ -1,3 +1,5 @@
+exit /B 1
+
 :: prepare vcvarsall
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
 	set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
@@ -8,12 +10,6 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 	
 set tDir=C:\Qt-Static
 mkdir -p %tDir% || exit /B 1
-
-cd C:\Qt
-dir
-cd C:\Qt\%QT_VER%
-dir
-cd C:\Qt\%QT_VER%\Src\ || exit /B 1
 
 for /D %%G in (.) do (
 	echo "qtbase %STATIC_QT_MODS%" | findstr /C:"%%G" > nul && (

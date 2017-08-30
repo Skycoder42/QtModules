@@ -3,6 +3,11 @@ set -e
 
 scriptdir=$(dirname $0)
 
+# build static qt
+if [[ -n "$STATIC_TOOLS" ]]; then
+	$scriptdir/setup-qt-static.sh
+fi
+
 # install build deps
 $SUDO apt-get -qq update
 $SUDO apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen
@@ -29,8 +34,3 @@ QT_QPA_PLATFORM=minimal $SUDO /tmp/installer.run --script $scriptdir/qt-installe
 $SUDO rm -rf /opt/qt/Examples
 $SUDO rm -rf /opt/qt/Docs
 $SUDO rm -rf /opt/qt/Tools/QtCreator
-
-# build static qt
-if [[ -n "$STATIC_TOOLS" ]]; then
-	$scriptdir/setup-qt-static.sh
-fi
