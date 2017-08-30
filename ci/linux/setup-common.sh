@@ -29,3 +29,8 @@ QT_QPA_PLATFORM=minimal $SUDO /tmp/installer.run --script $scriptdir/qt-installe
 $SUDO rm -rf /opt/qt/Examples
 $SUDO rm -rf /opt/qt/Docs
 $SUDO rm -rf /opt/qt/Tools/QtCreator
+
+# build static qt
+if [[ -n "$STATIC_TOOLS" ]]; then
+	$scriptdir/setup-qt-static.sh
+fi

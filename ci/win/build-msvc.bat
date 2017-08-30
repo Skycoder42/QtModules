@@ -30,7 +30,6 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 
 :: build documentation
 if "%BUILD_DOC%" == "" goto no_doc
-	echo pre doc real
 	cd \projects\%CurrDirName%
 	mkdir build-doc
 	cd build-doc

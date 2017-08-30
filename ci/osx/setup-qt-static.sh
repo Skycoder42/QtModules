@@ -1,0 +1,1 @@
+../linux/setup-qt-static.sh

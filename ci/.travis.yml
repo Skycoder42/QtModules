@@ -11,6 +11,7 @@ env:
   global:
     - QT_VER=5.9
     - EXTRA_MODULES=.skycoder42
+    - STATIC_TOOLS=tools/mytool
 
 matrix:
   include:

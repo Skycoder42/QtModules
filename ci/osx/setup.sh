@@ -33,3 +33,8 @@ QT_QPA_PLATFORM=minimal sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents
 sudo rm -rf /opt/qt/Examples
 sudo rm -rf /opt/qt/Docs
 sudo rm -rf /opt/qt/Tools/QtCreator
+
+# build static qt
+if [[ -n "$STATIC_TOOLS" ]]; then
+	$scriptdir/setup-qt-static.sh
+fi

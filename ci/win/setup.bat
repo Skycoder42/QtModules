@@ -33,3 +33,8 @@ C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
 C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 || (
 	find /c "no_modules_changed" C:\Qt\InstallationLog.txt > nul || exit \B 1
 )
+
+:: build static qt
+if "%STATIC_TOOLS%" == "" goto no_static
+	%~dp0\setup-qt-static.bat || exit \B 1
+:no_static

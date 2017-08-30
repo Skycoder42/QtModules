@@ -7,6 +7,7 @@ version: build-{build}
 environment:
   QT_VER: 5.9
   EXTRA_MODULES: .skycoder42
+  STATIC_TOOLS: tools\mytool
 
   matrix:
     - PLATFORM: msvc2017_64
