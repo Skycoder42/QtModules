@@ -11,6 +11,10 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 set tDir=C:\Qt-Static
 mkdir -p %tDir% || exit /B 1
 
+cd C:\Qt
+dir
+cd C:\Qt\%QT_VER%
+dir
 cd C:\Qt\%QT_VER%\Src\ || exit /B 1
 
 for /D %%G in (.) do (
