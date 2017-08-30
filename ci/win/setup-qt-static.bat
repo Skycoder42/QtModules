@@ -1,3 +1,5 @@
+@echo on
+
 :: prepare vcvarsall
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
 	set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
