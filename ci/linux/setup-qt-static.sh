@@ -13,6 +13,7 @@ mkdir -p $tDir
 
 pushd $(mktemp -d)
 mkdir src
+mkdir download
 
 pushd download
 for mod in qtbase $STATIC_QT_MODS; do
