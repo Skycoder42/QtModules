@@ -11,7 +11,6 @@ env:
   global:
     - QT_VER=5.9
     - EXTRA_MODULES=.skycoder42
-    - STATIC_TOOLS=tools/mytool
 
 matrix:
   include:
@@ -31,6 +30,13 @@ matrix:
     - os: osx
       env:
         - PLATFORM=ios
+    # only when using static tools
+    - os: linux
+      env:
+        - PLATFORM=static
+    - os: osx
+      env:
+        - PLATFORM=static
 
 before_install:
   - git clone https://github.com/Skycoder42/QtModules.git ./qtmodules-travis

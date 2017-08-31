@@ -18,7 +18,11 @@ fi
 # prepare installer script
 qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
 echo "qtVersion = \"$qtvid\";" > $scriptdir/qt-installer-script.qs
-echo "platform = \"$PLATFORM\";" >> $scriptdir/qt-installer-script.qs
+if [[ "$PLATFORM" == "static" ]]; then
+	echo "platform = \"src\";" >> $scriptdir/qt-installer-script.qs
+else
+	echo "platform = \"$PLATFORM\";" >> $scriptdir/qt-installer-script.qs
+fi
 echo "extraMods = [];" >> $scriptdir/qt-installer-script.qs
 for mod in $EXTRA_MODULES; do
 	echo "extraMods.push(\"$mod\");" >> $scriptdir/qt-installer-script.qs
@@ -34,7 +38,6 @@ sudo rm -rf /opt/qt/Examples
 sudo rm -rf /opt/qt/Docs
 sudo rm -rf /opt/qt/Tools/QtCreator
 
-# build static qt
-if [[ -n "$STATIC_TOOLS" ]]; then
+if [[ "$PLATFORM" == "static" ]]; then
 	$scriptdir/setup-qt-static.sh
 fi

@@ -1,14 +1,11 @@
 #!/bin/bash
 set -e
 
-tDir=/opt/qt-static
-mkdir -p $tDir
+tDir=/opt/qt/$QT_VER/static
+$SUDO mkdir -p $tDir
 
 $SUDO chown -R $USER /opt/qt/$QT_VER/Src
 cd /opt/qt/$QT_VER/Src/
-pushd $(mktemp -d)
-mkdir src
-mkdir download
 
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
 	if [[ "qtbase $STATIC_QT_MODS" != *"$mod"* ]]; then
@@ -20,4 +17,4 @@ done
 make > /dev/null
 $SUDO make install > /dev/null
 
-find /tmp/qt-static
+find $tDir
