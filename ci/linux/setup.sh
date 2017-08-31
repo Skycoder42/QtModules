@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 scriptdir=$(dirname $0)
 
