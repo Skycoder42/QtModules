@@ -4,12 +4,9 @@ set -e
 tDir=/opt/qt/$QT_VER/static
 $SUDO mkdir -p $tDir
 
-#debug
-cd /opt/qt/$QT_VER
-ls -lsa
-chown --help
-
-$SUDO chown -R $USER /opt/qt/$QT_VER/Src
+if [[ -n "$SUDO" ]]; then
+	$SUDO chown -R $USER /opt/qt/$QT_VER/Src
+fi
 cd /opt/qt/$QT_VER/Src/
 
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
