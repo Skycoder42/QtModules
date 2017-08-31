@@ -18,3 +18,8 @@ if [[ $PLATFORM == "android_"* ]]; then
 
 	$scriptdir/build-all.sh
 fi
+
+if [[ $PLATFORM == "static" ]]; then
+	docker run --rm --name docker-qt-build -e BUILD_DOC -e TEST_DIR -e NO_TESTS -v "$(pwd):/root/project" skycoder42/qt-build
+	sudo chown -R $USER $(pwd)
+fi

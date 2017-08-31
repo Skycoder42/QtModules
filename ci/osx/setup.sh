@@ -39,6 +39,7 @@ sudo rm -rf /opt/qt/Docs
 sudo rm -rf /opt/qt/Tools/QtCreator
 
 if [[ "$PLATFORM" == "static" ]]; then
+	export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 	export SUDO=sudo #because of symlink
 	$scriptdir/setup-qt-static.sh
 fi

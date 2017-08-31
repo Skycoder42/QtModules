@@ -3,12 +3,14 @@ set -e
 
 scriptdir=$(dirname $0)
 
+export MAKEFLAGS="-j$(nproc)"
+
 # common setup
 $scriptdir/setup-common.sh
 
-# install gcc  and linuxdeployqt deps
+# install gcc and linuxdeployqt deps
 apt-get -qq install --no-install-recommends patchelf libjasper1 libxi6 libsm6 libpq5
-rm -f /opt/qt/$QT_VER/gcc_64/plugins/sqldrivers/libqsqlmysql.so
+rm -f /opt/qt/$QT_VER/$PLATFORM/plugins/sqldrivers/libqsqlmysql*
 
 # install linuxdeployqt
 pdir=$(pwd)
@@ -30,7 +32,7 @@ echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licuuc' >> tools/linuxdeployqt/linuxdeployq
 
 cd ../build
 
-/opt/qt/$QT_VER/gcc_64/bin/qmake -r ../linuxdeployqt/linuxdeployqt.pro
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r ../linuxdeployqt/linuxdeployqt.pro
 make
 make install
 
