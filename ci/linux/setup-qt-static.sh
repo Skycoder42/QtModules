@@ -4,6 +4,11 @@ set -e
 tDir=/opt/qt/$QT_VER/static
 $SUDO mkdir -p $tDir
 
+#debug
+cd /opt/qt/$QT_VER
+ls -lsa
+chown --help
+
 $SUDO chown -R $USER /opt/qt/$QT_VER/Src
 cd /opt/qt/$QT_VER/Src/
 
