@@ -20,6 +20,7 @@ if [[ $PLATFORM == "android_"* ]]; then
 fi
 
 if [[ $PLATFORM == "static" ]]; then
+	export NO_TESTS=true
 	docker run --rm --name docker-qt-build -e BUILD_DOC -e TEST_DIR -e NO_TESTS -v "$(pwd):/root/project" skycoder42/qt-build
 	sudo chown -R $USER $(pwd)
 fi
