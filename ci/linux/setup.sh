@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 scriptdir=$(dirname $0)
 
@@ -9,4 +9,8 @@ fi
 
 if [[ $PLATFORM == "android_"* ]]; then
 	$scriptdir/setup-android.sh
+fi
+
+if [[ $PLATFORM == "static" ]]; then
+	$scriptdir/setup-gcc.sh
 fi
