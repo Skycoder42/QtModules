@@ -16,6 +16,11 @@ for file in $(find . -name "qpm.json"); do
 	fi
 done
 
+# static flag
+if [[ "$PLATFORM" == "static" ]]; then
+	echo "CONFIG += static_host_build" >> .qmake.conf
+fi
+
 # build
 rootdir=$(pwd)
 mkdir build-$PLATFORM
