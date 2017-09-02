@@ -12,9 +12,10 @@ set tDir=C:\Qt\%QT_VER%\static
 mkdir -p %tDir% || exit /B 1
 
 cd C:\Qt\%QT_VER%\Src
+set skipPart=
 for /D %%G in (*) do (
 	echo "qtbase %STATIC_QT_MODS%" | findstr /C:"%%G" > nul || (
-		setx skipPart "-skip %%G %skipPart%"
+		set skipPart=-skip %%G !skipPart!
 	)
 )
 
