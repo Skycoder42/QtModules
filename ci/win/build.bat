@@ -39,6 +39,7 @@ if "%PLATFORM%" == "mingw53_32" (
 	if "%PLATFORM%" == "static" (
 		set VC_VARSALL=amd64
 		set NO_TESTS=true
+		echo CONFIG += static_host_build >> .qmake.conf
 	)
 
 	:: build
