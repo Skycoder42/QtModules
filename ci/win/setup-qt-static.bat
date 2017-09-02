@@ -1,4 +1,5 @@
 @echo on
+setlocal EnableDelayedExpansion
 
 :: prepare vcvarsall
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
