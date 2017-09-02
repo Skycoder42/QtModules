@@ -20,12 +20,9 @@ for /D %%G in (*) do (
 
 call %VC_DIR% amd64 || exit /B 1
 
-echo before config
-.\configure -prefix %tDir% -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart%
-echo before make
-nmake
-echo before make install
-nmake install
+call .\configure -prefix %tDir% -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
+nmake || exit /B 1
+nmake install || exit /B 1
 
 cd ../static
 dir
