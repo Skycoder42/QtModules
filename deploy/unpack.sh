@@ -56,5 +56,3 @@ for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 win
 	fi
 done
 popd
-
-./repogen.sh "$qtVer" "$version"

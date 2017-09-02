@@ -180,7 +180,7 @@ def createDocPkg():
 	pkgDocXml = os.path.join(pkgDocMeta, "package.xml")
 	pkgDocScript = os.path.join(pkgDocMeta, "installscript.qs")
 
-	print("Creating documentation package", pkgDoc)
+	print("Creating doc package", pkgDoc)
 	os.mkdir(pkgDocPath)
 	os.mkdir(pkgDocMeta)
 	os.makedirs(pkgDocData)
