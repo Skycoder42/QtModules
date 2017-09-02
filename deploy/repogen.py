@@ -207,7 +207,7 @@ def createSrcPkg():
 	pkgSrcXml = os.path.join(pkgSrcMeta, "package.xml")
 	pkgSrcScript = os.path.join(pkgSrcMeta, "installscript.qs")
 
-	print("Creating src package")
+	print("Creating src package", pkgSrc)
 	os.mkdir(pkgSrcPath)
 	os.mkdir(pkgSrcMeta)
 	os.makedirs(pkgSrcData)
