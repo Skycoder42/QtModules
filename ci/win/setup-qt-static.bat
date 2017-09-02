@@ -14,15 +14,15 @@ mkdir -p %tDir% || exit /B 1
 cd C:\Qt\%QT_VER%\Src
 for /D %%G in (*) do (
 	echo "qtbase %STATIC_QT_MODS%" | findstr /C:"%%G" > nul || (
-		set skipPart=-skip %%G %skipPart%
+		setx skipPart "-skip %%G %skipPart%"
 	)
 )
 
 call %VC_DIR% amd64 || exit /B 1
 
-call .\configure -prefix %tDir% -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
-nmake || exit /B 1
-nmake install || exit /B 1
+call .\configure -prefix %tDir% -platform win32-msvc -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
+nmake > nul || exit /B 1
+nmake install > nul || exit /B 1
 
 cd ../static
 dir
