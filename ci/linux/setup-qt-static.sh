@@ -24,4 +24,4 @@ make > /dev/null
 $SUDO make install > /dev/null
 
 popd
-rm -rf /opt/qt/$QT_VER/Src
+$SUDO rm -rf /opt/qt/$QT_VER/Src
