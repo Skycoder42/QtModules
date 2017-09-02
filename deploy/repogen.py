@@ -278,7 +278,7 @@ def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
-	pkgFullList = [pkgBase, pkgBase + ".doc"]
+	pkgFullList = [pkgBase, pkgBase + ".src", pkgBase + ".doc"]
 	for pkgItem in pkgList:
 		pkgFullList.append(pkgBase + "." + pkgItem)
 	repoInc = ",".join(pkgFullList)
