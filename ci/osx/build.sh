@@ -23,6 +23,7 @@ done
 
 # static flag
 if [[ "$PLATFORM" == "static" ]]; then
+	export NO_TESTS=true
 	echo "CONFIG += static_host_build" >> .qmake.conf
 fi
 
