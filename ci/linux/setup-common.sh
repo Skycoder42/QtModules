@@ -28,7 +28,7 @@ cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 # install Qt
 curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 chmod +x /tmp/installer.run
-QT_QPA_PLATFORM=minimal $SUDO /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
+QT_QPA_PLATFORM=minimal $SUDO /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64 --verbose
 
 $SUDO rm -rf /opt/qt/Examples
 $SUDO rm -rf /opt/qt/Docs
