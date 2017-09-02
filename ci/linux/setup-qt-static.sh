@@ -15,6 +15,10 @@ for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
 	fi
 done
 
+#bug: remove gui from macdeployqt
+echo "QT -= gui" >> qttools/src/macdeployqt/macdeployqt/macdeployqt.pro
+echo "QT -= gui" >> qttools/src/macdeployqt/macchangeqt/macchangeqt.pro
+
 ./configure -prefix $tDir -opensource -confirm-license -release -static -static-runtime -no-use-gold-linker -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets $skipPart
 make > /dev/null
 $SUDO make install > /dev/null
