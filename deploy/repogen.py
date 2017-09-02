@@ -99,6 +99,29 @@ Component.prototype.createOperations = function()
                             "{}");
 }}"""
 
+srcPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+	<Name>{}</Name>
+	<DisplayName>{} Sources</DisplayName>
+	<Version>{}</Version>
+	<ReleaseDate>{}</ReleaseDate>
+	<Virtual>true</Virtual>
+	<AutoDependOn>{}, {}</AutoDependOn>
+	<Dependencies>{}</Dependencies>
+	<Script>installscript.qs</Script>
+</Package>"""
+
+srcPkgScript = """// constructor
+function Component()
+{{
+}}
+
+Component.prototype.createOperations = function()
+{{
+    component.createOperations();
+    component.addOperation("AppendFile", "{}/Src/.gitmodules", "[submodule \\"{}\\"]\\n\\tdepends = qtbase\\n\\tpath = {}\\n\\turl = ../{}.git\\n\\tbranch = {}\\n\\tstatus = addon\\n\\trepoType = inherited\\n");
+}}"""
+
 #read args
 baseDir = sys.argv[1]
 modName = sys.argv[2]
@@ -116,6 +139,7 @@ skipPacks = sys.argv[9].split(",") if len(sys.argv) > 9 else []
 qtDir = os.path.basename(baseDir)
 modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
 modBase = modName.lower()
+modBaseTitle = "qt" + modBase
 qtVers = qtDir.replace(".", "")
 pkgBase = "qt.{}.skycoder42.{}".format(qtVers, modBase)
 
@@ -170,6 +194,33 @@ def createDocPkg():
 	pgkDocScriptFile.close()
 
 	shutil.copytree(baseDocDir, pkgDocDataDoc)
+
+def createSrcPkg():
+	baseSrcDir = os.path.join(baseDir, "src") #TODO add in unzip.sh
+	pkgSrc = pkgBase + ".src"
+	pkgSrcKit = "qt.{}.src".format(qtVers)
+	pkgSrcFolder = "/{}/Src/".format(qtDir)
+	pkgSrcPath = os.path.join("packages", pkgSrc)
+	pkgSrcMeta = os.path.join(pkgSrcPath, "meta")
+	pkgSrcData = os.path.join(pkgSrcPath, "data", qtDir)
+	pkgSrcDataKit = os.path.join(pkgSrcData, "Src", modBaseTitle)
+	pkgSrcXml = os.path.join(pkgSrcMeta, "package.xml")
+	pkgSrcScript = os.path.join(pkgSrcMeta, "installscript.qs")
+
+	print("Creating src package")
+	os.mkdir(pkgSrcPath)
+	os.mkdir(pkgSrcMeta)
+	os.makedirs(pkgSrcData)
+
+	pgkXmlFile = open(pkgSrcXml, "w")
+	pgkXmlFile.write(srcPkgXml.format(pkgSrc, modTitle, vers, datetime.date.today(), pkgBase, pkgSrcKit, pkgSrcKit))
+	pgkXmlFile.close()
+
+	pgkScriptFile = open(pkgSrcScript, "w")
+	pgkScriptFile.write(srcPkgScript.format(baseDir, modBaseTitle, modBaseTitle, modBaseTitle, baseDir))
+	pgkScriptFile.close()
+
+	shutil.copytree(baseSrcDir, pkgSrcDataKit, symlinks=True)
 
 def createSubPkg(dirName, pkgName, patchName):
 	baseDataDir = os.path.join(baseDir, dirName)
@@ -241,8 +292,6 @@ def repogen(archName, pkgList):
 shutil.rmtree("packages", ignore_errors=True)
 os.mkdir("packages")
 createBasePkg()
-if "doc" not in skipPacks:
-	createDocPkg()
 if "android_armv7" not in skipPacks:
 	createSubPkg("android_armv7", "android_armv7", "emb-arm-qt5")
 if "android_x86" not in skipPacks:
@@ -267,6 +316,10 @@ if "msvc2015_64" not in skipPacks:
 	createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
 if "msvc2015" not in skipPacks:
 	createSubPkg("msvc2015", "win32_msvc2015", "qt5")
+if "src" not in skipPacks:
+	createSrcPkg()
+if "doc" not in skipPacks:
+	createDocPkg()
 
 # build repositories
 prepareTools("gcc_64", [

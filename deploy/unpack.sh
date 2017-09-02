@@ -10,15 +10,16 @@ repoId=$2
 version=$3
 skip=$4
 
-# get the repogen script
-git clone "https://github.com/${repoId}" --branch "$version" ./gitrepo
-mv ./gitrepo/repogen.sh ./
-mv ./gitrepo/LICENSE ./
-rm -rf ./gitrepo
-
 #prepare dirs
 mkdir -p "$qtVer"
 mkdir -p archives
+
+# clone & prepare the sources
+git clone "https://github.com/${repoId}" --branch "$version" ./$qtVer/src
+mv ./$qtVer/src/repogen.sh ./
+cp ./$qtVer/src/LICENSE ./
+rm -rf ./$qtVer/src/.git
+rm -f ./$qtVer/src/*.yml
 
 pushd archives
 #download all possible packages (.tar.xz)
