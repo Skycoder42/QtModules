@@ -21,7 +21,7 @@ for %%m in (qtbase;%STATIC_QT_MODS%) do (
 	if "%%m" == "qtbase" (
 		call .\configure -prefix %tDir% -platform win32-msvc -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets || exit /B 1
 	) else (
-		%tDir%\qmake -r
+		%tDir%\bin\qmake -r
 	)
 	nmake > nul || exit /B 1
 	nmake install > nul || exit /B 1
