@@ -11,9 +11,21 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 	
 set tDir=C:\Qt\%QT_VER%\static
 mkdir -p %tDir% || exit /B 1
+cd C:\Qt\%QT_VER%\Src
+
+:: include extra modules explicitly
+for %%m in (qtbase;%STATIC_EXTRA_MODS%) do (
+	echo [submodule "%%m"] >> .gitmodules
+	echo 	depends = qtbase >> .gitmodules
+	echo 	path = %%m >> .gitmodules
+	echo 	url = ../%%m.git >> .gitmodules
+	echo 	branch = %QT_VER% >> .gitmodules
+	echo 	status = addon >> .gitmodules
+	echo 	repoType = inherited >> .gitmodules
+)
+type .gitmodules
 
 :: generate skip modules
-cd C:\Qt\%QT_VER%\Src
 set skipPart=
 for /D %%G in (qt*) do (
 	echo "qtbase %STATIC_QT_MODS% %STATIC_EXTRA_MODS%" | findstr /C:"%%G" > nul || (
@@ -27,15 +39,5 @@ call %VC_DIR% amd64 || exit /B 1
 call .\configure -prefix %tDir% -platform win32-msvc -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
 nmake > nul || exit /B 1
 nmake install > nul || exit /B 1
-
-:: build extra modules explicitly
-for %%m in (qtbase;%STATIC_EXTRA_MODS%) do (
-	cd %%m
-	%tDir%\bin\qmake -r
-	nmake > nul || exit /B 1
-	nmake install > nul || exit /B 1
-	cd ..
-)
-
 cd ../static
 dir

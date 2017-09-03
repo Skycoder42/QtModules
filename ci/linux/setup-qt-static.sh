@@ -13,6 +13,18 @@ pushd /opt/qt/$QT_VER/Src/
 echo "QT -= gui" >> qttools/src/macdeployqt/macdeployqt/macdeployqt.pro
 echo "QT -= gui" >> qttools/src/macdeployqt/macchangeqt/macchangeqt.pro
 
+#include extra modules explicitly
+for mod in $STATIC_EXTRA_MODS; do
+	echo -e "[submodule \"${mod}\"]" >> .gitmodules
+	echo -e "\tdepends = qtbase" >> .gitmodules
+	echo -e "\tpath = ${mod}" >> .gitmodules
+	echo -e "\turl = ../${mod}.git" >> .gitmodules
+	echo -e "\tbranch = ${QT_VER}" >> .gitmodules
+	echo -e "\tstatus = addon" >> .gitmodules
+	echo -e "\trepoType = inherited" >> .gitmodules
+done
+cat .gitmodules
+
 # generate skip modules
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
 	if [[ "qtbase $STATIC_QT_MODS $STATIC_EXTRA_MODS" != *"$mod"* ]]; then
@@ -24,15 +36,6 @@ done
 ./configure -prefix $tDir -opensource -confirm-license -release -static -static-runtime -no-use-gold-linker -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets $skipPart
 make > /dev/null
 $SUDO make install > /dev/null
-
-#build extra modules explicitly
-for mod in $STATIC_EXTRA_MODS; do
-	pushd $mod
-	$tDir/bin/qmake -r
-	make > /dev/null
-	$SUDO make install > /dev/null
-	popd
-done
 
 popd
 $SUDO rm -rf /opt/qt/$QT_VER/Src
