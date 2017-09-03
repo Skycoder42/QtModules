@@ -28,7 +28,7 @@ $SUDO make install > /dev/null
 #build extra modules explicitly
 for mod in $STATIC_EXTRA_MODS; do
 	pushd $mod
-	$tDir/qmake -r
+	$tDir/bin/qmake -r
 	make > /dev/null
 	$SUDO make install > /dev/null
 	popd
