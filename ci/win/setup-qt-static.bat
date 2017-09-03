@@ -14,7 +14,7 @@ mkdir -p %tDir% || exit /B 1
 cd C:\Qt\%QT_VER%\Src
 
 :: include extra modules explicitly
-for %%m in (qtbase;%STATIC_EXTRA_MODS%) do (
+for %%m in (%STATIC_EXTRA_MODS%) do (
 	echo [submodule "%%m"] >> .gitmodules
 	echo 	depends = qtbase >> .gitmodules
 	echo 	path = %%m >> .gitmodules
@@ -35,9 +35,10 @@ for /D %%G in (qt*) do (
 
 call %VC_DIR% amd64 || exit /B 1
 
-:: build qt
-call .\configure -prefix %tDir% -platform win32-msvc -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
+:: build qt (shadowed)
+mkdir C:\qt-build-tmp
+cd C:\qt-build-tmp
+
+call C:\Qt\%QT_VER%\Src\configure -prefix %tDir% -platform win32-msvc -opensource -confirm-license -release -static -static-runtime -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets %skipPart% || exit /B 1
 nmake > nul || exit /B 1
 nmake install > nul || exit /B 1
-cd ../static
-dir
