@@ -26,7 +26,7 @@ for mod in $STATIC_EXTRA_MODS; do
 done
 
 #debug
-perl -w ./bin/syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir /opt/qt/$QT_VER/Src/qtjsonserializer /opt/qt/$QT_VER/Src/qtjsonserializer
+perl -w ./qtbase/bin/syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir /opt/qt/$QT_VER/Src/qtjsonserializer /opt/qt/$QT_VER/Src/qtjsonserializer
 
 # generate skip modules
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do

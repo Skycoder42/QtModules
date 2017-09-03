@@ -25,7 +25,7 @@ for %%m in (%STATIC_EXTRA_MODS%) do (
 )
 
 :: debug
-perl -w .\bin\syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir C:\Qt\%QT_VER%\Src\qtjsonserializer C:\Qt\%QT_VER%\Src\qtjsonserializer
+perl -w .\qtbase\bin\syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir C:\Qt\%QT_VER%\Src\qtjsonserializer C:\Qt\%QT_VER%\Src\qtjsonserializer
 
 :: generate skip modules
 set skipPart=
