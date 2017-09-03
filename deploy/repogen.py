@@ -111,17 +111,6 @@ srcPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<Script>installscript.qs</Script>
 </Package>"""
 
-srcPkgScript = """// constructor
-function Component()
-{{
-}}
-
-Component.prototype.createOperations = function()
-{{
-    component.createOperations();
-    component.addOperation("AppendFile", "{}/Src/.gitmodules", "[submodule \\"{}\\"]\\n\\tdepends = qtbase\\n\\tpath = {}\\n\\turl = ../{}.git\\n\\tbranch = {}\\n\\tstatus = addon\\n\\trepoType = inherited\\n");
-}}"""
-
 #read args
 baseDir = sys.argv[1]
 modName = sys.argv[2]
@@ -215,10 +204,6 @@ def createSrcPkg():
 	pgkXmlFile = open(pkgSrcXml, "w")
 	pgkXmlFile.write(srcPkgXml.format(pkgSrc, modTitle, vers, datetime.date.today(), pkgBase, pkgSrcKit, pkgSrcKit))
 	pgkXmlFile.close()
-
-	pgkScriptFile = open(pkgSrcScript, "w")
-	pgkScriptFile.write(srcPkgScript.format(baseDir, modBaseTitle, modBaseTitle, modBaseTitle, baseDir))
-	pgkScriptFile.close()
 
 	shutil.copytree(baseSrcDir, pkgSrcDataKit, symlinks=True)
 
