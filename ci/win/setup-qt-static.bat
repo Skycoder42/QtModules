@@ -29,7 +29,7 @@ nmake > nul || exit /B 1
 nmake install > nul || exit /B 1
 
 :: build extra modules explicitly
-for %%m in (qtbase;%STATIC_QT_MODS%) do (
+for %%m in (qtbase;%STATIC_EXTRA_MODS%) do (
 	cd %%m
 	%tDir%\qmake -r
 	nmake > nul || exit /B 1
