@@ -108,7 +108,6 @@ srcPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<Virtual>true</Virtual>
 	<AutoDependOn>{}, {}</AutoDependOn>
 	<Dependencies>{}</Dependencies>
-	<Script>installscript.qs</Script>
 </Package>"""
 
 #read args
