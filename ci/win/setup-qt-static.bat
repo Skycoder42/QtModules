@@ -24,6 +24,8 @@ for %%m in (%STATIC_EXTRA_MODS%) do (
 	echo 	repoType = inherited >> .gitmodules
 )
 
+type .gitmodules
+
 :: debug
 perl -w .\qtbase\bin\syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir C:\Qt\%QT_VER%\Src\qtjsonserializer C:\Qt\%QT_VER%\Src\qtjsonserializer
 
