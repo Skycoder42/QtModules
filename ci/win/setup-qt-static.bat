@@ -15,13 +15,13 @@ cd C:\Qt\%QT_VER%\Src
 
 :: include extra modules explicitly
 for %%m in (%STATIC_EXTRA_MODS%) do (
-	echo [submodule "%%m"] >> .gitmodules
-	echo 	depends = qtbase >> .gitmodules
-	echo 	path = %%m >> .gitmodules
-	echo 	url = ../%%m.git >> .gitmodules
-	echo 	branch = %QT_VER% >> .gitmodules
-	echo 	status = addon >> .gitmodules
-	echo 	repoType = inherited >> .gitmodules
+	echo [submodule "%%m"]>> .gitmodules
+	echo 	depends = qtbase>> .gitmodules
+	echo 	path = %%m>> .gitmodules
+	echo 	url = ../%%m.git>> .gitmodules
+	echo 	branch = %QT_VER%>> .gitmodules
+	echo 	status = addon>> .gitmodules
+	echo 	repoType = inherited>> .gitmodules
 )
 
 type .gitmodules
