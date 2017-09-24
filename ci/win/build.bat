@@ -1,5 +1,5 @@
 :: builds
-set PATH=C:\Python36-x64;%PATH%
+set PATH=C:\Python36-x64;C:\projects\;%PATH%
 
 :: install QPM dependencies
 setlocal
@@ -7,7 +7,7 @@ set olddir=%CD%
 for /R %%F in (*qpm.json) do (
 	echo %%F | findstr /C:"vendor" > nul || (
 		cd %%~dpF
-		C:\projects\qpm.exe install
+		qpm.exe install
 		cd %olddir%
 	)
 )
