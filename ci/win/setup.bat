@@ -3,7 +3,7 @@ powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
-	set EXTRA_MODULES=qt.tools.ifw.20;%EXTRA_MODULES%
+	set EXTRA_MODULES=qt.tools.ifw.30;%EXTRA_MODULES%
 )
 
 :: prepare installer script

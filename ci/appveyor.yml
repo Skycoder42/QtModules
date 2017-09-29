@@ -52,6 +52,6 @@ deploy:
   auth_token:
     secure: <your encrypted token>
   artifact: /.*\.zip/
-  force_update: true
+  force_update: false
   on:
     appveyor_repo_tag: true

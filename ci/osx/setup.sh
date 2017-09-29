@@ -12,7 +12,7 @@ sudo install -m 755 /tmp/qpm /usr/local/bin/
 
 # clang only -> install qtifw
 if [[ $PLATFORM == "clang_64" ]]; then
-	export EXTRA_MODULES="qt.tools.ifw.20 $EXTRA_MODULES"
+	export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"
 fi
 
 # prepare installer script
