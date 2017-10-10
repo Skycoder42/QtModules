@@ -4,6 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 # python
+brew update
 brew install python3
 
 # install qpm
