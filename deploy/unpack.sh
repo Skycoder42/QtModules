@@ -1,8 +1,10 @@
 #!/bin/bash
 # $1 Qt Version
-# $2 repoid
+# $2 module name
 # $3 version
-# $4+ skip packages
+# $4 skip packages
+# $5 branch
+# $6 repository
 set -e
 
 qtVer=$1
@@ -33,9 +35,9 @@ rm -rf ./$qtVer/src/.git
 rm -f ./$qtVer/src/*.yml
 
 # create headers
-#wget -q "https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl"
+wget -q "https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl"
 pushd ./$qtVer/src
-syncqt.pl -module "$moduleName" -version "$version" "$(pwd)"
+../../syncqt.pl -module "$moduleName" -version "$version" "$(pwd)"
 popd
 
 pushd archives
