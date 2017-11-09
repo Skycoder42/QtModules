@@ -36,6 +36,7 @@ rm -f ./$qtVer/src/*.yml
 
 # create headers
 wget -q "https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl"
+chmod a+x syncqt.pl
 pushd ./$qtVer/src
 ../../syncqt.pl -module "$moduleName" -version "$version" "$(pwd)"
 popd
