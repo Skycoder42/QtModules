@@ -56,7 +56,11 @@ pbuilder-dist "$distro" build *.dsc
 read -p "publish on launchpad? [y/N] " publish
 
 if [[ "$publish" == "y" ]]; then
-	dput "ppa:skycoder42/qt-modules" *.changes
+	ppa="qt-modules"
+	if [[ "$mode" == "opt" ]]; then
+		ppa="$ppa-opt"
+	fi
+	dput "ppa:skycoder42/$ppa" *.changes
 fi
 popd
 
