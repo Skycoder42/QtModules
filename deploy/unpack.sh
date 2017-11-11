@@ -34,6 +34,7 @@ mv "./$qtVer/$moduleName-$branch" ./$qtVer/src
 mv ./$qtVer/src/repogen.sh ./
 cp ./$qtVer/src/LICENSE ./
 rm -f ./$qtVer/src/*.yml
+rm -f ./$qtVer/src/.*.yml
 
 # create headers
 wget -q "https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl"
