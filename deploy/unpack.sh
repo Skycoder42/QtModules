@@ -28,10 +28,11 @@ mkdir -p "$qtVer"
 mkdir -p archives
 
 # clone & prepare the sources
-git clone "https://github.com/${repoId}.git" --branch "$branch" ./$qtVer/src
+wget -q "https://github.com/$repoId/archive/$branch.tar.gz"
+tar -xf "$branch.tar.gz" -C "./$qtVer/"
+mv "./$qtVer/$moduleName-$branch" ./$qtVer/src
 mv ./$qtVer/src/repogen.sh ./
 cp ./$qtVer/src/LICENSE ./
-rm -rf ./$qtVer/src/.git
 rm -f ./$qtVer/src/*.yml
 
 # create headers
