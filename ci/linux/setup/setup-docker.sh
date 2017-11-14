@@ -25,4 +25,4 @@ if [[ $PLATFORM == "static" ]]; then
 	$scriptdir/setup-static.sh
 fi
 
-sudo rm -rf /tmp/*
+rm -rf /tmp/*
