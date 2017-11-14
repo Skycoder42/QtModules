@@ -10,17 +10,6 @@ if [[ $PLATFORM == "ios" ]]; then
 	export NO_TESTS=true
 fi
 
-# install QPM dependencies
-olddir=$(pwd)
-for file in $(find . -name "qpm.json"); do
-	qpmdir=$(dirname $file)
-	if [[ "$qpmdir" != *"vendor"* ]]; then
-		cd $qpmdir
-		qpm install
-		cd $olddir
-	fi
-done
-
 # static flag
 if [[ "$PLATFORM" == "static" ]]; then
 	export NO_TESTS=true
@@ -30,9 +19,10 @@ fi
 # build
 rootdir=$(pwd)
 mkdir build-$PLATFORM
-cd build-$PLATFORM
+pushd build-$PLATFORM
 
-/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r $QMAKE_FLAGS ../
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake $QMAKE_FLAGS ../
+make qmake_all
 make
 make INSTALL_ROOT="$rootdir/install" install
 
@@ -45,20 +35,23 @@ if [[ -z "$NO_TESTS" ]]; then
 	if [[ -z "$TEST_DIR" ]]; then
 		export TEST_DIR=./tests/auto
 	fi
-	cd "$TEST_DIR"
+	pushd "$TEST_DIR"
 	for test in $(find . -type f -perm +0111 -name "tst_*"); do
 		#QT_QPA_PLATFORM=minimal
 		$test
 	done
+	popd
 fi
+
+popd
 
 # build documentation
 if [[ -n "$BUILD_DOC" ]]; then
-	cd "$rootdir"
 	mkdir build-doc
-	cd build-doc
+	pushd build-doc
 
-	/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r ../doc/doc.pro
+	/opt/qt/$QT_VER/$PLATFORM/bin/qmake ../doc/doc.pro
 	make doxygen
 	make INSTALL_ROOT="$rootdir/install" install
+	popd
 fi

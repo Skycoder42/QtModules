@@ -6,6 +6,7 @@ scriptdir=$(dirname $0)
 # python
 brew update
 brew install python3
+# TODO install qpmx
 
 # install qpm
 curl -Lo /tmp/qpm https://storage.googleapis.com/www.qpm.io/download/latest/darwin_386/qpm
@@ -42,5 +43,5 @@ sudo rm -rf /opt/qt/Tools/QtCreator
 if [[ "$PLATFORM" == "static" ]]; then
 	export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 	export SUDO=sudo #because of symlink
-	$scriptdir/setup-qt-static.sh
+	$scriptdir/setup-static.sh
 fi

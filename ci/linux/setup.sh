@@ -6,6 +6,7 @@ scriptdir=$(dirname $0)
 echo FROM ubuntu:latest > $scriptdir/Dockerfile
 #TODO pass all known vars
 echo ENV \
+	TRAVIS_OS_NAME=\"$TRAVIS_OS_NAME\" \
 	QT_VER=\"$QT_VER\" \
 	PLATFORM=\"$PLATFORM\" \
 	EXTRA_MODULES=\"$EXTRA_MODULES\" \

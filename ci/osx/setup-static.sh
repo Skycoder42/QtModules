@@ -1,0 +1,1 @@
+../linux/setup/setup-static.sh

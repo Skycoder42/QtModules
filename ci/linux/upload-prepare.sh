@@ -7,7 +7,7 @@ cd install/opt/qt/$QT_VER
 
 PNAME=$PLATFORM
 if [[ $PLATFORM == "static" ]]; then
-	export PNAME="${PNAME}_linux"
+	export PNAME="${PNAME}_${TRAVIS_OS_NAME}"
 fi
 
 tar cJf build_${PNAME}_${QT_VER}.tar.xz $PLATFORM

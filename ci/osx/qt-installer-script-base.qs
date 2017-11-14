@@ -1,1 +1,1 @@
-../linux/qt-installer-script-base.qs
+../linux/setup/qt-installer-script-base.qs

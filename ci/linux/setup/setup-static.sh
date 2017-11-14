@@ -2,9 +2,11 @@
 set -e
 
 ### compile static Qt
-export MAKEFLAGS="-j$(nproc)"
 tDir=/opt/qt/$QT_VER/static
-mkdir -p $tDir
+$SUDO mkdir -p $tDir
+if [[ -n "$SUDO" ]]; then
+	$SUDO chown -R $USER /opt/qt/$QT_VER/Src
+fi
 
 pushd /opt/qt/$QT_VER/Src/
 
@@ -35,8 +37,8 @@ done
 pushd $(mktemp -d)
 /opt/qt/$QT_VER/Src/configure -prefix $tDir -opensource -confirm-license -release -static -static-runtime -no-use-gold-linker -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets $skipPart
 make > /dev/null
-make install > /dev/null
+$SUDO make install > /dev/null
 popd
 
 popd
-rm -rf /opt/qt/$QT_VER/Src #make space for docker
+$SUDO rm -rf /opt/qt/$QT_VER/Src #make space for docker
