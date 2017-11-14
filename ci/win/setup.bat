@@ -3,7 +3,7 @@ powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
-	set EXTRA_MODULES=qt.tools.ifw.20;%EXTRA_MODULES%
+	set EXTRA_MODULES=qt.tools.ifw.30;%EXTRA_MODULES%
 )
 
 :: prepare installer script
@@ -32,7 +32,10 @@ type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
 :: update and install Qt modules
 C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
 C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 || (
-	find /c "no_modules_changed" C:\Qt\InstallationLog.txt > nul || exit \B 1
+	find /c "no_modules_changed" C:\Qt\InstallationLog.txt > nul || (
+		type C:\Qt\InstallationLog.txt
+		exit \B 1
+	)
 )
 
 :: build static qt

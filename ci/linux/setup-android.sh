@@ -15,7 +15,10 @@ curl -Lo /tmp/android-sdk.zip https://dl.google.com/android/repository/sdk-tools
 mkdir $HOME/android
 unzip -qq /tmp/android-sdk.zip -d $HOME/android/sdk/
 rm -f /tmp/android-sdk.zip
-echo y | $HOME/android/sdk/tools/bin/sdkmanager --update
-echo y | $HOME/android/sdk/tools/bin/sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.1" "extras;google;m2repository" "extras;android;m2repository" "ndk-bundle"
+echo y | $HOME/android/sdk/tools/bin/sdkmanager --update > /dev/null
+for package in "platform-tools" "platforms;android-26" "build-tools;26.0.1" "extras;google;m2repository" "extras;android;m2repository" "ndk-bundle"; do
+	echo install android $package
+	echo y | $HOME/android/sdk/tools/bin/sdkmanager "$package" > /dev/null
+done
 
 sudo rm -rf /tmp/*
