@@ -1,12 +1,11 @@
 #!/bin/bash
 set -e
 
+### compile static Qt
+export MAKEFLAGS="-j$(nproc)"
 tDir=/opt/qt/$QT_VER/static
-$SUDO mkdir -p $tDir
+mkdir -p $tDir
 
-if [[ -n "$SUDO" ]]; then
-	$SUDO chown -R $USER /opt/qt/$QT_VER/Src
-fi
 pushd /opt/qt/$QT_VER/Src/
 
 #bug: remove gui from macdeployqt
@@ -22,11 +21,8 @@ for mod in $STATIC_EXTRA_MODS; do
 	echo -e "\tbranch = ${QT_VER}" >> .gitmodules
 	echo -e "\tstatus = addon" >> .gitmodules
 	echo -e "\trepoType = inherited" >> .gitmodules
-	
-done
 
-#debug
-perl -w ./qtbase/bin/syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir /opt/qt/$QT_VER/Src/qtjsonserializer /opt/qt/$QT_VER/Src/qtjsonserializer
+done
 
 # generate skip modules
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
@@ -39,9 +35,8 @@ done
 pushd $(mktemp -d)
 /opt/qt/$QT_VER/Src/configure -prefix $tDir -opensource -confirm-license -release -static -static-runtime -no-use-gold-linker -no-cups -no-qml-debug -no-opengl -no-egl -no-xinput2 -no-sm -no-icu -nomake examples -nomake tests -accessibility -no-gui -no-widgets $skipPart
 make > /dev/null
-$SUDO make install > /dev/null
+make install > /dev/null
 popd
 
 popd
-
-$SUDO rm -rf /opt/qt/$QT_VER/Src #make space for docker
+rm -rf /opt/qt/$QT_VER/Src #make space for docker

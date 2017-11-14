@@ -3,14 +3,17 @@ set -e
 
 scriptdir=$(dirname $0)
 
-if [[ $PLATFORM == "gcc_64" ]]; then
-	$scriptdir/setup-gcc.sh
-fi
+echo FROM ubuntu:latest > $scriptdir/Dockerfile
+#TODO pass all known vars
+echo ENV \
+	QT_VER=\"$QT_VER\" \
+	PLATFORM=\"$PLATFORM\" \
+	EXTRA_MODULES=\"$EXTRA_MODULES\" \
+	STATIC_QT_MODS=\"$STATIC_QT_MODS\" \
+	STATIC_EXTRA_MODS=\"$STATIC_EXTRA_MODS\" >> $scriptdir/Dockerfile
 
-if [[ $PLATFORM == "android_"* ]]; then
-	$scriptdir/setup-android.sh
-fi
+echo "ADD setup /tmp/qt/setup/" >> $scriptdir/Dockerfile
+echo "RUN /tmp/qt/setup/setup-docker.sh" >> $scriptdir/Dockerfile
+echo "CMD cd /root/project && /root/project/qtmodules-travis/ci/linux/build-docker.sh" >> $scriptdir/Dockerfile
 
-if [[ $PLATFORM == "static" ]]; then
-	$scriptdir/setup-gcc.sh
-fi
+sudo docker build -t skycoder42/qt-build $scriptdir
