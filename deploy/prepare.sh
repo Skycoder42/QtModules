@@ -56,6 +56,12 @@ bzr builddeb -S
 popd
 
 pushd build-area
+
+if [[ "$mode" == "opt" ]]; then
+	pbuilder-dist "$distro" update --override-config --othermirror "deb http://ppa.launchpad.net/beineri/opt-qt592-xenial/ubuntu $distro main | deb http://ppa.launchpad.net/skycoder42/qt-modules-opt/ubuntu $distro main"
+else
+	pbuilder-dist "$distro" update --override-config --othermirror "deb http://ppa.launchpad.net/skycoder42/qt-modules/ubuntu $distro main"
+fi
 pbuilder-dist "$distro" build *.dsc
 
 read -p "publish on launchpad? [y/N] " publish
