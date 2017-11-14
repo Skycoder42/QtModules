@@ -1,20 +1,21 @@
 #!/bin/bash
 # $1 Module Name
-# $2 branch
-# $3 mode
+# $2 branch/version
+# $3 mode (standard|module|opt)
 # $4 distro
+# $5 source (optional, instead of downloading)
 set -e
 
 module=$1
 branch=$2
 mode=$3
 distro=$4
+source=$(readlink -f $5)
 
-if [[ "$mode" == "standard" ]]; then
+if [[ "$mode" == "module" ]]; then
 	name=${module,,}
 	name=libqt5${name:2}
-fi
-if [[ "$mode" == "opt" ]]; then
+else
 	name=${module,,}
 fi
 
@@ -22,7 +23,11 @@ pwDir=$(mktemp -d)
 home=$(dirname $(readlink -f $0))
 
 pushd "$pwDir"
-wget "https://github.com/Skycoder42/$module/archive/$branch.tar.gz"
+if [[ "$source" == "" ]]; then
+	wget "https://github.com/Skycoder42/$module/archive/$branch.tar.gz"
+else
+	cp "$source" "$branch.tar.gz"
+fi
 
 bzr dh-make "$name" "$branch" "$branch.tar.gz"
 
