@@ -9,7 +9,8 @@ call %VC_DIR% %VC_VARSALL% || exit /B 1
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
-C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ../ || exit /B 1
+C:\Qt\%QT_VER%\%qtplatform%\bin\qmake ../ || exit /B 1
+name qmake_all || exit /B 1
 nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
@@ -34,7 +35,7 @@ if "%BUILD_DOC%" == "" goto no_doc
 	mkdir build-doc
 	cd build-doc
 
-	C:\Qt\%QT_VER%\%qtplatform%\bin\qmake -r ../doc/doc.pro || exit /B 1
+	C:\Qt\%QT_VER%\%qtplatform%\bin\qmake ../doc/doc.pro || exit /B 1
 	nmake doxygen || exit /B 1
 	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 :no_doc

@@ -1,18 +1,6 @@
 :: builds
 set PATH=C:\Python36-x64;C:\projects\;%PATH%
 
-:: install QPM dependencies
-setlocal
-set olddir=%CD%
-for /R %%F in (*qpm.json) do (
-	echo %%F | findstr /C:"vendor" > nul || (
-		cd %%~dpF
-		qpm.exe install
-		cd %olddir%
-	)
-)
-endlocal
-
 if "%PLATFORM%" == "mingw53_32" (
 	call %~dp0\build-mingw.bat || exit /B 1
 ) else (

@@ -8,7 +8,7 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" (
 	set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
 )
-	
+
 set tDir=C:\Qt\%QT_VER%\static
 mkdir -p %tDir% || exit /B 1
 cd C:\Qt\%QT_VER%\Src
@@ -23,11 +23,6 @@ for %%m in (%STATIC_EXTRA_MODS%) do (
 	echo 	status = addon>> .gitmodules
 	echo 	repoType = inherited>> .gitmodules
 )
-
-type .gitmodules
-
-:: debug
-perl -w .\qtbase\bin\syncqt.pl -module QtJsonSerializer -version 3.0.0 -outdir C:\Qt\%QT_VER%\Src\qtjsonserializer C:\Qt\%QT_VER%\Src\qtjsonserializer
 
 :: generate skip modules
 set skipPart=

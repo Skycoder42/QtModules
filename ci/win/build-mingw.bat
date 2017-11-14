@@ -8,7 +8,8 @@ set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
-C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake -r ../ || exit /B 1
+C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
+mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install
 
@@ -35,7 +36,7 @@ if "%BUILD_DOC%" == "" goto no_doc
 	mkdir build-doc
 	cd build-doc
 
-	C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake -r ../doc/doc.pro || exit /B 1
+	C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../doc/doc.pro || exit /B 1
 	mingw32-make doxygen || exit /B 1
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 :no_doc
