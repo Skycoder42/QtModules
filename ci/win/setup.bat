@@ -47,4 +47,6 @@ if "%PLATFORM%" == "static" (
 )
 
 :: mingw32 make workaround
-copy C:\Qt\Tools\mingw530_32\bin\mingw32-make.exe C:\Qt\Tools\mingw530_32\bin\make.exe
+if "%PLATFORM%" == "mingw53_32" (
+	copy C:\Qt\Tools\mingw530_32\bin\mingw32-make.exe C:\Qt\Tools\mingw530_32\bin\make.exe
+)
