@@ -255,8 +255,8 @@ def prepareTools(dirName, fixPkgs):
 				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
 			
 			print("copying static stuff from", baseStaticDir, "to", fixPkgPath)
-			dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
-			dir_util.copy_tree(baseStaticDir, fixPkgPath)
+			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
+			distutils.dir_util.copy_tree(baseStaticDir, fixPkgPath)
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
