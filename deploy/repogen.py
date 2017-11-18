@@ -254,7 +254,6 @@ def prepareTools(dirName, fixPkgs):
 			else:
 				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
 			
-			print("copying static stuff from", baseStaticDir, "to", fixPkgPath)
 			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
 			distutils.dir_util.copy_tree(baseStaticDir, fixPkgPath)
 
@@ -265,9 +264,7 @@ def repogen(archName, pkgList):
 		pkgFullList.append(pkgBase + "." + pkgItem)
 	repoInc = ",".join(pkgFullList)
 
-	if not os.path.exists(repoPath):
-		print("WARNING: No existing repository found! It will be created as a new one, and not updated")
-
+	print("Creating repository", archName)
 	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath], check=True)
 
 # create packages

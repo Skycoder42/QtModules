@@ -58,11 +58,6 @@ for arch in android_armv7 android_x86 clang_64 doc gcc_64 ios static_linux stati
 		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${branch}/$file"
 		tar -xf "$file" -C "../$qtVer/"
-		
-		# TODO WORKAROUND
-		if [[ "$arch" == "static_"* ]]; then
-			mv "../$qtVer/static" "../$qtVer/$arch"
-		fi
 	fi
 done
 
@@ -80,11 +75,6 @@ for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 win
 		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${branch}/$file"
 		unzip -qq "$file" -d "../$qtVer/"
-	fi
-		
-	# TODO WORKAROUND
-	if [[ "$arch" == "static_"* ]]; then
-		mv "../$qtVer/static" "../$qtVer/$arch"
 	fi
 done
 popd
