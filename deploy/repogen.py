@@ -244,7 +244,16 @@ def prepareTools(dirName, fixPkgs):
 		fixPkgDir = fixPkgInfo[1];
 		if fixPkgName not in skipPacks:
 			fixPkg = pkgBase + "." + fixPkgName
-			fixPkgPath = os.path.join("packages", fixPkg, "data", qtDir, fixPkgDir)
+			fixPkgBasePath = os.path.join("packages", fixPkg)
+			fixPkgPath = os.path.join(fixPkgBasePath, "data", qtDir, fixPkgDir)
+			fixPkgRestorePath = fixPkgBasePath + ".bkp"
+			
+			if os.path.exists(fixPkgRestorePath):
+				shutil.rmtree(fixPkgBasePath)
+				shutil.copytree(fixPkgRestorePath, fixPkgBasePath)
+			else:
+				shutil.copytree(fixPkgBasePath, fixPkgRestorePath)
+			
 			copy_tree(baseStaticDir, fixPkgPath)
 
 def repogen(archName, pkgList):
