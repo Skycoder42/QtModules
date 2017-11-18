@@ -295,7 +295,8 @@ if "doc" not in skipPacks:
 # build repositories
 prepareTools("static_linux", [
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"])
+	["android_x86", "android_x86"]
+])
 repogen("linux_x64", [
 	"gcc_64",
 	"android_armv7",
@@ -307,7 +308,8 @@ prepareTools("static_win", [
 	["win64_msvc2017_winrt_x64", "winrt_x64_msvc2017"],
 	["win64_msvc2017_winrt_armv7", "winrt_armv7_msvc2017"],
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"])
+	["android_x86", "android_x86"]
+])
 repogen("windows_x86", [
 	"win32_mingw53",
 	"win64_msvc2017_64",
@@ -323,7 +325,8 @@ repogen("windows_x86", [
 prepareTools("static_osx", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"])
+	["android_x86", "android_x86"]
+])
 repogen("mac_x64", [
 	"clang_64",
 	"ios",
