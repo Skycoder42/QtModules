@@ -10,7 +10,10 @@ module=$1
 branch=$2
 mode=$3
 distro=$4
-source=$(readlink -f $5)
+source=$5
+if [[ -n "$source" ]]; then
+	source=$(readlink -f $source)
+fi
 
 if [[ "$mode" == "module" ]]; then
 	name=${module,,}
