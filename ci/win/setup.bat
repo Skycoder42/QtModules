@@ -45,3 +45,6 @@ C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addRepository 
 if "%PLATFORM%" == "static" (
 	%~dp0\setup-qt-static.bat || exit \B 1
 )
+
+:: mingw32 make workaround
+copy C:\Qt\Tools\mingw530_32\bin\mingw32-make.exe C:\Qt\Tools\mingw530_32\bin\make.exe
