@@ -248,17 +248,14 @@ def prepareTools(dirName, fixPkgs):
 			fixPkgPath = os.path.join(fixPkgBasePath, "data", qtDir, fixPkgDir)
 			fixPkgRestorePath = fixPkgBasePath + ".bkp"
 			
-			print(fixPkgBasePath, "->", fixPkgRestorePath)
-			print(baseStaticDir, "->", fixPkgPath)
 			if os.path.exists(fixPkgRestorePath):
-				print("restoring base dir")
 				shutil.rmtree(fixPkgBasePath)
 				shutil.copytree(fixPkgRestorePath, fixPkgBasePath, symlinks=True)
 			else:
-				print("creating backup dir")
 				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
 			
-			print("copying static stuff")
+			print("copying static stuff from", baseStaticDir, "to", fixPkgPath)
+			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
 			copy_tree(baseStaticDir, fixPkgPath)
 
 def repogen(archName, pkgList):
