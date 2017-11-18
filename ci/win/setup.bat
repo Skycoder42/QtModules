@@ -1,7 +1,8 @@
 :: install qpm
 powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
-::TODO install qpmx
+:: install qpmx, remove version once published
+choco install qpmx --version 1.3.0
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
