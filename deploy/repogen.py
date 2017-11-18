@@ -15,7 +15,7 @@ import shutil
 import re
 import datetime
 import subprocess
-from distutils.dir_util import copy_tree
+import distutils.dir_util
 
 # constants
 fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -255,8 +255,8 @@ def prepareTools(dirName, fixPkgs):
 				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
 			
 			print("copying static stuff from", baseStaticDir, "to", fixPkgPath)
-			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
-			copy_tree(baseStaticDir, fixPkgPath)
+			dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
+			dir_util.copy_tree(baseStaticDir, fixPkgPath)
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
