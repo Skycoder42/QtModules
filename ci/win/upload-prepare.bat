@@ -1,9 +1,9 @@
 cd install\Qt\%QT_VER%
 
-set PNAME=%PLATFORM%
 if "%PLATFORM%" == "static" (
-	set PNAME=%PNAME%_win
+	set PLATFORM=static_win
+	rename .\static %PLATFORM%
 )
 
-7z a build_%PNAME%_%QT_VER%.zip %PLATFORM%
-move build_%PNAME%_%QT_VER%.zip ..\..\
+7z a build_%PLATFORM%_%QT_VER%.zip %PLATFORM%
+move build_%PLATFORM%_%QT_VER%.zip ..\..\

@@ -2,7 +2,7 @@
 # $1 Qt Version (e.g. "5.9")
 # $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
 # $3 comma seperate dependencies (e.g. ".examples, qt.tools.qtcreator")
-# $4 tool names (comma seperated)
+# $4 REMOVE!!!
 # $5 Description
 # $6 Version
 # $7 License file
@@ -15,6 +15,7 @@ import shutil
 import re
 import datetime
 import subprocess
+from distutils.dir_util import copy_tree
 
 # constants
 fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -184,7 +185,7 @@ def createDocPkg():
 	shutil.copytree(baseDocDir, pkgDocDataDoc)
 
 def createSrcPkg():
-	baseSrcDir = os.path.join(baseDir, "src") #TODO add in unzip.sh
+	baseSrcDir = os.path.join(baseDir, "src")
 	pkgSrc = pkgBase + ".src"
 	pkgSrcKit = "qt.{}.src".format(qtVers)
 	pkgSrcFolder = "/{}/Src/".format(qtDir)
@@ -233,8 +234,9 @@ def createSubPkg(dirName, pkgName, patchName):
 
 	shutil.copytree(baseDataDir, pkgDataKit, symlinks=True)
 
-def prepareTools(masterPath, fixPkgs, suffix, doCopy):
-	if len(tools) == 0:
+def prepareTools(dirName, fixPkgs):
+	baseStaticDir = os.path.join(baseDir, dirName)
+	if not os.path.exists(baseStaticDir):
 		return
 
 	for fixPkgInfo in fixPkgs:
@@ -243,22 +245,7 @@ def prepareTools(masterPath, fixPkgs, suffix, doCopy):
 		if fixPkgName not in skipPacks:
 			fixPkg = pkgBase + "." + fixPkgName
 			fixPkgPath = os.path.join("packages", fixPkg, "data", qtDir, fixPkgDir)
-			binPath = os.path.join(fixPkgPath, "bin")
-			os.makedirs(binPath, exist_ok=True);
-			for toolName in tools:
-				tool = toolName + suffix
-				toolBasePath = os.path.join(binPath, toolName)
-				toolPath = os.path.join(binPath, tool)
-
-				if os.path.lexists(toolBasePath):
-					os.remove(toolBasePath)
-				if os.path.lexists(toolPath):
-					os.remove(toolPath)
-
-				if doCopy:
-					shutil.copy(os.path.join(baseDir, masterPath, "bin", tool), toolPath)
-				else:
-					os.symlink(os.path.join("../..", masterPath, "bin", tool), toolPath)
+			copy_tree(baseStaticDir, fixPkgPath)
 
 def repogen(archName, pkgList):
 	repoPath = os.path.join("./repositories", archName)
@@ -306,23 +293,21 @@ if "doc" not in skipPacks:
 	createDocPkg()
 
 # build repositories
-prepareTools("gcc_64", [
+prepareTools("static_linux", [
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-], "", False)
+	["android_x86", "android_x86"])
 repogen("linux_x64", [
 	"gcc_64",
 	"android_armv7",
 	"android_x86"
 ])
 
-prepareTools("msvc2017_64", [
+prepareTools("static_win", [
 	["win64_msvc2017_winrt_x86", "winrt_x86_msvc2017"],
 	["win64_msvc2017_winrt_x64", "winrt_x64_msvc2017"],
 	["win64_msvc2017_winrt_armv7", "winrt_armv7_msvc2017"],
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-], ".exe", True)
+	["android_x86", "android_x86"])
 repogen("windows_x86", [
 	"win32_mingw53",
 	"win64_msvc2017_64",
@@ -335,11 +320,10 @@ repogen("windows_x86", [
 	"android_x86"
 ])
 
-prepareTools("clang_64", [
+prepareTools("static_osx", [
 	["ios", "ios"],
 	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-], "", False)
+	["android_x86", "android_x86"])
 repogen("mac_x64", [
 	"clang_64",
 	"ios",

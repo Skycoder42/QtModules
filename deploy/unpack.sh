@@ -45,7 +45,7 @@ popd
 
 pushd archives
 #download all possible packages (.tar.xz)
-for arch in android_armv7 android_x86 clang_64 doc gcc_64 ios; do
+for arch in android_armv7 android_x86 clang_64 doc gcc_64 ios static_linux static_osx; do
 	ok=1
 	for skip_pattern in $skip; do
 		if [[ "$arch" == *"$skip_pattern"* ]]; then
@@ -58,11 +58,16 @@ for arch in android_armv7 android_x86 clang_64 doc gcc_64 ios; do
 		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${branch}/$file"
 		tar -xf "$file" -C "../$qtVer/"
+		
+		# TODO WORKAROUND
+		if [[ "$arch" == "static_"* ]]; then
+			mv "../$qtVer/static" "../$qtVer/$arch"
+		fi
 	fi
 done
 
 #download all possible packages (.zip)
-for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 winrt_x64_msvc2017 winrt_x86_msvc2017; do
+for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 winrt_x64_msvc2017 winrt_x86_msvc2017 static_win; do
 	ok=1
 	for skip_pattern in $skip; do
 		if [[ "$arch" == *"$skip_pattern"* ]]; then
@@ -75,6 +80,11 @@ for arch in mingw53_32 msvc2015 msvc2015_64 msvc2017_64 winrt_armv7_msvc2017 win
 		echo downloading and extracting $file
 		wget -q "https://github.com/${repoId}/releases/download/${branch}/$file"
 		unzip -qq "$file" -d "../$qtVer/"
+	fi
+		
+	# TODO WORKAROUND
+	if [[ "$arch" == "static_"* ]]; then
+		mv "../$qtVer/static" "../$qtVer/$arch"
 	fi
 done
 popd
