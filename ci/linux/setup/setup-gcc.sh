@@ -17,13 +17,11 @@ echo 'TEMPLATE = aux' > tests/tests.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licudata' >> tools/linuxdeployqt/linuxdeployqt.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licui18n' >> tools/linuxdeployqt/linuxdeployqt.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licuuc' >> tools/linuxdeployqt/linuxdeployqt.pro
-#workaround for ubuntu
-echo 'QMAKE_CXXFLAGS_WARN_ON -= -Wshift-overflow=2 -Wduplicated-cond' >> tools/linuxdeployqt/linuxdeployqt.pro
 popd
 
 mkdir build
 pushd build
-/opt/qt/$QT_VER/$PLATFORM/bin/qmake ../linuxdeployqt/linuxdeployqt.pro
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake $QMAKE_FLAGS ../linuxdeployqt/
 make qmake_all
 make
 make install

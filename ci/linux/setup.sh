@@ -11,7 +11,8 @@ echo ENV \
 	PLATFORM=\"$PLATFORM\" \
 	EXTRA_MODULES=\"$EXTRA_MODULES\" \
 	STATIC_QT_MODS=\"$STATIC_QT_MODS\" \
-	STATIC_EXTRA_MODS=\"$STATIC_EXTRA_MODS\" >> $scriptdir/Dockerfile
+	STATIC_EXTRA_MODS=\"$STATIC_EXTRA_MODS\" \
+	QMAKE_FLAGS=\"$QMAKE_FLAGS\" >> $scriptdir/Dockerfile
 
 echo "ADD setup /tmp/qt/setup/" >> $scriptdir/Dockerfile
 echo "RUN /tmp/qt/setup/setup-docker.sh" >> $scriptdir/Dockerfile

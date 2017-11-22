@@ -8,10 +8,11 @@ apt-get -qq update
 apt-get -qq install software-properties-common
 add-apt-repository -y ppa:beineri/opt-qt592-xenial
 add-apt-repository -y ppa:skycoder42/qt-modules-opt
+add-apt-repository -y ppa:ubuntu-toolchain-r/test
 
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen qpmx-opt
+apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen qpmx-opt gcc-6
 
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
@@ -35,6 +36,14 @@ cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 chmod +x /tmp/installer.run
 QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
+
+# update gcc for linux
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++/qmake.conf
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.conf
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
 
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs
