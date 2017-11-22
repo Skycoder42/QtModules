@@ -21,6 +21,7 @@ popd
 
 mkdir build
 pushd build
+echo /opt/qt/$QT_VER/$PLATFORM/bin/qmake $QMAKE_FLAGS ../linuxdeployqt/
 /opt/qt/$QT_VER/$PLATFORM/bin/qmake $QMAKE_FLAGS ../linuxdeployqt/
 make qmake_all
 make

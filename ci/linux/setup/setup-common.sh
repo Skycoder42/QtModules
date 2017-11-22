@@ -45,6 +45,10 @@ echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.co
 echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
 echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
 
+#test
+g++-6 --version
+gcc-6 --version
+
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs
 rm -rf /opt/qt/Tools/QtCreator
