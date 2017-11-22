@@ -5,6 +5,7 @@
 # $4 skip packages
 # $5 branch
 # $6 repository
+# $7 modules
 set -e
 
 qtVer=$1
@@ -13,6 +14,7 @@ version=$3
 skip=$4
 branch=$5
 repoId=$6
+modules=$7 # TODO better way, extract from sync.profile
 
 # prepare vars
 if [ -z "$branch" ]; then
@@ -21,6 +23,10 @@ fi
 
 if [ -z "$repoId" ]; then
 	repoId="Skycoder42/$moduleName"
+fi
+
+if [ -z "$modules" ]; then
+	modules="$moduleName"
 fi
 
 #prepare dirs
@@ -40,7 +46,9 @@ rm -f ./$qtVer/src/.*.yml
 wget -q "https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl"
 chmod a+x syncqt.pl
 pushd ./$qtVer/src
-../../syncqt.pl -module "$moduleName" -version "$version" "$(pwd)"
+for mod in $modules; do
+	../../syncqt.pl -module "$mod" -version "$version" "$(pwd)"
+done
 popd
 
 pushd archives
