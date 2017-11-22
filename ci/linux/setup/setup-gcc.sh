@@ -19,7 +19,7 @@ echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licui18n' >> tools/linuxdeployqt/linuxdeplo
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licuuc' >> tools/linuxdeployqt/linuxdeployqt.pro
 
 echo "" >> .qmake.conf
-echo 'message($$QMAKE_CXXFLAGS)' >> .qmake.conf
+echo 'QMAKE_CXXFLAGS += -Wno-error=unknown-warning' >> .qmake.conf
 popd
 
 mkdir build
