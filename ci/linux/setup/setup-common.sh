@@ -12,7 +12,11 @@ add-apt-repository -y ppa:ubuntu-toolchain-r/test
 
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen qpmx-opt gcc-6
+apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen qpmx-opt gcc-6 g++-6
+
+#test gcc
+gcc-6 --version
+g++-6 --version
 
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
@@ -44,10 +48,6 @@ echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.c
 echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.conf
 echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
 echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
-
-#test
-g++-6 --version
-gcc-6 --version
 
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs
