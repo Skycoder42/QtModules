@@ -17,11 +17,15 @@ echo 'TEMPLATE = aux' > tests/tests.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licudata' >> tools/linuxdeployqt/linuxdeployqt.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licui18n' >> tools/linuxdeployqt/linuxdeployqt.pro
 echo 'LIBS += -L$$[QT_INSTALL_LIBS] -licuuc' >> tools/linuxdeployqt/linuxdeployqt.pro
+
+echo "" >> .qmake.conf
+echo 'message($$QMAKE_CXXFLAGS)' >> .qmake.conf
 popd
 
 mkdir build
 pushd build
-/opt/qt/$QT_VER/$PLATFORM/bin/qmake -r ../linuxdeployqt/linuxdeployqt.pro
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake ../linuxdeployqt/linuxdeployqt.pro
+make qmake_all
 make
 make install
 popd
