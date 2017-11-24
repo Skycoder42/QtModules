@@ -42,12 +42,18 @@ chmod +x /tmp/installer.run
 QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/linux_x64
 
 # update gcc for linux
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++/qmake.conf
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-32/qmake.conf
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$PLATFORM/mkspecs/linux-g++-64/qmake.conf
+if [[ "$PLATFORM" == "static" ]]; then
+	TPLATFORM="Src/qtbase"
+else
+	TPLATFORM=$PLATFORM
+fi
+
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++/qmake.conf
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-32/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-32/qmake.conf
+echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-64/qmake.conf
+echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-64/qmake.conf
 
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs
