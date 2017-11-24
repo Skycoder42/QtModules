@@ -2,8 +2,7 @@ cd install\Qt\%QT_VER%
 
 if "%PLATFORM%" == "static" (
 	set PLATFORM=static_win
-	dir
-	rename static %PLATFORM%
+	move static %PLATFORM%
 	dir
 )
 
