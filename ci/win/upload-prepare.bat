@@ -2,9 +2,7 @@ cd install\Qt\%QT_VER%
 
 if "%PLATFORM%" == "static" (
 	set PLATFORM=static_win
-	echo %PLATFORM%
-	dir
-	move "static" "%PLATFORM%" || exit \B 1
+	robocopy static %PLATFORM% /e /s || exit \B 1
 	dir
 )
 
