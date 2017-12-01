@@ -3,29 +3,29 @@
 function Controller() {
     installer.autoRejectMessageBoxes();
     installer.installationFinished.connect(function() {
-        gui.clickButton(buttons.NextButton);
+		gui.clickButton(buttons.NextButton, 1000);
     })
 }
 
 // Skip the welcome page
 Controller.prototype.WelcomePageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 3000);
 }
 
 // skip the Qt Account credentials page
 Controller.prototype.CredentialsPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // skip the introduction page
 Controller.prototype.IntroductionPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // set the installation target directory
 Controller.prototype.TargetDirectoryPageCallback = function() {
     gui.currentPageWidget().TargetDirectoryLineEdit.setText("/opt/qt/");
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // select the components to install
@@ -39,23 +39,23 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 		widget.selectComponent(element);
 	});
 
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // accept the license agreement
 Controller.prototype.LicenseAgreementPageCallback = function() {
     gui.currentPageWidget().AcceptLicenseRadioButton.setChecked(true);
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // leave the start menu as it is
 Controller.prototype.StartMenuDirectoryPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // install
 Controller.prototype.ReadyForInstallationPageCallback = function() {
-    gui.clickButton(buttons.NextButton);
+	gui.clickButton(buttons.NextButton, 1000);
 }
 
 Controller.prototype.FinishedPageCallback = function() {
@@ -64,6 +64,6 @@ Controller.prototype.FinishedPageCallback = function() {
     if (checkBoxForm && checkBoxForm.launchQtCreatorCheckBox) {
         checkBoxForm.launchQtCreatorCheckBox.checked = false;
     }
-    gui.clickButton(buttons.FinishButton);
+    gui.clickButton(buttons.FinishButton, 1000);
 }
 
