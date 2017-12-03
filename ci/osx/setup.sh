@@ -34,7 +34,7 @@ cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 # install Qt
 curl -Lo /tmp/installer.dmg https://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
 hdiutil attach /tmp/installer.dmg
-QT_QPA_PLATFORM=minimal sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents/MacOS/qt-unified-mac-* --script $scriptdir/qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/mac_x64/
+QT_QPA_PLATFORM=minimal sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents/MacOS/qt-unified-mac-* --script $scriptdir/qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/mac_x64/
 
 sudo rm -rf /opt/qt/Examples
 sudo rm -rf /opt/qt/Docs
