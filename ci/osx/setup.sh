@@ -6,7 +6,7 @@ scriptdir=$(dirname $0)
 # python
 brew update
 brew tap Skycoder42/qt-modules
-brew install python3 qpmx
+brew install python3 qpmx coreutils
 
 # install qpm
 curl -Lo /tmp/qpm https://storage.googleapis.com/www.qpm.io/download/latest/darwin_386/qpm
