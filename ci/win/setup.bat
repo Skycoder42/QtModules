@@ -36,7 +36,8 @@ type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
 C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
 C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 || (
 	find /c "no_modules_changed" C:\Qt\InstallationLog.txt > nul || (
-		type C:\Qt\InstallationLog.txt
+		:: print last 100 lines of install log
+		powershell -Command "Get-Content C:\Qt\InstallationLog.txt -Wait -Tail 100"
 		exit \B 1
 	)
 )
