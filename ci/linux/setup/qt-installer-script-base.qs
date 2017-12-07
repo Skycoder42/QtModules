@@ -32,10 +32,10 @@ Controller.prototype.TargetDirectoryPageCallback = function() {
 Controller.prototype.ComponentSelectionPageCallback = function() {
     var widget = gui.currentPageWidget();
 	widget.deselectAll();
-	widget.selectComponent("qt." + qtVersion + "." + platform);
+	widget.selectComponent("qt.qt5." + qtVersion + "." + platform);
 	extraMods.forEach(function(element){
 		if(element.startsWith("."))
-			element = "qt." + qtVersion + element;
+			element = "qt.qt5." + qtVersion + element;
 		widget.selectComponent(element);
 	});
 

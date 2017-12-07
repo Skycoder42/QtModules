@@ -27,10 +27,10 @@ Controller.prototype.IntroductionPageCallback = function() {
 // select the components to install
 Controller.prototype.ComponentSelectionPageCallback = function() {
 	var widget = gui.currentPageWidget();
-	widget.selectComponent("qt." + qtVersion + "." + platform);
+	widget.selectComponent("qt.qt5." + qtVersion + "." + platform);
 	extraMods.forEach(function(element){
 		if(element.startsWith("."))
-			element = "qt." + qtVersion + element;
+			element = "qt.qt5." + qtVersion + element;
 		widget.selectComponent(element);
 	});
 
