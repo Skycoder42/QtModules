@@ -130,14 +130,14 @@ modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
 modBase = modName.lower()
 modBaseTitle = "qt" + modBase
 qtVers = qtDir.replace(".", "")
-pkgBase = "qt.{}.skycoder42.{}".format(qtVers, modBase)
+pkgBase = "qt.qt5.{}.skycoder42.{}".format(qtVers, modBase)
 
 # fix dependencies
 deps = depends.split(",")
 for i in range(0, len(deps), 1):
 	deps[i] = deps[i].strip();
 	if deps[i][0:1] == ".":
-		deps[i] = "qt.{}{}".format(qtVers, deps[i])
+		deps[i] = "qt.qt5.{}{}".format(qtVers, deps[i])
 depends = ",".join(deps)
 
 def createBasePkg():
@@ -187,7 +187,7 @@ def createDocPkg():
 def createSrcPkg():
 	baseSrcDir = os.path.join(baseDir, "src")
 	pkgSrc = pkgBase + ".src"
-	pkgSrcKit = "qt.{}.src".format(qtVers)
+	pkgSrcKit = "qt.qt5.{}.src".format(qtVers)
 	pkgSrcFolder = "/{}/Src/".format(qtDir)
 	pkgSrcPath = os.path.join("packages", pkgSrc)
 	pkgSrcMeta = os.path.join(pkgSrcPath, "meta")
@@ -210,7 +210,7 @@ def createSrcPkg():
 def createSubPkg(dirName, pkgName, patchName):
 	baseDataDir = os.path.join(baseDir, dirName)
 	pkg = pkgBase + "." + pkgName
-	pkgKit = "qt.{}.{}".format(qtVers, pkgName)
+	pkgKit = "qt.qt5.{}.{}".format(qtVers, pkgName)
 	pkgFolder = "/{}/{}/".format(qtDir, dirName)
 	pkgPath = os.path.join("packages", pkg)
 	pkgMeta = os.path.join(pkgPath, "meta")
@@ -247,13 +247,13 @@ def prepareTools(dirName, fixPkgs):
 			fixPkgBasePath = os.path.join("packages", fixPkg)
 			fixPkgPath = os.path.join(fixPkgBasePath, "data", qtDir, fixPkgDir)
 			fixPkgRestorePath = fixPkgBasePath + ".bkp"
-			
+
 			if os.path.exists(fixPkgRestorePath):
 				shutil.rmtree(fixPkgBasePath)
 				shutil.copytree(fixPkgRestorePath, fixPkgBasePath, symlinks=True)
 			else:
 				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
-			
+
 			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
 			distutils.dir_util.copy_tree(baseStaticDir, fixPkgPath)
 
