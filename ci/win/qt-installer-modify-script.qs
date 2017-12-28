@@ -3,25 +3,25 @@
 function Controller() {
     installer.autoRejectMessageBoxes();
     installer.installationFinished.connect(function() {
-		gui.clickButton(buttons.FinishButton, 5000);
+		gui.clickButton(buttons.FinishButton, 15000);
     });
 }
 
 // Skip the welcome page
 Controller.prototype.WelcomePageCallback = function() {
-	gui.clickButton(buttons.NextButton, 10000);
+	gui.clickButton(buttons.NextButton, 30000);
 }
 
 // skip the Qt Account credentials page
 Controller.prototype.CredentialsPageCallback = function() {
-	gui.clickButton(buttons.NextButton, 5000);
+	gui.clickButton(buttons.NextButton, 15000);
 }
 
 // select updates
 Controller.prototype.IntroductionPageCallback = function() {
 	var widget = gui.currentPageWidget();
 	widget.findChild("PackageManagerRadioButton").checked = true;
-	gui.clickButton(buttons.NextButton, 5000);
+	gui.clickButton(buttons.NextButton, 15000);
 }
 
 // select the components to install
@@ -35,7 +35,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 	});
 
 	if(gui.isButtonEnabled(buttons.NextButton))
-		gui.clickButton(buttons.NextButton, 5000);
+		gui.clickButton(buttons.NextButton, 15000);
 	else {
 		console.log("no_modules_changed");
 		gui.rejectWithoutPrompt();
@@ -45,15 +45,15 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
 // accept the license agreement
 Controller.prototype.LicenseAgreementPageCallback = function() {
     gui.currentPageWidget().AcceptLicenseRadioButton.setChecked(true);
-	gui.clickButton(buttons.NextButton, 5000);
+	gui.clickButton(buttons.NextButton, 15000);
 }
 
 // install
 Controller.prototype.ReadyForInstallationPageCallback = function() {
-	gui.clickButton(buttons.NextButton, 5000);
+	gui.clickButton(buttons.NextButton, 15000);
 }
 
 Controller.prototype.FinishedPageCallback = function() {
-	gui.clickButton(buttons.FinishButton, 5000);
+	gui.clickButton(buttons.FinishButton, 15000);
 }
 
