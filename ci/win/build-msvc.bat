@@ -9,7 +9,7 @@ call %VC_DIR% %VC_VARSALL% || exit /B 1
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
-C:\Qt\%QT_VER%\%qtplatform%\bin\qmake ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake ../ || exit /B 1
 nmake qmake_all || exit /B 1
 nmake || exit /B 1
 nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
@@ -18,7 +18,7 @@ nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 if NOT "%NO_TESTS%" == "" goto no_tests
 	nmake all || exit /B 1
 
-	set PATH=C:\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
+	set PATH=C:\projects\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
 	if "%TEST_DIR%" == "" (
 		set TEST_DIR=.\tests\auto
 	)
@@ -35,7 +35,7 @@ if "%BUILD_DOC%" == "" goto no_doc
 	mkdir build-doc
 	cd build-doc
 
-	C:\Qt\%QT_VER%\%qtplatform%\bin\qmake ../doc/doc.pro || exit /B 1
+	C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake ../doc/doc.pro || exit /B 1
 	nmake doxygen || exit /B 1
 	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 :no_doc

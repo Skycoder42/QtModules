@@ -30,11 +30,11 @@ echo extraMods = []; >> %~dp0\qt-installer-script.qs
 for %%x in (%EXTRA_MODULES%) do (
 	echo extraMods.push("%%x"^); >> %~dp0\qt-installer-script.qs
 )
-type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
+type %~dp0\qt-installer-script-base.qs >> %~dp0\qt-installer-script.qs
 
 :: update and install Qt modules
-:: C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
-C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86 || exit \B 1
+powershell -Command "Invoke-WebRequest https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -OutFile C:\projects\qtinst.exe"
+C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86
 
 :: build static qt
 if "%PLATFORM%" == "static" (
@@ -43,5 +43,5 @@ if "%PLATFORM%" == "static" (
 
 :: mingw32 make workaround
 if "%PLATFORM%" == "mingw53_32" (
-	copy C:\Qt\Tools\mingw530_32\bin\mingw32-make.exe C:\Qt\Tools\mingw530_32\bin\make.exe
+	copy C:\projects\Qt\Tools\mingw530_32\bin\mingw32-make.exe C:\projects\Qt\Tools\mingw530_32\bin\make.exe
 )

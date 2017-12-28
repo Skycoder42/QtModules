@@ -2,13 +2,13 @@ setlocal
 
 for %%* in (.) do set CurrDirName=%%~nx*
 
-set PATH=C:\Qt\Tools\mingw530_32\bin;%PATH%;
+set PATH=C:\projects\Qt\Tools\mingw530_32\bin;%PATH%;
 set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
-C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
 mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install
@@ -18,7 +18,7 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 	mingw32-make all || exit /B 1
 
 	setlocal
-	set PATH=C:\Qt\%QT_VER%\%PLATFORM%\bin;%CD%\lib;%PATH%;
+	set PATH=C:\projects\Qt\%QT_VER%\%PLATFORM%\bin;%CD%\lib;%PATH%;
 	if "%TEST_DIR%" == "" (
 		set TEST_DIR=.\tests\auto
 	)
@@ -36,7 +36,7 @@ if "%BUILD_DOC%" == "" goto no_doc
 	mkdir build-doc
 	cd build-doc
 
-	C:\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../doc/doc.pro || exit /B 1
+	C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../doc/doc.pro || exit /B 1
 	mingw32-make doxygen || exit /B 1
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 :no_doc
