@@ -34,7 +34,7 @@ type %~dp0\qt-installer-modify-script.qs >> %~dp0\qt-installer-script.qs
 
 :: update and install Qt modules
 :: C:\Qt\MaintenanceTool.exe --silentUpdate || exit \B 1
-C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 || exit \B 1
+C:\Qt\MaintenanceTool.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86 || exit \B 1
 
 :: build static qt
 if "%PLATFORM%" == "static" (
