@@ -289,15 +289,9 @@ def main():
 	# load the config
 	with open(sys.argv[1]) as file:
 		config = json.load(file)
-	publish = (sys.argv[2] == "y")
-	dists = sys.argv[3:]
+	dists = sys.argv[2:]
 
 	with tempfile.TemporaryDirectory() as tmp_dir:
-		# debug: override tmp_dir
-		tmp_dir = "/tmp/debbuild"
-		shutil.rmtree(tmp_dir, ignore_errors=True)
-		os.mkdir(tmp_dir)
-
 		# step 1: extract some variables
 		if "urlbase" not in config:
 			mod_baseurl = "https://github.com/{}/{}/archive/%version.tar.gz" \
@@ -305,9 +299,8 @@ def main():
 		else:
 			mod_baseurl = config["urlbase"]
 
-		for distro, dconf in config["distros"].items():
-			if dists and distro not in dists:
-				continue
+		for distro in dists:
+			dconf = config["distros"][distro]
 
 			dist_dir = pjoin(tmp_dir, distro)
 			os.mkdir(dist_dir)
@@ -336,8 +329,7 @@ def main():
 											   mod_fullname,
 											   pkg_mode,
 											   " ".join(config["configs"][pkg_mode]["debpkg"]),
-											   "",
-											   "y" if publish else "n")
+											   "")
 			deb_sh = pjoin(dist_dir, "debbuild.sh")
 			with open(deb_sh, "w") as file:
 				file.write(debbuild_str)

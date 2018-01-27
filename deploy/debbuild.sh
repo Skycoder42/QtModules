@@ -6,7 +6,6 @@ pkgname="{}"
 mode="{}"
 debpkgs="{}"
 optver="{}"
-publish="{}"
 
 cd /debbuild
 
@@ -57,11 +56,9 @@ popd
 pbuilder-dist $distro build *.dsc
 
 # publish to lp
-if [[ "$publish" == "y" ]]; then
-	ppa="qt-modules"
-	if [[ "$mode" == "opt" ]]; then
-		ppa="$ppa-opt"
-	fi
-	dput "ppa:skycoder42/$ppa" *.changes
+ppa="qt-modules"
+if [[ "$mode" == "opt" ]]; then
+	ppa="$ppa-opt"
 fi
+dput "ppa:skycoder42/$ppa" *.changes
 popd
