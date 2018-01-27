@@ -109,10 +109,10 @@ def get_source(sdir, mod_url):
 		archive.extractall(sdir)
 
 
-def pack_source(sdir, odir, mod_full_name):
+def pack_source(sdir, odir, mod_full_name, pkg_name):
 	out_path = pjoin(odir, mod_full_name)
 	os.rename(sdir, out_path)
-	with tarfile.open(pjoin(odir, mod_full_name + ".tar.gz"), "w:gz") as archive:
+	with tarfile.open(pjoin(odir, pkg_name + ".orig.tar.gz"), "w:gz") as archive:
 		archive.add(out_path, arcname=mod_full_name)
 
 
@@ -135,7 +135,7 @@ def prepare_source(sdir, extra_conf):
 			qmakeconf.write(conf + "\n")
 
 
-def prepare_dist_source(dconf, mconf, ddir, mod_name, baseurl):
+def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl):
 	# generate the version to use in the url
 	if "urlrev" in dconf:
 		urlrev = dconf["urlrev"]
@@ -161,7 +161,7 @@ def prepare_dist_source(dconf, mconf, ddir, mod_name, baseurl):
 		src_dir = pjoin(ddir, path)
 		if os.path.isdir(src_dir):
 			prepare_source(src_dir, qmake_conf)
-			pack_source(src_dir, ddir, mod_name)
+			pack_source(src_dir, ddir, mod_name, pkg_name)
 
 
 # stuff to create the debian dir
@@ -282,12 +282,15 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_name, mod_vers):
 			file.write("\noverride_dh_{}:\n".format(key))
 			for rule in rules:
 				file.write("\t" + rule + "\n")
+	os.chmod(pjoin(deb_dir, "rules"), 0o755)
 
 
 def main():
 	# load the config
 	with open(sys.argv[1]) as file:
 		config = json.load(file)
+	publish = (sys.argv[2] == "y")
+	dists = sys.argv[3:]
 
 	with tempfile.TemporaryDirectory() as tmp_dir:
 		# debug: override tmp_dir
@@ -303,13 +306,17 @@ def main():
 			mod_baseurl = config["urlbase"]
 
 		for distro, dconf in config["distros"].items():
+			if dists and distro not in dists:
+				continue
+
 			dist_dir = pjoin(tmp_dir, distro)
 			os.mkdir(dist_dir)
 
 			# common stuff
 			pkg_mode = dconf["mode"]
 			pkg_base = pkgbase(config["module"], dconf["mode"])
-			mod_version = dconf["version"]
+			lib_version = dconf["version"]
+			mod_version = lib_version
 			if "revision" in dconf:
 				mod_version += "-" + str(dconf["revision"])
 			else:
@@ -317,7 +324,7 @@ def main():
 			mod_fullname = config["module"] + "-" + mod_version
 
 			# step 1: generate sources for all distros
-			prepare_dist_source(dconf, config["configs"], dist_dir, mod_fullname, mod_baseurl)
+			prepare_dist_source(dconf, config["configs"], dist_dir, mod_fullname, pkg_base + "_" + lib_version, mod_baseurl)
 
 			# step 2: generate the debian dir
 			create_deb_dir(distro, pjoin(dist_dir, mod_fullname), config, pkg_mode, pkg_base, mod_fullname, mod_version)
@@ -329,35 +336,39 @@ def main():
 											   mod_fullname,
 											   pkg_mode,
 											   " ".join(config["configs"][pkg_mode]["debpkg"]),
-											   "")
+											   "",
+											   "y" if publish else "n")
 			deb_sh = pjoin(dist_dir, "debbuild.sh")
 			with open(deb_sh, "w") as file:
 				file.write(debbuild_str)
 			os.chmod(deb_sh, 0o755)
 
-			# step 4: run docker to create the
+			# step 4: copy stuff into docker volume folder
 			home = pathlib.Path.home()
 			cache_dir = pjoin(home, ".cache", "debbuild")
-			if not os.path.isdir(cache_dir):
-				os.mkdir(cache_dir)
+			build_dir = pjoin(cache_dir, "build")
+			shutil.rmtree(build_dir, ignore_errors=True)
+			shutil.copytree(dist_dir, build_dir, symlinks=True)
 
-			subprocess.run([
+			# step 5: prepare docker image and run
+			subprocess.run([  # update the image
 				"sudo", "docker", "pull", "ubuntu:" + distro
 			], check=True)
-			subprocess.run([
-				"sudo", "docker", "run",
-				"--name", "docker_deb_build",
-				"--rm", "-it",
+			subprocess.run([  # create the container if not already existing (thus ignore errors)
+				"sudo", "docker", "create",
+				"--name", "docker_deb_build_" + distro,
+				"-it",
 				"--security-opt", "apparmor:unconfined",
 				"--cap-add=SYS_ADMIN",
-				"-v", dist_dir + ":/debbuild",
-				"-v", cache_dir + ":/root/pbuilder",
+				"-v", cache_dir + ":/debbuild",
 				"ubuntu:" + distro,
-				"bash", "/debbuild/debbuild.sh"
+				"bash", "/debbuild/build/debbuild.sh"
+			])
+			subprocess.run([  # run the build script in the container
+				"sudo", "docker", "start",
+				"-ai",
+				"docker_deb_build_" + distro
 			], check=True)
-
-			# debug:
-			exit(0)
 
 
 if __name__ == "__main__":

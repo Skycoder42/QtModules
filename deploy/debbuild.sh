@@ -6,24 +6,29 @@ pkgname="{}"
 mode="{}"
 debpkgs="{}"
 optver="{}"
+publish="{}"
+
+cd /debbuild
 
 # install ppa
-#apt-get -qq update
-#apt-get -qq install software-properties-common
-#if [ "$mode" == "opt" ]; then
-#	add-apt-repository -y ppa:beineri/opt-qt${{optver}}-xenial
-#	add-apt-repository -y ppa:skycoder42/qt-modules-opt
-#else
-#	add-apt-repository -y ppa:skycoder42/qt-modules
-#fi
+apt-get -qq update
+apt-get -qq install software-properties-common apt-utils
+apt-get -qq upgrade
+if [ "$mode" == "opt" ]; then
+	add-apt-repository -y ppa:beineri/opt-qt${{optver}}-xenial
+	add-apt-repository -y ppa:skycoder42/qt-modules-opt
+else
+	add-apt-repository -y ppa:skycoder42/qt-modules
+fi
 
 # install deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends gnupg pbuilder ubuntu-dev-tools dh-make
-#apt-get -qq install $debpkgs
+apt-get -qq install --no-install-recommends gnupg pbuilder ubuntu-dev-tools dh-make build-essential fakeroot dput
+apt-get -qq install $debpkgs
 
 # prepare pubkeys and ppas
 echo "!/bin/bash" > .exec.sh
+echo "apt-get -qq install gnupg dirmngr" >> .exec.sh
 mirrors=""
 if [ "$mode" == "opt" ]; then
 	echo "apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6CD53B7A813BE3CA4F3BD3DB782DBCC6429E7D0B" >> .exec.sh
@@ -35,14 +40,28 @@ else
 fi
 
 # create pbuilder images
-if ! pbuilder-dist $distro update; then
+if ! pbuilder-dist $distro update --override-config --othermirror "$mirrors"; then
 	pbuilder-dist $distro create
 	chmod +x .exec.sh
 	pbuilder-dist $distro execute --save-after-exec .exec.sh
+	pbuilder-dist $distro update --override-config --othermirror "$mirrors"
+	# import gpg key
+	gpg --import launchpad.asc
 fi
-pbuilder-dist $distro update --override-config --othermirror "$mirrors"
 
+# build via pbuilder
+pushd build
 pushd $pkgname
-dpkg-buildpackage -S
+debuild -S
 popd
 pbuilder-dist $distro build *.dsc
+
+# publish to lp
+if [[ "$publish" == "y" ]]; then
+	ppa="qt-modules"
+	if [[ "$mode" == "opt" ]]; then
+		ppa="$ppa-opt"
+	fi
+	dput "ppa:skycoder42/$ppa" *.changes
+fi
+popd
