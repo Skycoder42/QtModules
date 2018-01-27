@@ -35,7 +35,7 @@
 		"module": {
 			"qmakeconf": [],
 			"debpkg": [
-				"debhelper (>= 9)",
+				"debhelper",
 				"qtbase5-dev",
 				"qtbase5-private-dev",
 				"qtdeclarative5-private-dev",

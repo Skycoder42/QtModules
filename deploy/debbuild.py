@@ -2,6 +2,7 @@
 # $1 config file
 import datetime
 import json
+import pathlib
 import sys
 import tempfile
 
@@ -24,7 +25,6 @@ class Mode(Enum):
 file_source_format = "3.0 (quilt)\n"
 file_compat = "9\n"
 file_rules = """#!/usr/bin/make -f
-
 %:
 	dh $@ --parallel
 """
@@ -110,8 +110,10 @@ def get_source(sdir, mod_url):
 
 
 def pack_source(sdir, odir, mod_full_name):
-	with tarfile.open(pjoin(odir, "src.tar.gz"), "w:gz") as archive:
-		archive.add(sdir, arcname=mod_full_name)
+	out_path = pjoin(odir, mod_full_name)
+	os.rename(sdir, out_path)
+	with tarfile.open(pjoin(odir, mod_full_name + ".tar.gz"), "w:gz") as archive:
+		archive.add(out_path, arcname=mod_full_name)
 
 
 def prepare_source(sdir, extra_conf):
@@ -160,7 +162,6 @@ def prepare_dist_source(dconf, mconf, ddir, mod_name, baseurl):
 		if os.path.isdir(src_dir):
 			prepare_source(src_dir, qmake_conf)
 			pack_source(src_dir, ddir, mod_name)
-			shutil.rmtree(src_dir)
 
 
 # stuff to create the debian dir
@@ -237,10 +238,9 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_name, mod_vers):
 											  conf["homepage"],
 											  license_conf["copyright"],
 											  license_conf["license"]))
-		with tarfile.open(pjoin(ddir, "src.tar.gz")) as src_archive:
-			with src_archive.extractfile(pjoin(mod_name, license_conf["file"])) as license_file:
-				for line in license_file.readlines():
-					file.write(" " + line.decode("utf-8").strip() + "\n")
+		with open(pjoin(ddir, license_conf["file"])) as license_file:
+			for line in license_file.readlines():
+				file.write(" " + line.strip() + "\n")
 		file.write(file_copyright_foot.format(license_conf["copyright"]))
 
 	# create control
@@ -320,12 +320,40 @@ def main():
 			prepare_dist_source(dconf, config["configs"], dist_dir, mod_fullname, mod_baseurl)
 
 			# step 2: generate the debian dir
-			create_deb_dir(distro, dist_dir, config, pkg_mode, pkg_base, mod_fullname, mod_version)
+			create_deb_dir(distro, pjoin(dist_dir, mod_fullname), config, pkg_mode, pkg_base, mod_fullname, mod_version)
 
-			# step 3: setup and run docker to generate the build files
+			# step 3: create the debbuild.sh file
+			with open(pjoin(os.path.dirname(os.path.realpath(__file__)), "debbuild.sh")) as file:
+				debbuild_str = file.read()
+			debbuild_str = debbuild_str.format(distro,
+											   mod_fullname,
+											   pkg_mode,
+											   " ".join(config["configs"][pkg_mode]["debpkg"]),
+											   "")
+			deb_sh = pjoin(dist_dir, "debbuild.sh")
+			with open(deb_sh, "w") as file:
+				file.write(debbuild_str)
+			os.chmod(deb_sh, 0o755)
+
+			# step 4: run docker to create the
+			home = pathlib.Path.home()
+			cache_dir = pjoin(home, ".cache", "debbuild")
+			if not os.path.isdir(cache_dir):
+				os.mkdir(cache_dir)
+
 			subprocess.run([
-				pjoin(os.path.dirname(os.path.realpath(__file__)), "debdocker.sh"),
-				dist_dir
+				"sudo", "docker", "pull", "ubuntu:" + distro
+			], check=True)
+			subprocess.run([
+				"sudo", "docker", "run",
+				"--name", "docker_deb_build",
+				"--rm", "-it",
+				"--security-opt", "apparmor:unconfined",
+				"--cap-add=SYS_ADMIN",
+				"-v", dist_dir + ":/debbuild",
+				"-v", cache_dir + ":/root/pbuilder",
+				"ubuntu:" + distro,
+				"bash", "/debbuild/debbuild.sh"
 			], check=True)
 
 			# debug:
