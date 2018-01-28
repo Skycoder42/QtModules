@@ -6,6 +6,7 @@ pkgname="{}"
 mode="{}"
 debpkgs="{}"
 optver="{}"
+noupload="{}"
 
 cd /debbuild
 
@@ -56,9 +57,12 @@ popd
 pbuilder-dist $distro build *.dsc
 
 # publish to lp
-ppa="qt-modules"
-if [[ "$mode" == "opt" ]]; then
-	ppa="$ppa-opt"
+if [ "$noupload" != "y" ]; then
+	ppa="qt-modules"
+	if [[ "$mode" == "opt" ]]; then
+		ppa="$ppa-opt"
+	fi
+	dput "ppa:skycoder42/$ppa" *.changes
 fi
-dput "ppa:skycoder42/$ppa" *.changes
+
 popd

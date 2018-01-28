@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # $1 config file
+# $2.. distros
+
 import datetime
 import json
 import pathlib
@@ -25,6 +27,8 @@ class Mode(Enum):
 file_source_format = "3.0 (quilt)\n"
 file_compat = "9\n"
 file_rules = """#!/usr/bin/make -f
+export HOME := $(CURDIR)/src/3rdparty/
+
 %:
 	dh $@ --parallel
 """
@@ -195,7 +199,7 @@ def write_inst_files(conf, ddir, pkg_name):
 			file.write(install + "\n")
 
 
-def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_name, mod_vers):
+def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_vers):
 	deb_dir = pjoin(ddir, "debian")
 	os.mkdir(deb_dir)
 
@@ -279,9 +283,16 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_name, mod_vers):
 	with open(pjoin(deb_dir, "rules"), "w") as file:
 		file.write(file_rules)
 		for key, rules in modconf["rules"].items():
-			file.write("\noverride_dh_{}:\n".format(key))
+			file.write("\noverride_dh_{}:".format(key))
+			rule_body = False
 			for rule in rules:
-				file.write("\t" + rule + "\n")
+				if not rule_body and rule[0] == ":":
+					file.write(" " + rule[1:])
+				else:
+					if not rule_body:
+						file.write("\n")
+						rule_body = True
+					file.write("\t" + rule + "\n")
 	os.chmod(pjoin(deb_dir, "rules"), 0o755)
 
 
@@ -290,11 +301,15 @@ def main():
 	with open(sys.argv[1]) as file:
 		config = json.load(file)
 	dists = sys.argv[2:]
+	if "noupdate" in config:
+		noupdate = config["test"]
+	else:
+		noupdate = False
 
 	with tempfile.TemporaryDirectory() as tmp_dir:
 		# step 1: extract some variables
 		if "urlbase" not in config:
-			mod_baseurl = "https://github.com/{}/{}/archive/%version.tar.gz" \
+			mod_baseurl = "https://github.com/{}/{}/archive/$version.tar.gz" \
 				.format(config["author"], config["module"])
 		else:
 			mod_baseurl = config["urlbase"]
@@ -320,7 +335,7 @@ def main():
 			prepare_dist_source(dconf, config["configs"], dist_dir, mod_fullname, pkg_base + "_" + lib_version, mod_baseurl)
 
 			# step 2: generate the debian dir
-			create_deb_dir(distro, pjoin(dist_dir, mod_fullname), config, pkg_mode, pkg_base, mod_fullname, mod_version)
+			create_deb_dir(distro, pjoin(dist_dir, mod_fullname), config, pkg_mode, pkg_base, mod_version)
 
 			# step 3: create the debbuild.sh file
 			with open(pjoin(os.path.dirname(os.path.realpath(__file__)), "debbuild.sh")) as file:
@@ -329,7 +344,8 @@ def main():
 											   mod_fullname,
 											   pkg_mode,
 											   " ".join(config["configs"][pkg_mode]["debpkg"]),
-											   "")
+											   "",
+											   "y" if noupdate else "n")
 			deb_sh = pjoin(dist_dir, "debbuild.sh")
 			with open(deb_sh, "w") as file:
 				file.write(debbuild_str)
