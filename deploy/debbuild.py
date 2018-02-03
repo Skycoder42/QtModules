@@ -107,10 +107,17 @@ def standards_version(distro):
 
 
 # basic: download and prepare the sources
-def get_source(sdir, mod_url):
+def get_source(sdir, mod_url, asOrig=False):
 	sources = requests.get(mod_url)
-	with tarfile.open(fileobj=io.BytesIO(sources.content)) as archive:
-		archive.extractall(sdir)
+	if asOrig:
+		pname = pjoin(sdir, os.path.basename(mod_url))
+		with open(pname, "wb") as file:
+			file.write(sources.content)
+		with tarfile.open(pname) as archive:
+				archive.extractall(sdir)
+	else:
+		with tarfile.open(fileobj=io.BytesIO(sources.content)) as archive:
+			archive.extractall(sdir)
 
 
 def pack_source(sdir, odir, mod_full_name, pkg_name):
@@ -139,33 +146,41 @@ def prepare_source(sdir, extra_conf):
 			qmakeconf.write(conf + "\n")
 
 
-def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl):
+def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl=""):
 	# generate the version to use in the url
-	if "urlrev" in dconf:
-		urlrev = dconf["urlrev"]
-	elif "revision" in dconf:
-		urlrev = dconf["revision"]
+	if origurl == "":
+		if "urlrev" in dconf:
+			urlrev = dconf["urlrev"]
+		elif "revision" in dconf:
+			urlrev = dconf["revision"]
+		else:
+			urlrev = 0
+		urlversion = dconf["version"]
+		vsplit = urlversion.split(".")
+		if urlrev != 0:
+			urlversion += "-" + str(urlrev)
+
+		# use the extracted stuff to prepare the url
+		dist_url = baseurl
+		for i in range(1, len(vsplit) + 1, 1):
+			dist_url = dist_url.replace("$ver" + str(i), ".".join(vsplit[0:i]))
+		dist_url = dist_url.replace("$version", urlversion)
+
+		# download the sources
+		qmake_conf = mconf[dconf["mode"]]["qmakeconf"]
+		get_source(ddir, dist_url)
+		for path in os.listdir(ddir):
+			src_dir = pjoin(ddir, path)
+			if os.path.isdir(src_dir):
+				prepare_source(src_dir, qmake_conf)
+				pack_source(src_dir, ddir, mod_name, pkg_name)
 	else:
-		urlrev = 0
-	urlversion = dconf["version"]
-	vsplit = urlversion.split(".")
-	if urlrev != 0:
-		urlversion += "-" + str(urlrev)
-
-	# use the extracted stuff to prepare the url
-	dist_url = baseurl
-	for i in range(1, len(vsplit) + 1, 1):
-		dist_url = dist_url.replace("$ver" + str(i), ".".join(vsplit[0:i]))
-	dist_url = dist_url.replace("$version", urlversion)
-
-	# download the sources
-	qmake_conf = mconf[dconf["mode"]]["qmakeconf"]
-	get_source(ddir, dist_url)
-	for path in os.listdir(ddir):
-		src_dir = pjoin(ddir, path)
-		if os.path.isdir(src_dir):
-			prepare_source(src_dir, qmake_conf)
-			pack_source(src_dir, ddir, mod_name, pkg_name)
+		# download the sources
+		get_source(ddir, origurl, asOrig=True)
+		for path in os.listdir(ddir):
+			src_dir = pjoin(ddir, path)
+			if os.path.isdir(src_dir):
+				os.rename(src_dir, pjoin(ddir, mod_name))
 
 
 # stuff to create the debian dir
@@ -331,11 +346,22 @@ def main():
 				mod_version += "-1"
 			mod_fullname = config["module"] + "-" + mod_version
 
-			# step 1: generate sources for all distros
-			prepare_dist_source(dconf, config["configs"], dist_dir, mod_fullname, pkg_base + "_" + lib_version, mod_baseurl)
+			# step 1: generate sources
+			prepare_dist_source(dconf,
+								config["configs"],
+								dist_dir,
+								mod_fullname,
+								pkg_base + "_" + lib_version,
+								mod_baseurl,
+								dconf["orig"] if "orig" in dconf else "")
 
 			# step 2: generate the debian dir
-			create_deb_dir(distro, pjoin(dist_dir, mod_fullname), config, pkg_mode, pkg_base, mod_version)
+			create_deb_dir(distro,
+						   pjoin(dist_dir, mod_fullname),
+						   config,
+						   pkg_mode,
+						   pkg_base,
+						   mod_version)
 
 			# step 3: create the debbuild.sh file
 			with open(pjoin(os.path.dirname(os.path.realpath(__file__)), "debbuild.sh")) as file:
