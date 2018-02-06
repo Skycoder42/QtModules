@@ -389,6 +389,51 @@ def create_all_pkgs(rdir, pkg_base, repo, config, version, qt_version):
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, True)
 
 
+def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
+	pkg_list = [pkg_base, pkg_base + ".src", pkg_base + ".doc"]
+	for arch in arch_pkgs:
+		pkg_list.append(pkg_base + "." + arch)
+	repo_inc = ",".join(pkg_list)
+
+	subprocess.run([
+		"repogen",
+		"-p", pdir,
+		"-i", repo_inc,
+		rdir
+	], check=True, stdout=subprocess.DEVNULL)
+
+
+def prepare_static_files(rdir, spkg, pkg_base, qt_version, *arch_pkgs):
+	static_bin_dir = pjoin(rdir, spkg)
+	if not os.path.exists(static_bin_dir):
+		return
+	static_bin_dir = pjoin(static_bin_dir, "static", "data", qt_version, "bin")
+
+	print("  -> Preparing static tools")
+	for arch in arch_pkgs:
+		if arch.startswith("android") or \
+				arch == "ios" or \
+				"winrt" in arch:
+			pkg_arch = pkg_base + "." + arch
+			pkg_bin_dir = pjoin(rdir, pkg_arch, "data", qt_version)
+			pkg_bin_dir = pjoin(pkg_bin_dir, os.listdir(pkg_bin_dir)[0])
+
+			shutil.rmtree(pkg_bin_dir, ignore_errors=True)
+			shutil.copytree(static_bin_dir, pkg_bin_dir)
+
+
+def deploy_repo(ddir, rdir, os, arch, pkg_base, qt_version, *arch_pkgs):
+	dep_name = os + "_" + arch
+	print("=> Deploying for " + dep_name)
+
+	# prepare static tools
+	prepare_static_files(rdir, "static_" + os, pkg_base, qt_version, *arch_pkgs)
+
+	# create repo
+	print("  -> Creating repository")
+	create_repo(pjoin(ddir, dep_name), rdir, pkg_base, *arch_pkgs)
+
+
 def repogen(repo_id, version, qt_version):
 	user = repo_id.split("/")[0]
 	mod_name = repo_id.split("/")[1]
@@ -408,7 +453,7 @@ def repogen(repo_id, version, qt_version):
 		prepare_headers(tmp_dir, src_dir, cfg_if(config, "modules", mod_name), version)
 
 		# step 2: create the meta and src repositories
-		rep_dir = pjoin(tmp_dir, "repos")
+		rep_dir = pjoin(tmp_dir, "pkg")
 		os.mkdir(rep_dir)
 		pkg_base = "qt.qt5.{}.{}.{}".format(qt_vid(qt_version), user.lower(), mod_title.lower())
 		create_base_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
@@ -419,6 +464,24 @@ def repogen(repo_id, version, qt_version):
 		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, qt_version)
 
 		# step 4: create the actual repositories (repogen)
+		dep_dir = pjoin(tmp_dir, "repos")
+		os.mkdir(dep_dir)
+		# linux
+		deploy_repo(dep_dir, rep_dir, "linux", "x64", pkg_base, qt_version,
+					"gcc_64",
+					"android_armv7", "android_x86")
+		# windows
+		deploy_repo(dep_dir, rep_dir, "windows", "x86", pkg_base, qt_version,
+					"win32_mingw53",
+					"win64_msvc2017_64",
+					"win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "win64_msvc2017_winrt_armv7",
+					"win64_msvc2015_64", "win32_msvc2015",
+					"android_armv7", "android_x86")
+		# macos
+		deploy_repo(dep_dir, rep_dir, "mac", "x64", pkg_base, qt_version,
+					"clang_64",
+					"ios",
+					"android_armv7", "android_x86")
 
 
 if __name__ == '__main__':
