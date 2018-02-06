@@ -3,6 +3,7 @@
 # $2 Version
 # $3 Qt Version (e.g. "5.10.0")
 import datetime
+import glob
 import io
 import json
 import os
@@ -227,7 +228,7 @@ def create_src_pkg(rdir, sdir, pkg_base, config, version, qt_version):
 	print("  -> Creating meta data")
 	pkg_qt_src = "qt.qt5.{}.src".format(qt_vid(qt_version))
 	pkg_add_package_xml(pkg_dir, pkg_src_xml,
-						pkg_base,
+						pkg_src,
 						config["title"],
 						version,
 						datetime.date.today(),
@@ -247,7 +248,7 @@ def create_doc_meta(rdir, pkg_base, config, version, qt_version):
 
 	pkg_qt_doc = "qt.qt5.{}.doc".format(qt_vid(qt_version))
 	pkg_add_package_xml(pkg_dir, pkg_doc_xml,
-						pkg_base,
+						pkg_doc,
 						config["title"],
 						version,
 						datetime.date.today(),
@@ -267,15 +268,25 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 		"winrt_x64_msvc2017",
 		"winrt_armv7_msvc2017"
 	]
+	pkg_keys = {
+		"mingw53_32": "win32_mingw53",
+		"msvc2017_64": "win64_msvc2017_64",
+		"winrt_x86_msvc2017": "win64_msvc2017_winrt_x86",
+		"winrt_x64_msvc2017": "win64_msvc2017_winrt_x64",
+		"winrt_armv7_msvc2017": "win64_msvc2017_winrt_armv7",
+		"msvc2015_64": "win64_msvc2015_64",
+		"msvc2015": "win32_msvc2015",
+	}
 
-	pkg_arch = pkg_base + "." + arch
+	qt_arch = pkg_keys[arch] if arch in pkg_keys else arch
+	pkg_arch = pkg_base + "." + qt_arch
 	pkg_dir = pkg_prepare(rdir, pkg_arch)
 
-	pkg_qt_arch = "qt.qt5.{}.{}".format(qt_vid(qt_version), arch)
+	pkg_qt_arch = "qt.qt5.{}.{}".format(qt_vid(qt_version), qt_arch)
 	pkg_add_package_xml(pkg_dir, pkg_arch_xml,
-						pkg_base,
+						pkg_arch,
 						config["title"],
-						arch,
+						qt_arch,
 						version,
 						datetime.date.today(),
 						pkg_base,
@@ -287,6 +298,59 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 				   arch,
 				   "emb-arm-qt5" if arch in embedded_keys else "qt5")
 	return pkg_dir
+
+
+def fix_lines(idir, arch, pattern, fix_fn):
+	# find all files and fix them
+	for file in glob.iglob(pjoin(idir, arch, "**", pattern), recursive=True):
+		print("    >> Fixing " + os.path.basename(file))
+		with open(file, "r") as infile:
+			lines = infile.readlines()
+
+		lines = fix_fn(lines)
+
+		with open(file, "w") as outfile:
+			outfile.writelines(lines)
+
+
+def fix_arch_paths(idir, arch):
+	def fix_prl(lines):
+		# remove the first element
+		lines[0] = "\n"
+		# replace the QMAKE_PRL_LIBS
+		for i in range(1, len(lines), 1):
+			if lines[i].startswith("QMAKE_PRL_LIBS"):
+				args = ["-L/home/qt/work/install/lib"]
+				for arg in lines[i].split("=")[1].strip().split(" "):
+					if not arg.startswith("-L"):
+						args.append(arg)
+				lines[i] = "QMAKE_PRL_LIBS = " + " ".join(args) + "\n"
+		return lines
+
+	def fix_la(lines):
+		# replace the dependency_libs and libdir
+		for i in range(0, len(lines), 1):
+			if lines[i].startswith("dependency_libs"):
+				args = ["-L/home/qt/work/install/lib"]
+				for arg in lines[i].split("=")[1].strip()[1:-1].split(" "):
+					if not arg.startswith("-L"):
+						args.append(arg)
+				lines[i] = "dependency_libs='" + " ".join(args) + "'\n"
+			elif lines[i].startswith("libdir"):
+				lines[i] = "libdir='=/home/qt/work/install/lib'\n"
+		return lines
+
+	def fix_pc(lines):
+		# replace the first line
+		lines[0] = "prefix=/home/qt/work/install\n"
+		return lines
+
+	# fix prl files
+	fix_lines(idir, arch, "*.prl", fix_prl)
+	# fix la files
+	fix_lines(idir, arch, "*.la", fix_la)
+	# fix pc files
+	fix_lines(idir, arch, "*.pc", fix_pc)
 
 
 def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, as_zip):
@@ -307,9 +371,13 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, as_z
 	print("  -> Downloading and extracting data from github")
 	bin_url = "https://github.com/" + repo + "/releases/download/" + version + "/build_" + arch + "_" + qt_version
 	bin_url += ".zip" if as_zip else ".tar.xz"
-	url_extract(pjoin(pkg_data(pkg_dir), "Docs" if arch == "doc" else qt_version),
-				bin_url,
-				as_zip)
+	inst_dir = pjoin(pkg_data(pkg_dir), "Docs" if arch == "doc" else qt_version)
+	url_extract(inst_dir, bin_url, as_zip)
+
+	# fiuxp prl and la files
+	if arch != "doc":
+		print("  -> Fixing up build paths")
+		fix_arch_paths(inst_dir, arch)
 
 
 def create_all_pkgs(rdir, pkg_base, repo, config, version, qt_version):
@@ -347,8 +415,10 @@ def repogen(repo_id, version, qt_version):
 		if "Src" not in config["excludes"]:
 			create_src_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
 
-		# step 3: download and add binary repositories
+		# step 3: download and create binary repositories
 		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, qt_version)
+
+		# step 4: create the actual repositories (repogen)
 
 
 if __name__ == '__main__':
