@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-# $1 Qt Version (e.g. "5.9")
-# $2 Module Name (e.g. "MyModule" [results in "mymodule", "QtMyModule", "Qt My Module", etc])
-# $3 comma seperate dependencies (e.g. ".examples, qt.tools.qtcreator")
-# $4 REMOVE!!!
-# $5 Description
-# $6 Version
-# $7 License file
-# $8 License name
-# $9 skip packages (comma seperated)
-
-import sys
-import os
-import shutil
-import re
+# $1 repo id
+# $2 Version
+# $3 Qt Version (e.g. "5.10.0")
 import datetime
-import subprocess
-import distutils.dir_util
+import io
+import json
+import os
+import zipfile
 
-# constants
-fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
+import requests
+import shutil
+import subprocess
+import sys
+import tarfile
+import tempfile
+
+from os.path import join as pjoin
+
+
+pkg_base_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
 	<Name>{}</Name>
 	<DisplayName>{}</DisplayName>
@@ -32,19 +32,30 @@ fullPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<Default>true</Default>
 </Package>"""
 
-docPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
+pkg_src_xml = """<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+	<Name>{}</Name>
+	<DisplayName>{} Sources</DisplayName>
+	<Version>{}</Version>
+	<ReleaseDate>{}</ReleaseDate>
+	<Virtual>true</Virtual>
+	<AutoDependOn>{}, {}</AutoDependOn>
+	<Dependencies>{}</Dependencies>
+</Package>"""
+
+pkg_doc_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
 	<Name>{}</Name>
 	<DisplayName>{} Documentation</DisplayName>
 	<Version>{}</Version>
 	<ReleaseDate>{}</ReleaseDate>
 	<Virtual>true</Virtual>
-	<AutoDependOn>{}</AutoDependOn>
-	<Dependencies>qt.tools</Dependencies>
+	<AutoDependOn>{}, {}</AutoDependOn>
+	<Dependencies>{}, qt.tools</Dependencies>
 	<Script>installscript.qs</Script>
 </Package>"""
 
-docPkgScript = """// constructor
+pkg_doc_qs = """// constructor
 function Component()
 {{
 }}
@@ -56,7 +67,7 @@ Component.prototype.createOperations = function()
     	registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
 }}"""
 
-subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
+pkg_arch_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
 	<Name>{}</Name>
 	<DisplayName>{} {}</DisplayName>
@@ -68,7 +79,7 @@ subPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
 	<Script>installscript.qs</Script>
 </Package>"""
 
-subPkgScript = """// constructor
+pkg_arch_qs = """// constructor
 function Component()
 {{
 }}
@@ -83,261 +94,263 @@ Component.prototype.createOperations = function()
     component.createOperations();
 
     var platform = "";
-    if (installer.value("os") == "x11") {{
+    if (installer.value("os") == "x11")
         platform = "linux";
-    }}
-    if (installer.value("os") == "win") {{
+    if (installer.value("os") == "win")
         platform = "windows";
-    }}
-    if (installer.value("os") == "mac") {{
+    if (installer.value("os") == "mac")
         platform = "mac";
-    }}
 
     component.addOperation("QtPatch",
                             platform,
-                            "@TargetDir@" + "{}",
+                            "@TargetDir@" + "/{}/{}",
                             "QmakeOutputInstallerKey=" + resolveQt5EssentialsDependency(),
                             "{}");
 }}"""
 
-srcPkgXml = """<?xml version="1.0" encoding="UTF-8"?>
-<Package>
-	<Name>{}</Name>
-	<DisplayName>{} Sources</DisplayName>
-	<Version>{}</Version>
-	<ReleaseDate>{}</ReleaseDate>
-	<Virtual>true</Virtual>
-	<AutoDependOn>{}, {}</AutoDependOn>
-	<Dependencies>{}</Dependencies>
-</Package>"""
 
-#read args
-baseDir = sys.argv[1]
-modName = sys.argv[2]
-depends = sys.argv[3]
-tools = sys.argv[4].split(",")
-if tools == [""]:
-	tools = []
-desc = sys.argv[5]
-vers = sys.argv[6]
-licenseFile = sys.argv[7]
-licenseName = sys.argv[8]
-skipPacks = sys.argv[9].split(",") if len(sys.argv) > 9 else []
+def cfg_if(config, key, default=None):
+	return config[key] if key in config else default
 
-# prepare extra vars
-qtDir = os.path.basename(baseDir)
-modTitle = "Qt " + " ".join(re.findall(r"[A-Z][a-z0-9]*", modName))
-modBase = modName.lower()
-modBaseTitle = "qt" + modBase
-qtVers = qtDir.replace(".", "")
-pkgBase = "qt.qt5.{}.skycoder42.{}".format(qtVers, modBase)
 
-# fix dependencies
-deps = depends.split(",")
-for i in range(0, len(deps), 1):
-	deps[i] = deps[i].strip();
-	if deps[i][0:1] == ".":
-		deps[i] = "qt.qt5.{}{}".format(qtVers, deps[i])
-depends = ",".join(deps)
+def qt_vid(qt_version):
+	return qt_version.replace(".", "")
 
-def createBasePkg():
-	pkgBasePath = os.path.join("packages", pkgBase)
-	pkgBaseMeta = os.path.join(pkgBasePath, "meta")
-	pkgBaseData = os.path.join(pkgBasePath, "data")
-	pkgBaseXml = os.path.join(pkgBaseMeta, "package.xml")
-	pkgBaseLicense = os.path.join(pkgBaseMeta, "LICENSE.txt")
 
-	print("Creating meta package", pkgBase)
-	os.mkdir(pkgBasePath)
-	os.mkdir(pkgBaseData)
-	os.mkdir(pkgBaseMeta)
+def url_extract(sdir, url, as_zip=False):
+	sources_req = requests.get(url)
+	if as_zip:
+		with zipfile.ZipFile(io.BytesIO(sources_req.content)) as archive:
+			archive.extractall(sdir)
+	else:
+		with tarfile.open(fileobj=io.BytesIO(sources_req.content)) as archive:
+			archive.extractall(sdir)
 
-	pgkBaseXmlFile = open(pkgBaseXml, "w")
-	pgkBaseXmlFile.write(fullPkgXml.format(pkgBase, modTitle, desc, depends, vers, datetime.date.today(), licenseName))
-	pgkBaseXmlFile.close()
 
-	shutil.copy(licenseFile, pkgBaseLicense)
+def prepare_sources(sdir, repo, mod_name, vers):
+	print("Downloading an preparing sources")
+	# download sources
+	mod_url = "https://github.com/" + repo + "/archive/" + vers + ".tar.gz"
+	out_dir = pjoin(sdir, "Src", mod_name.lower())
+	url_extract(sdir, mod_url)
+	shutil.move(pjoin(sdir, mod_name + "-" + vers), out_dir)
 
-def createDocPkg():
-	docName = "Qt-{}".format(baseDir);
-	baseDocDir = os.path.join(baseDir, docName)
-	pkgDoc = pkgBase + ".doc"
-	pkgDocPath = os.path.join("packages", pkgDoc)
-	pkgDocMeta = os.path.join(pkgDocPath, "meta")
-	pkgDocData = os.path.join(pkgDocPath, "data/Docs")
-	pkgDocDataDoc = os.path.join(pkgDocData, docName)
-	pkgDocXml = os.path.join(pkgDocMeta, "package.xml")
-	pkgDocScript = os.path.join(pkgDocMeta, "installscript.qs")
+	# prepare sources
+	os.remove(pjoin(out_dir, ".travis.yml"))
+	os.remove(pjoin(out_dir, "appveyor.yml"))
+	# DEBUG shutil.move(pjoin(out_dir, "deploy.json"), pjoin(sdir, "deploy.json"))
+	shutil.copy2("/home/sky/Programming/QtLibraries/QtDataSync/deploy.json", pjoin(sdir, "deploy.json"))
 
-	print("Creating doc package", pkgDoc)
-	os.mkdir(pkgDocPath)
-	os.mkdir(pkgDocMeta)
-	os.makedirs(pkgDocData)
+	return out_dir
 
-	pgkDocXmlFile = open(pkgDocXml, "w")
-	pgkDocXmlFile.write(docPkgXml.format(pkgDoc, modTitle, vers, datetime.date.today(), pkgBase))
-	pgkDocXmlFile.close()
 
-	pgkDocScriptFile = open(pkgDocScript, "w")
-	pgkDocScriptFile.write(docPkgScript.format(baseDir))
-	pgkDocScriptFile.close()
+def prepare_headers(tdir, mdir, mods, version):
+	syncqt_req = requests.get("https://code.qt.io/cgit/qt/qtbase.git/plain/bin/syncqt.pl")
+	syncqt_pl = pjoin(tdir, "syncqt.pl")
+	with open(syncqt_pl, "wb") as file:
+		file.write(syncqt_req.content)
+	os.chmod(syncqt_pl, 0o755)
+	for mod in mods:
+		subprocess.run([
+			syncqt_pl,
+			"-module", mod,
+			"-version", version,
+			"-outdir", mdir,
+			mdir
+		], check=True)
 
-	shutil.copytree(baseDocDir, pkgDocDataDoc)
 
-def createSrcPkg():
-	baseSrcDir = os.path.join(baseDir, "src")
-	pkgSrc = pkgBase + ".src"
-	pkgSrcKit = "qt.qt5.{}.src".format(qtVers)
-	pkgSrcFolder = "/{}/Src/".format(qtDir)
-	pkgSrcPath = os.path.join("packages", pkgSrc)
-	pkgSrcMeta = os.path.join(pkgSrcPath, "meta")
-	pkgSrcData = os.path.join(pkgSrcPath, "data", qtDir)
-	pkgSrcDataKit = os.path.join(pkgSrcData, "Src", modBaseTitle)
-	pkgSrcXml = os.path.join(pkgSrcMeta, "package.xml")
-	pkgSrcScript = os.path.join(pkgSrcMeta, "installscript.qs")
+def get_binary_imp(sdir, repo, vers, qt_vers, excludes, arch, as_zip):
+	for exclude in excludes:
+		if exclude in arch:
+			return False
 
-	print("Creating src package", pkgSrc)
-	os.mkdir(pkgSrcPath)
-	os.mkdir(pkgSrcMeta)
-	os.makedirs(pkgSrcData)
+	bin_url="https://github.com/" + repo + "/releases/download/" + vers + "/build_" + arch + "_" + qt_vers
+	if as_zip:
+		bin_url += ".zip"
+	else:
+		bin_url += ".tar.xz"
+	print("Downloading and extracting " + arch)
+	url_extract(sdir, bin_url, as_zip)
+	return True
 
-	pgkXmlFile = open(pkgSrcXml, "w")
-	pgkXmlFile.write(srcPkgXml.format(pkgSrc, modTitle, vers, datetime.date.today(), pkgBase, pkgSrcKit, pkgSrcKit))
-	pgkXmlFile.close()
 
-	shutil.copytree(baseSrcDir, pkgSrcDataKit, symlinks=True)
+def get_binaries(sdir, repo, vers, qt_vers, excludes):
+	use_arch = []
+	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "gcc_64", "ios", "static_linux", "static_osx"]:
+		if get_binary_imp(sdir, repo, vers, qt_vers, excludes, arch, False):
+			use_arch.append(arch)
+	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017", "winrt_x86_msvc2017", "static_win"]:
+		if get_binary_imp(sdir, repo, vers, qt_vers, excludes, arch, True):
+			use_arch.append(arch)
+	return use_arch
 
-def createSubPkg(dirName, pkgName, patchName):
-	baseDataDir = os.path.join(baseDir, dirName)
-	pkg = pkgBase + "." + pkgName
-	pkgKit = "qt.qt5.{}.{}".format(qtVers, pkgName)
-	pkgFolder = "/{}/{}/".format(qtDir, dirName)
-	pkgPath = os.path.join("packages", pkg)
-	pkgMeta = os.path.join(pkgPath, "meta")
-	pkgData = os.path.join(pkgPath, "data", qtDir)
-	pkgDataKit = os.path.join(pkgData, dirName)
-	pkgXml = os.path.join(pkgMeta, "package.xml")
-	pkgScript = os.path.join(pkgMeta, "installscript.qs")
 
-	print("Creating sub package", pkg)
-	os.mkdir(pkgPath)
-	os.mkdir(pkgMeta)
-	os.makedirs(pkgData)
+def pkg_meta(pdir):
+	return pjoin(pdir, "meta")
 
-	pgkXmlFile = open(pkgXml, "w")
-	pgkXmlFile.write(subPkgXml.format(pkg, modTitle, dirName, vers, datetime.date.today(), pkgBase, pkgKit, pkgKit))
-	pgkXmlFile.close()
 
-	pgkScriptFile = open(pkgScript, "w")
-	pgkScriptFile.write(subPkgScript.format(pkgKit, pkgFolder, patchName))
-	pgkScriptFile.close()
+def pkg_data(pdir):
+	return pjoin(pdir, "data")
 
-	shutil.copytree(baseDataDir, pkgDataKit, symlinks=True)
 
-def prepareTools(dirName, fixPkgs):
-	baseStaticDir = os.path.join(baseDir, dirName)
-	if not os.path.exists(baseStaticDir):
-		return
+def pkg_prepare(rdir, pkg_base):
+	pkg_dir = pjoin(rdir, pkg_base)
+	os.mkdir(pkg_dir)
+	return pkg_dir
 
-	for fixPkgInfo in fixPkgs:
-		fixPkgName = fixPkgInfo[0];
-		fixPkgDir = fixPkgInfo[1];
-		if fixPkgName not in skipPacks:
-			fixPkg = pkgBase + "." + fixPkgName
-			fixPkgBasePath = os.path.join("packages", fixPkg)
-			fixPkgPath = os.path.join(fixPkgBasePath, "data", qtDir, fixPkgDir)
-			fixPkgRestorePath = fixPkgBasePath + ".bkp"
 
-			if os.path.exists(fixPkgRestorePath):
-				shutil.rmtree(fixPkgBasePath)
-				shutil.copytree(fixPkgRestorePath, fixPkgBasePath, symlinks=True)
+def pkg_add_package_xml(pdir, template, *format_args):
+	meta_dir = pkg_meta(pdir)
+	os.makedirs(meta_dir, exist_ok=True)
+	with open(pjoin(meta_dir, "package.xml"), "w") as file:
+		file.write(template.format(*format_args))
+
+
+def pkg_add_script(pdir, template, *format_args):
+	meta_dir = pkg_meta(pdir)
+	os.makedirs(meta_dir, exist_ok=True)
+	with open(pjoin(meta_dir, "installscript.qs"), "w") as file:
+		file.write(template.format(*format_args))
+
+
+def pkg_copy_data(pdir, sdir, arch, qt_version):
+	src_dir = pjoin(sdir, arch)
+	target_dir = pjoin(pkg_data(pdir), qt_version, arch)
+	shutil.copytree(src_dir, target_dir, symlinks=True)
+
+
+def create_base_pkg(rdir, msdir, pkg_base, config, version, qt_version):
+	print("Creating meta package")
+	pkg_dir = pkg_prepare(rdir, pkg_base)
+
+	depends = []
+	for dep in config["dependencies"]:
+		if dep[0] == ".":
+			depends.append("qt.qt5.{}".format(qt_vid(qt_version)) + dep)
+		else:
+			depends.append(dep)
+
+	pkg_add_package_xml(pkg_dir, pkg_base_xml,
+						pkg_base,
+						config["title"],
+						config["description"],
+						", ".join(depends),
+						version,
+						datetime.date.today(),
+						config["license"]["name"])
+
+	shutil.copy2(pjoin(msdir, config["license"]["path"]),
+				 pjoin(pkg_meta(pkg_dir), "LICENSE.txt"))
+
+
+def create_src_pkg(rdir, sdir, pkg_base, config, version, qt_version):
+	print("Creating source package")
+	pkg_src = pkg_base + ".src"
+	pkg_dir = pkg_prepare(rdir, pkg_src)
+
+	pkg_qt_src = "qt.qt5.{}.src".format(qt_vid(qt_version))
+	pkg_add_package_xml(pkg_dir, pkg_src_xml,
+						pkg_base,
+						config["title"],
+						version,
+						datetime.date.today(),
+						pkg_base,
+						pkg_qt_src,
+						pkg_qt_src)
+
+	pkg_copy_data(pkg_dir, sdir, "Src", qt_version)
+
+
+def create_doc_pkg(rdir, sdir, pkg_base, config, version, qt_version):
+	print("Creating doc package")
+	pkg_doc = pkg_base + ".doc"
+	pkg_dir = pkg_prepare(rdir, pkg_doc)
+
+	pkg_qt_doc = "qt.qt5.{}.doc".format(qt_vid(qt_version))
+	pkg_add_package_xml(pkg_dir, pkg_doc_xml,
+						pkg_base,
+						config["title"],
+						version,
+						datetime.date.today(),
+						pkg_base,
+						pkg_qt_doc,
+						pkg_qt_doc)
+	pkg_add_script(pkg_dir, pkg_doc_qs, qt_version)
+
+	shutil.copytree(pjoin(sdir, "Qt-" + qt_version),
+					pjoin(pkg_data(pkg_dir), "Doc", "Qt-" + qt_version),
+					symlinks=True)
+
+
+def create_arch_pkg(rdir, sdir, pkg_base, arch, config, version, qt_version):
+	embedded_keys = [
+		"android_armv7",
+		"android_x86",
+		"ios",
+		"winrt_x86_msvc2017",
+		"winrt_x64_msvc2017",
+		"winrt_armv7_msvc2017"
+	]
+
+	print("Creating " + arch + " package")
+	pkg_arch = pkg_base + "." + arch
+	pkg_dir = pkg_prepare(rdir, pkg_arch)
+
+	pkg_qt_arch = "qt.qt5.{}.{}".format(qt_vid(qt_version), arch)
+	pkg_add_package_xml(pkg_dir, pkg_arch_xml,
+						pkg_base,
+						config["title"],
+						arch,
+						version,
+						datetime.date.today(),
+						pkg_base,
+						pkg_qt_arch,
+						pkg_qt_arch)
+	pkg_add_script(pkg_dir, pkg_arch_qs,
+				   pkg_qt_arch,
+				   qt_version,
+				   arch,
+				   "emb-arm-qt5" if arch in embedded_keys else "qt5")
+
+	pkg_copy_data(pkg_dir, sdir, arch, qt_version)
+
+
+def repogen(repo_id, version, qt_version):
+	user = repo_id.split("/")[0]
+	mod_name = repo_id.split("/")[1]
+	mod_title = mod_name[2:]
+
+	with tempfile.TemporaryDirectory() as tmp_dir:
+		#debug
+		tmp_dir = "/tmp/repogen"
+		shutil.rmtree(tmp_dir, ignore_errors=True)
+		os.mkdir(tmp_dir)
+
+		# general
+		src_dir = pjoin(tmp_dir, "src")
+		os.mkdir(src_dir)
+
+		# step 1: download and prepare sources, download binaries
+		mod_src_dir = prepare_sources(src_dir, repo_id, mod_name, version)
+		with open(pjoin(src_dir, "deploy.json")) as file:
+			config = json.load(file)
+		prepare_headers(src_dir, mod_src_dir, cfg_if(config, "modules", mod_name), version)
+		use_arch = get_binaries(src_dir, repo_id, version, qt_version, cfg_if(config, "excludes", []))
+
+		# step 2: create the repositories
+		rep_dir = pjoin(tmp_dir, "repos")
+		os.mkdir(rep_dir)
+		pkg_base = "qt.qt5.{}.{}.{}".format(qt_vid(qt_version), user.lower(), mod_title.lower())
+		create_base_pkg(rep_dir, mod_src_dir, pkg_base, config, version, qt_version)
+		if "Src" not in config["excludes"]:
+			create_src_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
+		for arch in use_arch:
+			if arch == "doc":
+				create_doc_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
 			else:
-				shutil.copytree(fixPkgBasePath, fixPkgRestorePath, symlinks=True)
+				create_arch_pkg(rep_dir, src_dir, pkg_base, arch, config, version, qt_version)
 
-			distutils.dir_util._path_created = {} #clear copy dir-cache, because it was deleted before
-			distutils.dir_util.copy_tree(baseStaticDir, fixPkgPath)
 
-def repogen(archName, pkgList):
-	repoPath = os.path.join("./repositories", archName)
-	pkgFullList = [pkgBase, pkgBase + ".src", pkgBase + ".doc"]
-	for pkgItem in pkgList:
-		pkgFullList.append(pkgBase + "." + pkgItem)
-	repoInc = ",".join(pkgFullList)
-
-	print("Creating repository", archName)
-	subprocess.run(["repogen", "--update-new-components", "-p", "./packages", "-i", repoInc, repoPath], check=True)
-
-# create packages
-shutil.rmtree("packages", ignore_errors=True)
-os.mkdir("packages")
-createBasePkg()
-if "android_armv7" not in skipPacks:
-	createSubPkg("android_armv7", "android_armv7", "emb-arm-qt5")
-if "android_x86" not in skipPacks:
-	createSubPkg("android_x86", "android_x86", "emb-arm-qt5")
-if "clang_64" not in skipPacks:
-	createSubPkg("clang_64", "clang_64", "qt5")
-if "gcc_64" not in skipPacks:
-	createSubPkg("gcc_64", "gcc_64", "qt5")
-if "ios" not in skipPacks:
-	createSubPkg("ios", "ios", "emb-arm-qt5")
-if "mingw53_32" not in skipPacks:
-	createSubPkg("mingw53_32", "win32_mingw53", "qt5")
-if "msvc2017_64" not in skipPacks:
-	createSubPkg("msvc2017_64", "win64_msvc2017_64", "qt5")
-if "winrt_x86_msvc2017" not in skipPacks:
-	createSubPkg("winrt_x86_msvc2017", "win64_msvc2017_winrt_x86", "emb-arm-qt5")
-if "winrt_x64_msvc2017" not in skipPacks:
-	createSubPkg("winrt_x64_msvc2017", "win64_msvc2017_winrt_x64", "emb-arm-qt5")
-if "winrt_armv7_msvc2017" not in skipPacks:
-	createSubPkg("winrt_armv7_msvc2017", "win64_msvc2017_winrt_armv7", "emb-arm-qt5")
-if "msvc2015_64" not in skipPacks:
-	createSubPkg("msvc2015_64", "win64_msvc2015_64", "qt5")
-if "msvc2015" not in skipPacks:
-	createSubPkg("msvc2015", "win32_msvc2015", "qt5")
-if "src" not in skipPacks:
-	createSrcPkg()
-if "doc" not in skipPacks:
-	createDocPkg()
-
-# build repositories
-prepareTools("static_linux", [
-	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-])
-repogen("linux_x64", [
-	"gcc_64",
-	"android_armv7",
-	"android_x86"
-])
-
-prepareTools("static_win", [
-	["win64_msvc2017_winrt_x86", "winrt_x86_msvc2017"],
-	["win64_msvc2017_winrt_x64", "winrt_x64_msvc2017"],
-	["win64_msvc2017_winrt_armv7", "winrt_armv7_msvc2017"],
-	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-])
-repogen("windows_x86", [
-	"win32_mingw53",
-	"win64_msvc2017_64",
-	"win64_msvc2017_winrt_x86",
-	"win64_msvc2017_winrt_x64",
-	"win64_msvc2017_winrt_armv7",
-	"win64_msvc2015_64",
-	"win32_msvc2015",
-	"android_armv7",
-	"android_x86"
-])
-
-prepareTools("static_osx", [
-	["ios", "ios"],
-	["android_armv7", "android_armv7"],
-	["android_x86", "android_x86"]
-])
-repogen("mac_x64", [
-	"clang_64",
-	"ios",
-	"android_armv7",
-	"android_x86"
-])
+if __name__ == '__main__':
+	repogen(*sys.argv[1:4])
