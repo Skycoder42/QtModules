@@ -72,7 +72,7 @@ file_control_module = """
 Package: {}
 Architecture: any
 Depends: ${{shlibs:Depends}}, ${{misc:Depends}}
-Description: {} Library
+Description: {} {}
 """
 file_control_dev = """
 Package: {}-dev
@@ -88,7 +88,7 @@ def pkgbase(modname, mode):
 	if mode == Mode.MODULE.value:
 		return "libqt5" + modname[2:].lower()
 	elif mode == Mode.OPT.value:
-		return modname.lower()
+		return modname.lower() + "-opt"
 	elif mode == Mode.STANDARD.value:
 		return modname.lower()
 	else:
@@ -127,16 +127,16 @@ def pack_source(sdir, odir, mod_full_name, pkg_name):
 		archive.add(out_path, arcname=mod_full_name)
 
 
-def prepare_source(sdir, extra_conf):
+def prepare_source(sdir, extra_conf, src_cmds):
 	# install qpmx deps into a temporary cache
 	env = os.environ.copy()
 	env["HOME"] = pjoin(sdir, "src", "3rdparty")
 	for root, dirs, files in os.walk(sdir):
 		for file in files:
 			if file == "qpmx.json":
-				subprocess.Popen([
+				subprocess.run([
 					"qpmx", "-d", root, "install"
-				], env=env).communicate()
+				], env=env)
 	# create the .git folder to generate fwd includes if not already present
 	if not os.path.isdir(pjoin(sdir, "include")):
 		os.mkdir(pjoin(sdir, ".git"))
@@ -144,6 +144,10 @@ def prepare_source(sdir, extra_conf):
 	with open(pjoin(sdir, ".qmake.conf"), "a") as qmakeconf:
 		for conf in extra_conf:
 			qmakeconf.write(conf + "\n")
+	# run special source commands
+	for cmd in src_cmds:
+		if subprocess.call(cmd.split(" "), cwd=sdir) != 0:
+			raise Exception("Subcommand \"" + cmd + "\" failed")
 
 
 def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl=""):
@@ -155,7 +159,10 @@ def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl
 			urlrev = dconf["revision"]
 		else:
 			urlrev = 0
-		urlversion = dconf["version"]
+		if "urlver" in dconf:
+			urlversion = dconf["urlver"]
+		else:
+			urlversion = dconf["version"]
 		vsplit = urlversion.split(".")
 		if urlrev != 0:
 			urlversion += "-" + str(urlrev)
@@ -167,12 +174,14 @@ def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl
 		dist_url = dist_url.replace("$version", urlversion)
 
 		# download the sources
-		qmake_conf = mconf[dconf["mode"]]["qmakeconf"]
+		xconf = mconf[dconf["mode"]]
+		qmake_conf = xconf["qmakeconf"] if "qmakeconf" in xconf else []
+		src_cmds = xconf["srccmds"] if "srccmds" in xconf else []
 		get_source(ddir, dist_url)
 		for path in os.listdir(ddir):
 			src_dir = pjoin(ddir, path)
 			if os.path.isdir(src_dir):
-				prepare_source(src_dir, qmake_conf)
+				prepare_source(src_dir, qmake_conf, src_cmds)
 				pack_source(src_dir, ddir, mod_name, pkg_name)
 	else:
 		# download the sources
@@ -268,6 +277,9 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_vers):
 		pkg_lib = pkg_base
 		if mode == Mode.MODULE.value:
 			pkg_lib += mod_vers.split(".")[0]
+			suffix = "Library"
+		else:
+			suffix = "Package"
 		modconf = conf["configs"][mode]
 
 		# write file
@@ -278,8 +290,10 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_vers):
 											  standards_version(dist),
 											  conf["section"],
 											  conf["homepage"]))
+
 		file.write(file_control_module.format(pkg_lib,
-											  conf["module"]))
+											  conf["module"],
+											  suffix))
 		write_description(file, conf["description"])
 		if mode == Mode.MODULE.value:
 			file.write(file_control_dev.format(pkg_base,
@@ -311,12 +325,20 @@ def create_deb_dir(dist, ddir, conf, mode, pkg_base, mod_vers):
 	os.chmod(pjoin(deb_dir, "rules"), 0o755)
 
 
+def qt_vid(config, pkg_mode):
+	if pkg_mode == Mode.OPT.value:
+		qt_ver = config["configs"][pkg_mode]["qtver"]
+		return qt_ver.replace(".", "")
+	else:
+		return ""
+
+
 def main():
 	# load the config
 	with open(sys.argv[1]) as file:
 		config = json.load(file)
 	dists = sys.argv[2:]
-	if "noupdate" in config:
+	if "test" in config:
 		noupdate = config["test"]
 	else:
 		noupdate = False
@@ -370,7 +392,7 @@ def main():
 											   mod_fullname,
 											   pkg_mode,
 											   " ".join(config["configs"][pkg_mode]["debpkg"]),
-											   "",
+											   qt_vid(config, pkg_mode),
 											   "y" if noupdate else "n")
 			deb_sh = pjoin(dist_dir, "debbuild.sh")
 			with open(deb_sh, "w") as file:
