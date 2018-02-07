@@ -2,6 +2,7 @@
 # $1 repo id
 # $2 Version
 # $3 Qt Version (e.g. "5.10.0")
+# $4 install root
 import datetime
 import glob
 import io
@@ -17,7 +18,6 @@ import tarfile
 import tempfile
 
 from os.path import join as pjoin
-
 
 pkg_base_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
@@ -63,9 +63,9 @@ function Component()
 
 Component.prototype.createOperations = function()
 {{
-    component.createOperations();
-    if (typeof registerQtCreatorDocumentation === "function")
-    	registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
+	component.createOperations();
+	if (typeof registerQtCreatorDocumentation === "function")
+		registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
 }}"""
 
 pkg_arch_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -87,26 +87,26 @@ function Component()
 
 function resolveQt5EssentialsDependency()
 {{
-    return "{}" + "_qmakeoutput";
+	return "{}" + "_qmakeoutput";
 }}
 
 Component.prototype.createOperations = function()
 {{
-    component.createOperations();
+	component.createOperations();
 
-    var platform = "";
-    if (installer.value("os") == "x11")
-        platform = "linux";
-    if (installer.value("os") == "win")
-        platform = "windows";
-    if (installer.value("os") == "mac")
-        platform = "mac";
+	var platform = "";
+	if (installer.value("os") == "x11")
+		platform = "linux";
+	if (installer.value("os") == "win")
+		platform = "windows";
+	if (installer.value("os") == "mac")
+		platform = "mac";
 
-    component.addOperation("QtPatch",
-                            platform,
-                            "@TargetDir@" + "/{}/{}",
-                            "QmakeOutputInstallerKey=" + resolveQt5EssentialsDependency(),
-                            "{}");
+	component.addOperation("QtPatch",
+							platform,
+							"@TargetDir@" + "/{}/{}",
+							"QmakeOutputInstallerKey=" + resolveQt5EssentialsDependency(),
+							"{}");
 }}"""
 
 
@@ -138,8 +138,7 @@ def prepare_sources(tdir, repo, mod_name, vers):
 	# prepare sources
 	os.remove(pjoin(out_dir, ".travis.yml"))
 	os.remove(pjoin(out_dir, "appveyor.yml"))
-	# DEBUG shutil.move(pjoin(out_dir, "deploy.json"), pjoin(sdir, "deploy.json"))
-	shutil.copy2("/home/sky/Programming/QtLibraries/QtDataSync/deploy.json", pjoin(tdir, "deploy.json"))
+	shutil.move(pjoin(out_dir, "deploy.json"), pjoin(tdir, "deploy.json"))
 
 	return out_dir
 
@@ -303,7 +302,7 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 def fix_lines(idir, arch, pattern, fix_fn):
 	# find all files and fix them
 	for file in glob.iglob(pjoin(idir, arch, "**", pattern), recursive=True):
-		print("    >> Fixing " + os.path.basename(file))
+		print("	>> Fixing " + os.path.basename(file))
 		with open(file, "r") as infile:
 			lines = infile.readlines()
 
@@ -385,7 +384,8 @@ def create_all_pkgs(rdir, pkg_base, repo, config, version, qt_version):
 	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "gcc_64", "ios", "static_linux", "static_osx"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, False)
 	# zip packages
-	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017", "winrt_x86_msvc2017", "static_win"]:
+	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
+				 "winrt_x86_msvc2017", "static_win"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, True)
 
 
@@ -397,6 +397,7 @@ def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
 
 	subprocess.run([
 		"repogen",
+		"--update-new-components",
 		"-p", pdir,
 		"-i", repo_inc,
 		rdir
@@ -422,29 +423,26 @@ def prepare_static_files(rdir, spkg, pkg_base, qt_version, *arch_pkgs):
 			shutil.copytree(static_bin_dir, pkg_bin_dir)
 
 
-def deploy_repo(ddir, rdir, os, arch, pkg_base, qt_version, *arch_pkgs):
-	dep_name = os + "_" + arch
+def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pkgs):
+	dep_name = osname + "_" + arch
 	print("=> Deploying for " + dep_name)
 
 	# prepare static tools
-	prepare_static_files(rdir, "static_" + os, pkg_base, qt_version, *arch_pkgs)
+	prepare_static_files(rdir, "static_" + osname, pkg_base, qt_version, *arch_pkgs)
 
 	# create repo
 	print("  -> Creating repository")
-	create_repo(pjoin(ddir, dep_name), rdir, pkg_base, *arch_pkgs)
+	out_dir = pjoin(ddir, "qt" + qt_vid(qt_version), config["title"].lower(), dep_name)
+	os.makedirs(out_dir, exist_ok=True)
+	create_repo(out_dir, rdir, pkg_base, *arch_pkgs)
 
 
-def repogen(repo_id, version, qt_version):
+def repogen(repo_id, version, qt_version, dep_dir):
 	user = repo_id.split("/")[0]
 	mod_name = repo_id.split("/")[1]
 	mod_title = mod_name[2:]
 
 	with tempfile.TemporaryDirectory() as tmp_dir:
-		#debug
-		tmp_dir = "/tmp/repogen"
-		shutil.rmtree(tmp_dir, ignore_errors=True)
-		os.mkdir(tmp_dir)
-
 		# step 1: download and prepare sources
 		print("=> Downloading an preparing sources")
 		src_dir = prepare_sources(tmp_dir, repo_id, mod_name, version)
@@ -464,25 +462,23 @@ def repogen(repo_id, version, qt_version):
 		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, qt_version)
 
 		# step 4: create the actual repositories (repogen)
-		dep_dir = pjoin(tmp_dir, "repos")
-		os.mkdir(dep_dir)
 		# linux
-		deploy_repo(dep_dir, rep_dir, "linux", "x64", pkg_base, qt_version,
+		deploy_repo(dep_dir, rep_dir, "linux", "x64", pkg_base, config, qt_version,
 					"gcc_64",
 					"android_armv7", "android_x86")
 		# windows
-		deploy_repo(dep_dir, rep_dir, "windows", "x86", pkg_base, qt_version,
+		deploy_repo(dep_dir, rep_dir, "windows", "x86", pkg_base, config, qt_version,
 					"win32_mingw53",
 					"win64_msvc2017_64",
 					"win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "win64_msvc2017_winrt_armv7",
 					"win64_msvc2015_64", "win32_msvc2015",
 					"android_armv7", "android_x86")
 		# macos
-		deploy_repo(dep_dir, rep_dir, "mac", "x64", pkg_base, qt_version,
+		deploy_repo(dep_dir, rep_dir, "mac", "x64", pkg_base, config, qt_version,
 					"clang_64",
 					"ios",
 					"android_armv7", "android_x86")
 
 
 if __name__ == '__main__':
-	repogen(*sys.argv[1:4])
+	repogen(*sys.argv[1:5])
