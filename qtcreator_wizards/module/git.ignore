@@ -71,5 +71,6 @@ Thumbs.db
 *.dll
 *.exe
 
-# qpm
+# qpmx
 vendor
+qpmx.user.json

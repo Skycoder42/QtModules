@@ -3,8 +3,20 @@ load(qt_parts)
 @if '%{UseQDoc}' === ''
 SUBDIRS += doc
 
-docTarget.target = doxygen
-docTarget.CONFIG += recursive
-docTarget.recurse_target = doxygen
-QMAKE_EXTRA_TARGETS += docTarget
+doxygen.target = doxygen
+doxygen.CONFIG = recursive
+doxygen.recurse_target = doxygen
+doxygen.recurse += doc
+QMAKE_EXTRA_TARGETS += doxygen
+
 @endif
+@if '%{Translations}' !== ''
+lrelease.target = lrelease
+lrelease.CONFIG = recursive
+lrelease.recurse_target = lrelease
+lrelease.recurse += sub_src
+QMAKE_EXTRA_TARGETS += lrelease
+
+@endif
+DISTFILES += .qmake.conf \\
+	sync.profile

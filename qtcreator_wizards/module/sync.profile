@@ -2,5 +2,5 @@
     "%{QtModuleName}" => "$basedir/src/%{ModuleBase}",
 );
 
-%moduleheaders = (
-);
+# Force generation of camel case headers for classes inside QtDataSync namespaces
+$publicclassregexp = "%{QtModuleName}::.+";

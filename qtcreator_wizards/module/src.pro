@@ -3,7 +3,7 @@ CONFIG += ordered
 
 SUBDIRS += %{ModuleBase}
 
-@if '%{UseQDoc}' === ''
-docTarget.target = doxygen
-QMAKE_EXTRA_TARGETS += docTarget
+@if '%{Translations}' !== ''
+prepareRecursiveTarget(lrelease)
+QMAKE_EXTRA_TARGETS += lrelease
 @endif

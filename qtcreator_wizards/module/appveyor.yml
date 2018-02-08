@@ -5,8 +5,8 @@ image:
 version: build-{build}
 
 environment:
-  QT_VER: 5.9.1
-#  EXTRA_MODULES: 
+  QT_VER: 5.10.0
+  EXTRA_MODULES: .skycoder42
 
   matrix:
     - PLATFORM: msvc2017_64
@@ -16,6 +16,8 @@ environment:
     - PLATFORM: msvc2015_64
     - PLATFORM: msvc2015
     - PLATFORM: mingw53_32
+    # only when using static tools
+    - PLATFORM: static
 
 matrix:
   exclude:
@@ -27,12 +29,14 @@ matrix:
       image: Visual Studio 2015
     - PLATFORM: winrt_armv7_msvc2017
       image: Visual Studio 2015
-    - PLATFORM: mingw53_32
-      image: Visual Studio 2015
     - PLATFORM: msvc2015_64
       image: Visual Studio 2017
     - PLATFORM: msvc2015
       image: Visual Studio 2017
+    - PLATFORM: mingw53_32
+      image: Visual Studio 2017
+    - PLATFORM: static
+      image: Visual Studio 2015
 
 install:
   - git clone https://github.com/Skycoder42/QtModules.git .\qtmodules-travis
@@ -50,8 +54,11 @@ artifacts:
 deploy:
   provider: GitHub
   auth_token:
-    secure: <secret key>
+    secure: <your encrypted token>
   artifact: /.*\.zip/
   force_update: false
   on:
     appveyor_repo_tag: true
+
+cache:
+  - 'C:\Users\appveyor\AppData\Local\Skycoder42\qpmx\cache -> appveyor.yml'

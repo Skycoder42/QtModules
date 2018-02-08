@@ -1,6 +1,6 @@
 %{Cpp:LicenseTemplate}\
-#ifndef %{GUARD}
-#define %{GUARD}
+#ifndef %{GLOBGUARD}
+#define %{GLOBGUARD}
 
 #include <QtCore/qglobal.h>
 
@@ -10,4 +10,4 @@
 #	define Q_%{ModuleDefine}_EXPORT Q_DECL_IMPORT
 #endif
 
-#endif // %{GUARD}\
+#endif // %{GLOBGUARD}\

@@ -18,12 +18,13 @@
 		{ "key": "ClassName", "value": "Q%{ModuleName}" },
 		{ "key": "ModuleVersionTag", "value": "%{JS: '%{ModuleVersion}'.split('.').join('')}" },
 		
-		{ "key": "ProFileName", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'pro')}" },
+		{ "key": "ProFileName", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{QtModuleNameLower}', 'pro')}" },
 		{ "key": "HdrFileName", "value": "%{JS: Cpp.classToFileName('%{ClassName}', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" },
 		{ "key": "GUARD", "value": "%{JS: Cpp.headerGuard('%{HdrFileName}')}" },
 		{ "key": "ModHdrFileName", "value": "%{JS: Cpp.classToFileName('qt_%{QtModuleName}_module', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" },
 		{ "key": "MODGUARD", "value": "%{JS: Cpp.headerGuard('%{ModHdrFileName}')}" },
-		{ "key": "GlobalHeaderName", "value": "%{JS: '%{ClassName}_global.h'.toLowerCase()}" }
+		{ "key": "GlobalHeaderName", "value": "%{JS: '%{ClassName}_global.h'.toLowerCase()}" },
+		{ "key": "GLOBGUARD", "value": "%{JS: Cpp.headerGuard('%{GlobalHeaderName}')}" },
 	],
 
 	"pages":
@@ -168,13 +169,12 @@
 					"target": "src/src.pro"
 				},
 				{
-					"source": "translations.pri",
-					"target": "src/%{ModuleBase}/translations/translations.pri",
-					"condition": "%{JS: '%{Translations}' !== ''}"
-				},
-				{
 					"source": "module_src.pro",
 					"target": "src/%{ModuleBase}/%{ModuleBase}.pro"
+				},
+				{
+					"source": "qpmx.json",
+					"target": "src/%{ModuleBase}/qpmx.json"
 				},
 				{
 					"source": "module_global.h",
@@ -218,6 +218,17 @@
 				{
 					"source": "doxme.py",
 					"target": "doc/doxme.py",
+					"condition": "%{JS: '%{UseQDoc}' === ''}"
+				},
+				{
+					"source": "GitHub_Logo.png",
+					"target": "doc/images/GitHub_Logo.png",
+					"condition": "%{JS: '%{UseQDoc}' === ''}",
+					"isBinary": true
+				},
+				{
+					"source": "gh_header.html",
+					"target": "doc/gh_header.html",
 					"condition": "%{JS: '%{UseQDoc}' === ''}"
 				},
 				{
