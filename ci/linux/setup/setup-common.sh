@@ -6,7 +6,7 @@ scriptdir=$(dirname $0)
 # add ppas
 apt-get -qq update
 apt-get -qq install software-properties-common
-add-apt-repository -y ppa:beineri/opt-qt592-xenial
+add-apt-repository -y ppa:beineri/opt-qt594-xenial
 add-apt-repository -y ppa:skycoder42/qt-modules-opt
 add-apt-repository -y ppa:ubuntu-toolchain-r/test
 
