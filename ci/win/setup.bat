@@ -2,7 +2,7 @@
 powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
 :: install qpmx
-choco install qpmx %EXTRA_PKG%
+choco install qpmx --version 1.4.0 %EXTRA_PKG%
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (

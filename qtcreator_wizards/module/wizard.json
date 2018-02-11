@@ -157,12 +157,14 @@
 				{
 					"source": "travis.yml",
 					"target": ".travis.yml",
-					"condition": "%{JS: '%{CI}' !== ''}"
+					"condition": "%{JS: '%{CI}' !== ''}",
+					"isBinary": true
 				},
 				{
 					"source": "appveyor.yml",
 					"target": "appveyor.yml",
-					"condition": "%{JS: '%{CI}' !== ''}"
+					"condition": "%{JS: '%{CI}' !== ''}",
+					"isBinary": true
 				},
 				{
 					"source": "src.pro",
