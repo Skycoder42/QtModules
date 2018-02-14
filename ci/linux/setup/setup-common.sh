@@ -14,10 +14,6 @@ add-apt-repository -y ppa:ubuntu-toolchain-r/test
 apt-get -qq update
 apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 doxygen qpmx-opt gcc-6 g++-6 $EXTRA_PKG
 
-#test gcc
-gcc-6 --version
-g++-6 --version
-
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
 install -m 755 /tmp/qpm /usr/local/bin/
