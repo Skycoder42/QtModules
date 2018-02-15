@@ -34,7 +34,10 @@ type %~dp0\qt-installer-script-base.qs >> %~dp0\qt-installer-script.qs
 
 :: update and install Qt modules
 powershell -Command "Invoke-WebRequest https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -OutFile C:\projects\qtinst.exe"
-C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86 --verbose
+C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86 --verbose > C:\projects\installer.log || (
+	type C:\projects\installer.l
+	exit \B 1
+)
 
 :: build static qt
 if "%PLATFORM%" == "static" (
