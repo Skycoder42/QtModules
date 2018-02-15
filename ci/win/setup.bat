@@ -16,7 +16,7 @@ powershell -File %~dp0\replace.ps1 %~dp0\tmp.qs %~dp0\qt-installer-script.qs
 if "%IS_LTS%" == "true" (
 	echo prefix = "qt."; >> %~dp0\qt-installer-script.qs
 ) else (
-	echo prefix = "qt.qt5.";" >> %~dp0\qt-installer-script.qs
+	echo prefix = "qt.qt5."; >> %~dp0\qt-installer-script.qs
 )
 
 if "%PLATFORM%" == "msvc2017_64" set PACKAGE=win64_msvc2017_64
