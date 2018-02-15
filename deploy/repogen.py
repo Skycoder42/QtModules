@@ -19,6 +19,10 @@ import tempfile
 
 from os.path import join as pjoin
 
+
+# workaround / hack to handle LTS releases
+qt_prefix = "qt.qt5."
+
 pkg_base_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
 	<Name>{}</Name>
@@ -154,7 +158,7 @@ def prepare_headers(tdir, mdir, mods, version):
 		subprocess.run([
 			syncqt_pl,
 			"-module", mod,
-			"-version", version,
+			"-version", version.split("-")[0],  # only use the actual version, not the revision
 			"-outdir", mdir,
 			mdir
 		], check=True, stdout=subprocess.DEVNULL)
@@ -202,7 +206,7 @@ def create_base_pkg(rdir, sdir, pkg_base, config, version, qt_version):
 	depends = []
 	for dep in config["dependencies"]:
 		if dep[0] == ".":
-			depends.append("qt.qt5.{}".format(qt_vid(qt_version)) + dep)
+			depends.append(qt_prefix + qt_vid(qt_version) + dep)
 		else:
 			depends.append(dep)
 
@@ -225,7 +229,7 @@ def create_src_pkg(rdir, sdir, pkg_base, config, version, qt_version):
 	pkg_dir = pkg_prepare(rdir, pkg_src)
 
 	print("  -> Creating meta data")
-	pkg_qt_src = "qt.qt5.{}.src".format(qt_vid(qt_version))
+	pkg_qt_src = "{}{}.src".format(qt_prefix, qt_vid(qt_version))
 	pkg_add_package_xml(pkg_dir, pkg_src_xml,
 						pkg_src,
 						config["title"],
@@ -245,7 +249,7 @@ def create_doc_meta(rdir, pkg_base, config, version, qt_version):
 	pkg_doc = pkg_base + ".doc"
 	pkg_dir = pkg_prepare(rdir, pkg_doc)
 
-	pkg_qt_doc = "qt.qt5.{}.doc".format(qt_vid(qt_version))
+	pkg_qt_doc = "{}{}.doc".format(qt_prefix, qt_vid(qt_version))
 	pkg_add_package_xml(pkg_dir, pkg_doc_xml,
 						pkg_doc,
 						config["title"],
@@ -281,7 +285,7 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 	pkg_arch = pkg_base + "." + qt_arch
 	pkg_dir = pkg_prepare(rdir, pkg_arch)
 
-	pkg_qt_arch = "qt.qt5.{}.{}".format(qt_vid(qt_version), qt_arch)
+	pkg_qt_arch = "{}{}.{}".format(qt_prefix, qt_vid(qt_version), qt_arch)
 	pkg_add_package_xml(pkg_dir, pkg_arch_xml,
 						pkg_arch,
 						config["title"],
@@ -353,7 +357,7 @@ def fix_arch_paths(idir, arch):
 	fix_lines(idir, arch, "*.pc", fix_pc)
 
 
-def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, as_zip):
+def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, as_zip):
 	for exclude in config["excludes"]:
 		if exclude in arch:
 			return
@@ -369,7 +373,7 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, as_z
 
 	# download sources
 	print("  -> Downloading and extracting data from github")
-	bin_url = "https://github.com/" + repo + "/releases/download/" + version + "/build_" + arch + "_" + qt_version
+	bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/build_" + arch + "_" + qt_version
 	bin_url += ".zip" if as_zip else ".tar.xz"
 	inst_dir = pjoin(pkg_data(pkg_dir), "Docs" if arch == "doc" else qt_version)
 	url_extract(inst_dir, bin_url, as_zip)
@@ -380,14 +384,14 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, as_z
 		fix_arch_paths(inst_dir, arch)
 
 
-def create_all_pkgs(rdir, pkg_base, repo, config, version, qt_version):
+def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_version):
 	# tar packages
 	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "gcc_64", "ios", "static_linux", "static_osx"]:
-		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, False)
+		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, False)
 	# zip packages
 	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
 				 "winrt_x86_msvc2017", "static_win"]:
-		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, qt_version, True)
+		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, True)
 
 
 def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
@@ -451,16 +455,23 @@ def repogen(repo_id, version, qt_version, dep_dir):
 			config = json.load(file)
 		prepare_headers(tmp_dir, src_dir, cfg_if(config, "modules", mod_name), version)
 
+		# workaround for LTS releases
+		url_version = version
+		if "lts" in version:
+			global qt_prefix
+			qt_prefix = "qt."
+			version = version.replace("lts", "")
+
 		# step 2: create the meta and src repositories
 		rep_dir = pjoin(tmp_dir, "pkg")
 		os.mkdir(rep_dir)
-		pkg_base = "qt.qt5.{}.{}.{}".format(qt_vid(qt_version), user.lower(), mod_title.lower())
+		pkg_base = "{}{}.{}.{}".format(qt_prefix, qt_vid(qt_version), user.lower(), mod_title.lower())
 		create_base_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
 		if "Src" not in config["excludes"]:
 			create_src_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
 
 		# step 3: download and create binary repositories
-		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, qt_version)
+		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, url_version, qt_version)
 
 		# step 4: create the actual repositories (repogen)
 		# linux
