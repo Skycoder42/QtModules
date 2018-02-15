@@ -341,7 +341,8 @@ def fix_arch_paths(idir, arch):
 
 	def fix_pc(lines):
 		# replace the first line
-		lines[0] = "prefix=/home/qt/work/install\n"
+		if len(lines) > 0:
+			lines[0] = "prefix=/home/qt/work/install\n"
 		return lines
 
 	# fix prl files

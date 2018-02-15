@@ -21,15 +21,24 @@ install -m 755 /tmp/qpm /usr/local/bin/
 # create installer script
 qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
 echo "qtVersion = \"$qtvid\";" > $scriptdir/qt-installer-script.qs
+
+if [[ "$IS_LTS" == "true" ]]; then
+	echo "prefix = \"qt.\";" >> $scriptdir/qt-installer-script.qs
+else
+	echo "prefix = \"qt.qt5.\";" >> $scriptdir/qt-installer-script.qs
+fi
+
 if [[ "$PLATFORM" == "static" ]]; then
 	echo "platform = \"src\";" >> $scriptdir/qt-installer-script.qs
 else
 	echo "platform = \"$PLATFORM\";" >> $scriptdir/qt-installer-script.qs
 fi
+
 echo "extraMods = [];" >> $scriptdir/qt-installer-script.qs
 for mod in $EXTRA_MODULES; do
 	echo "extraMods.push(\"$mod\");" >> $scriptdir/qt-installer-script.qs
 done
+
 cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 
 # install Qt

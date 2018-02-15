@@ -13,6 +13,9 @@ echo %PLATFORM% | findstr /C:"winrt" > nul || (
 echo qtVersion = "%QT_VER%"; > %~dp0\tmp.qs
 powershell -File %~dp0\replace.ps1 %~dp0\tmp.qs %~dp0\qt-installer-script.qs
 
+if "%IS_LTS%" == "true" echo prefix = "qt."; >> $scriptdir/qt-installer-script.qs
+else echo prefix = "qt.qt5.";" >> $scriptdir/qt-installer-script.qs
+
 if "%PLATFORM%" == "msvc2017_64" set PACKAGE=win64_msvc2017_64
 if "%PLATFORM%" == "winrt_x64_msvc2017" set PACKAGE=win64_msvc2017_winrt_x64
 if "%PLATFORM%" == "winrt_x86_msvc2017" set PACKAGE=win64_msvc2017_winrt_x86
