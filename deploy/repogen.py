@@ -4,6 +4,7 @@
 # $3 Qt Version (e.g. "5.10.0")
 # $4 install root
 import datetime
+import distutils.dir_util
 import glob
 import io
 import json
@@ -306,7 +307,7 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 def fix_lines(idir, arch, pattern, fix_fn):
 	# find all files and fix them
 	for file in glob.iglob(pjoin(idir, arch, "**", pattern), recursive=True):
-		print("	>> Fixing " + os.path.basename(file))
+		print("    >> Fixing " + os.path.basename(file))
 		with open(file, "r") as infile:
 			lines = infile.readlines()
 
@@ -409,23 +410,51 @@ def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
 	], check=True, stdout=subprocess.DEVNULL)
 
 
-def prepare_static_files(rdir, spkg, pkg_base, qt_version, *arch_pkgs):
-	static_bin_dir = pjoin(rdir, spkg)
-	if not os.path.exists(static_bin_dir):
+def prepare_static_files(rdir, os_static, pkg_base, qt_version, *arch_pkgs):
+	inverse_pkg_keys = {
+		"win64_msvc2017_winrt_x86": "winrt_x86_msvc2017",
+		"win64_msvc2017_winrt_x64": "winrt_x64_msvc2017",
+		"win64_msvc2017_winrt_armv7": "winrt_armv7_msvc2017"
+	}
+
+	# fix static os
+	if os_static == "static_mac":
+		os_static = "static_osx"
+	if os_static == "static_windows":
+		os_static = "static_win"
+
+	# generate static copy paths
+	pkg_static = pkg_base + "." + os_static
+	static_kit_dir = pjoin(rdir, pkg_static)
+	if not os.path.exists(static_kit_dir):
 		return
-	static_bin_dir = pjoin(static_bin_dir, "static", "data", qt_version, "bin")
+	static_kit_dir = pjoin(static_kit_dir, "data", qt_version, os_static)
 
-	print("  -> Preparing static tools")
 	for arch in arch_pkgs:
-		if arch.startswith("android") or \
-				arch == "ios" or \
-				"winrt" in arch:
+		if arch.startswith("android") or arch == "ios" or "winrt" in arch:
+			print("  -> Preparing static tools for " + arch)
 			pkg_arch = pkg_base + "." + arch
-			pkg_bin_dir = pjoin(rdir, pkg_arch, "data", qt_version)
-			pkg_bin_dir = pjoin(pkg_bin_dir, os.listdir(pkg_bin_dir)[0])
+			pkg_data_dir = pjoin(rdir, pkg_arch, "data")
+			pkg_backup_dir = pkg_data_dir + ".bkp"
 
-			shutil.rmtree(pkg_bin_dir, ignore_errors=True)
-			shutil.copytree(static_bin_dir, pkg_bin_dir)
+			orig_arch = inverse_pkg_keys[arch] if arch in inverse_pkg_keys else arch
+			pkg_kit_dir = pjoin(pkg_data_dir, qt_version, orig_arch)
+			if not os.path.exists(pkg_kit_dir):
+				raise Exception("Missing path: " + pkg_kit_dir)
+
+			# create or restore original data
+			if not os.path.exists(pkg_backup_dir):
+				print("    >> Create original data backup")
+				shutil.copytree(pkg_data_dir, pkg_backup_dir, symlinks=True)
+			else:
+				print("    >> Restore original data backup")
+				shutil.rmtree(pkg_data_dir)
+				shutil.copytree(pkg_backup_dir, pkg_data_dir, symlinks=True)
+
+			# copy in the static stuff
+			print("    >> Copy static tools")
+			distutils.dir_util._path_created = {}  # clear copy dir-cache, because it was deleted before
+			distutils.dir_util.copy_tree(static_kit_dir, pkg_kit_dir, preserve_symlinks=True)
 
 
 def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pkgs):
