@@ -16,7 +16,8 @@ First you open the Settings of the MaintenanceTool.
 
 ![](./images/add_repo_02.png "Go to repositories")
 
-Now go to the repositories and add a new entry under the `User defined repositories`.
+Now go to the repositories and add a new entry under the `User defined repositories` section. If you are using a newer version of the installer, that is disabled because the installer only uses temporary repositories. In that case, you have to
+uncheck the `Use temporary repositories only` before you can add it. Please not that if thats the case for you, you will have to uncheck this box **every time** you start installer again. This is annoying, but sadly nothing can be done against this for now.
 
 ![](./images/add_repo_03.png "Add the repository")
 
