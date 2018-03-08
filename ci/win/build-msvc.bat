@@ -54,4 +54,4 @@ if "%BUILD_EXAMPLES%" == "" goto no_examples
 	
 	cd examples
 	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
-:no_dexamples
+:no_examples
