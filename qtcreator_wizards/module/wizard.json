@@ -10,7 +10,7 @@
 	"featuresRequired": [ "QtSupport.Wizards.FeatureQt" ],
 	"enabled": "%{JS: [ %{Plugins} ].indexOf('QmakeProjectManager') >= 0}",
 	"options":
-	[		
+	[
 		{ "key": "ModuleBase", "value": "%{JS: '%{ModuleName}'.toLowerCase()}" },
 		{ "key": "ModuleDefine", "value": "%{JS: '%{ModuleName}'.toUpperCase()}" },
 		{ "key": "QtModuleName", "value": "Qt%{ModuleName}" },
@@ -24,7 +24,7 @@
 		{ "key": "ModHdrFileName", "value": "%{JS: Cpp.classToFileName('qt_%{QtModuleName}_module', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" },
 		{ "key": "MODGUARD", "value": "%{JS: Cpp.headerGuard('%{ModHdrFileName}')}" },
 		{ "key": "GlobalHeaderName", "value": "%{JS: '%{ClassName}_global.h'.toLowerCase()}" },
-		{ "key": "GLOBGUARD", "value": "%{JS: Cpp.headerGuard('%{GlobalHeaderName}')}" },
+		{ "key": "GLOBGUARD", "value": "%{JS: Cpp.headerGuard('%{GlobalHeaderName}')}" }
 	],
 
 	"pages":

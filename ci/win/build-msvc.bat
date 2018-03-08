@@ -29,6 +29,16 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 	)
 :no_tests
 
+:: build examples
+if "%BUILD_EXAMPLES%" == "" goto no_examples
+	cd \projects\%CurrDirName%
+	cd build-%qtplatform%
+	nmake all || exit /B 1
+	
+	cd examples
+	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
+:no_examples
+
 :: build documentation
 if "%BUILD_DOC%" == "" goto no_doc
 	cd \projects\%CurrDirName%
@@ -42,16 +52,3 @@ if "%BUILD_DOC%" == "" goto no_doc
 	nmake doxygen || exit /B 1
 	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 :no_doc
-
-:: build examples
-if "%BUILD_EXAMPLES%" == "" goto no_examples
-	cd \projects\%CurrDirName%
-	mkdir build-examples
-	cd build-examples
-
-	C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake ../ || exit /B 1
-	nmake qmake_all || exit /B 1
-	
-	cd examples
-	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
-:no_examples

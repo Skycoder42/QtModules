@@ -43,6 +43,15 @@ if [[ -z "$NO_TESTS" ]]; then
 	popd
 fi
 
+# build examples
+if [[ -n "$BUILD_EXAMPLES" ]]; then
+	make all
+
+	pushd examples
+	make INSTALL_ROOT="$rootdir/install" install
+	popd
+fi
+
 popd
 
 # build documentation
@@ -52,24 +61,9 @@ if [[ -n "$BUILD_DOC" ]]; then
 
 	/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=debug" $QMAKE_FLAGS ../
 	make qmake_all
-	
+
 	pushd doc
 	make doxygen
-	make INSTALL_ROOT="$rootdir/install" install
-	popd
-	
-	popd
-fi
-
-# build examples
-if [[ -n "$BUILD_EXAMPLES" ]]; then
-	mkdir build-examples
-	pushd build-examples
-
-	/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=debug" $QMAKE_FLAGS ../
-	make qmake_all
-	
-	pushd examples
 	make INSTALL_ROOT="$rootdir/install" install
 	popd
 
