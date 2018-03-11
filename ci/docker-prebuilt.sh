@@ -22,7 +22,7 @@ case "$IMAGE_TAG" in
 		;;
 esac
 
-for platform in gcc_64; do #android_armv7 android_x86; do
+for platform in gcc_64 android_armv7 android_x86; do
 	export PLATFORM=$platform
 	$scriptdir/linux/setup.sh
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
