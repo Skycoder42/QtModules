@@ -23,5 +23,4 @@ if [[ -n "$BUILD_EXAMPLES" ]]; then
 	cd ../Examples
 	tar cJf build_examples_$QT_VER.tar.xz ./*
 	mv build_examples_$QT_VER.tar.xz ../../
-	find .
 fi
