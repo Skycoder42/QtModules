@@ -28,6 +28,7 @@ pushd build-$PLATFORM
 /opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=debug" $QMAKE_FLAGS ../
 make qmake_all
 make
+make lrelease
 make INSTALL_ROOT="$rootdir/install" install
 
 # build and run tests
