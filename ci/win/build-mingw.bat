@@ -11,7 +11,7 @@ cd build-%PLATFORM%
 C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
 mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
-mingw32-make lrelease || exit /B 1
+:: skip translations until fixed: mingw32-make lrelease || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install
 
 :: build and run test
