@@ -3,14 +3,17 @@
 # $2 Version
 # $3 Qt Version (e.g. "5.10.0")
 # $4 install root
+
 import datetime
 import distutils.dir_util
 import glob
 import io
 import json
 import os
+import re
 import zipfile
 
+import magic
 import requests
 import shutil
 import subprocess
@@ -72,6 +75,17 @@ Component.prototype.createOperations = function()
 	if (typeof registerQtCreatorDocumentation === "function")
 		registerQtCreatorDocumentation(component, "/Docs/Qt-{}/");
 }}"""
+
+pkg_sample_xml = """<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+	<Name>{}</Name>
+	<DisplayName>{} Examples</DisplayName>
+	<Version>{}</Version>
+	<ReleaseDate>{}</ReleaseDate>
+	<Virtual>true</Virtual>
+	<AutoDependOn>{}, {}</AutoDependOn>
+	<Dependencies>{}</Dependencies>
+</Package>"""
 
 pkg_arch_xml = """<?xml version="1.0" encoding="UTF-8"?>
 <Package>
@@ -223,6 +237,17 @@ def create_base_pkg(rdir, sdir, pkg_base, config, version, qt_version):
 	shutil.copy2(pjoin(sdir, config["license"]["path"]),
 				 pjoin(pkg_meta(pkg_dir), "LICENSE.txt"))
 
+	# add special installs
+	if "installs" in config:
+		data_dir = pkg_data(pkg_dir)
+		for from_path, to_path in config["installs"].items():
+			fp = pjoin(sdir, from_path)
+			tp = pjoin(data_dir, to_path)
+			if os.path.isdir(fp):
+				shutil.copytree(fp, tp, symlinks=True)
+			else:
+				shutil.copy2(fp, tp)
+
 
 def create_src_pkg(rdir, sdir, pkg_base, config, version, qt_version):
 	print("=> Creating source package")
@@ -260,6 +285,22 @@ def create_doc_meta(rdir, pkg_base, config, version, qt_version):
 						pkg_qt_doc,
 						pkg_qt_doc)
 	pkg_add_script(pkg_dir, pkg_doc_qs, qt_version)
+	return pkg_dir
+
+
+def create_sample_meta(rdir, pkg_base, config, version, qt_version):
+	pkg_sample = pkg_base + ".examples"
+	pkg_dir = pkg_prepare(rdir, pkg_sample)
+
+	pkg_qt_sample = "{}{}.examples".format(qt_prefix, qt_vid(qt_version))
+	pkg_add_package_xml(pkg_dir, pkg_sample_xml,
+						pkg_sample,
+						config["title"],
+						version,
+						datetime.date.today(),
+						pkg_base,
+						pkg_qt_sample,
+						pkg_qt_sample)
 	return pkg_dir
 
 
@@ -358,6 +399,29 @@ def fix_arch_paths(idir, arch):
 	fix_lines(idir, arch, "*.pc", fix_pc)
 
 
+def fix_sample_paths(idir):
+	patterns = [
+		re.compile("^.*\\.la$"),
+		re.compile("^.*\\.prl$"),
+		re.compile("^.*\\.a$"),
+		re.compile("^.*\\.so$"),
+		re.compile("^.*\\.la$"),
+		re.compile("^.*\\.so(\\.\\d+)+$")
+	]
+
+	for root, dirs, files in os.walk(idir):
+		for file in files:
+			ma = magic.detect_from_filename(pjoin(root, file))
+			if ma.mime_type == "application/x-executable":
+				print("    >> Removing sample binary " + file)
+				os.remove(pjoin(root, file))
+			else:
+				for pattern in patterns:
+					if pattern.fullmatch(file):
+						print("    >> Removing sample binary " + file)
+						os.remove(pjoin(root, file))
+
+
 def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, as_zip):
 	for exclude in config["excludes"]:
 		if exclude in arch:
@@ -369,6 +433,8 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 	print("  -> Creating meta data")
 	if arch == "doc":
 		pkg_dir = create_doc_meta(rdir, pkg_base, config, version, qt_version)
+	elif arch == "examples":
+		pkg_dir = create_sample_meta(rdir, pkg_base, config, version, qt_version)
 	else:
 		pkg_dir = create_arch_meta(rdir, pkg_base, arch, config, version, qt_version)
 
@@ -376,18 +442,26 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 	print("  -> Downloading and extracting data from github")
 	bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/build_" + arch + "_" + qt_version
 	bin_url += ".zip" if as_zip else ".tar.xz"
-	inst_dir = pjoin(pkg_data(pkg_dir), "Docs" if arch == "doc" else qt_version)
+	if arch == "doc":
+		inst_dir = pjoin(pkg_data(pkg_dir), "Docs")
+	elif arch == "examples":
+		inst_dir = pjoin(pkg_data(pkg_dir), "Examples")
+	else:
+		inst_dir = pjoin(pkg_data(pkg_dir), qt_version)
 	url_extract(inst_dir, bin_url, as_zip)
 
-	# fiuxp prl and la files
-	if arch != "doc":
+	# fiuxp prl and la files, clean samples etc.
+	if arch == "examples":
+		print("  -> Removing binaries from documentation")
+		fix_sample_paths(inst_dir)
+	elif arch != "doc":
 		print("  -> Fixing up build paths")
 		fix_arch_paths(inst_dir, arch)
 
 
 def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_version):
 	# tar packages
-	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "gcc_64", "ios", "static_linux", "static_osx"]:
+	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "examples", "gcc_64", "ios", "static_linux", "static_osx"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, False)
 	# zip packages
 	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
@@ -396,7 +470,12 @@ def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_versi
 
 
 def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
-	pkg_list = [pkg_base, pkg_base + ".src", pkg_base + ".doc"]
+	pkg_list = [
+		pkg_base,
+		pkg_base + ".src",
+		pkg_base + ".doc",
+		pkg_base + ".examples"
+	]
 	for arch in arch_pkgs:
 		pkg_list.append(pkg_base + "." + arch)
 	repo_inc = ",".join(pkg_list)
