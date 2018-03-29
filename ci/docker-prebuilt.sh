@@ -10,6 +10,9 @@ export TRAVIS_OS_NAME=linux
 export IMAGE_TAG=$2
 
 case "$IMAGE_TAG" in
+	full)
+		export EXTRA_MODULES=".qtremoteobjects .skycoder42"
+		;;
 	datasync)
 		export EXTRA_MODULES=".qtremoteobjects .skycoder42.datasync"
 		;;
