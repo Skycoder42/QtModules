@@ -1,3 +1,7 @@
+:: make python default
+ftype pyfile=C:\Python36-x64\python.exe "%1"
+assoc .py=pyfile
+
 :: install qpm
 powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
