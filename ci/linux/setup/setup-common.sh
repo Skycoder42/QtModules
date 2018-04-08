@@ -6,13 +6,11 @@ scriptdir=$(dirname $0)
 # add ppas
 apt-get -qq update
 apt-get -qq install software-properties-common
-add-apt-repository -y ppa:beineri/opt-qt594-xenial
-add-apt-repository -y ppa:skycoder42/qt-modules-opt
-add-apt-repository -y ppa:ubuntu-toolchain-r/test
+add-apt-repository -y ppa:skycoder42/qt-modules
 
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml qpmx-opt gcc-6 g++-6 $EXTRA_PKG
+apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml qpmx $EXTRA_PKG
 
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
@@ -52,13 +50,6 @@ if [[ "$PLATFORM" == "static" ]]; then
 else
 	TPLATFORM=$PLATFORM
 fi
-
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++/qmake.conf
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-32/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-32/qmake.conf
-echo "QMAKE_CXX=g++-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-64/qmake.conf
-echo "QMAKE_CC=gcc-6" >> /opt/qt/$QT_VER/$TPLATFORM/mkspecs/linux-g++-64/qmake.conf
 
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs

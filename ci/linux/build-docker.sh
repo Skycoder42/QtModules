@@ -63,7 +63,7 @@ if [[ -n "$BUILD_DOC" ]]; then
 	mkdir build-doc
 	pushd build-doc
 
-	/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=debug" $QMAKE_FLAGS ../
+	/opt/qt/$QT_VER/$PLATFORM/bin/qmake $QMAKE_FLAGS ../ #create documentation in release mode
 	make qmake_all
 
 	pushd doc

@@ -4,7 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 if [ -z "$DOCKER_IMAGE" ]; then
-	echo FROM ubuntu:latest > $scriptdir/Dockerfile
+	echo FROM ubuntu:bionic > $scriptdir/Dockerfile
 	#TODO pass all known vars
 	echo ENV \
 		TRAVIS_OS_NAME=\"$TRAVIS_OS_NAME\" \
