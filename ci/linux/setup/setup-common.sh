@@ -42,7 +42,12 @@ cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 # install Qt
 curl -Lo /tmp/installer.run https://download.qt.io/official_releases/online_installers/qt-unified-linux-x64-online.run
 chmod +x /tmp/installer.run
-QT_QPA_PLATFORM=minimal /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/linux_x64 --verbose
+export QT_QPA_PLATFORM=minimal
+if ! /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/linux_x64 --verbose &> /tmp/install-log.txt; then
+	exitCode=$?
+	cat /tmp/install-log.txt
+	exit $exitCode
+fi
 
 # update gcc for linux
 if [[ "$PLATFORM" == "static" ]]; then
