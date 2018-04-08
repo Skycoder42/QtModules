@@ -1,5 +1,5 @@
 :: make python default
-ftype pyfile=C:\Python36-x64\python.exe "%1"
+ftype pyfile=C:\Python36-x64\python.exe "%%1"
 assoc .py=pyfile
 
 :: install qpm
