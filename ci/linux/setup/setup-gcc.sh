@@ -5,7 +5,7 @@ scriptdir=$(dirname $0)
 
 ## linuxdeployqt setup
 export MAKEFLAGS="-j$(nproc)"
-apt-get -qq install --no-install-recommends patchelf libjpeg8 libxi6 libsm6 libpq5 wget
+apt-get -qq install --no-install-recommends patchelf libjpeg8 libxi6 libsm6 libpq5 libxrender1 wget
 rm -f /opt/qt/$QT_VER/$PLATFORM/plugins/sqldrivers/libqsqlmysql*
 
 pushd $(mktemp -d)
