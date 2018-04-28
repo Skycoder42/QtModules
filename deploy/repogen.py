@@ -415,6 +415,9 @@ def fix_sample_paths(idir):
 			if ma.mime_type == "application/x-executable":
 				print("    >> Removing sample binary " + file)
 				os.remove(pjoin(root, file))
+			elif ma.mime_type == "application/x-sharedlib":
+				print("    >> Removing sample binary " + file)
+				os.remove(pjoin(root, file))
 			else:
 				for pattern in patterns:
 					if pattern.fullmatch(file):

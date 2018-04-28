@@ -9,6 +9,7 @@ scriptdir=$(dirname $0)
 export QT_VER=$1
 export TRAVIS_OS_NAME=linux
 export IMAGE_TAG=$2
+#export IS_LTS=true
 
 shift
 shift
@@ -20,6 +21,9 @@ case "$IMAGE_TAG" in
 		;;
 	datasync)
 		export EXTRA_MODULES=".qtremoteobjects .skycoder42.datasync"
+		;;
+	json)
+		export EXTRA_MODULES=".skycoder42.jsonserializer"
 		;;
 	base)
 		# no extra exports
