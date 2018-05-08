@@ -10,7 +10,12 @@ add-apt-repository -y ppa:skycoder42/qt-modules
 
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml qpmx $EXTRA_PKG
+apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml qpmx libssl1.0.0 $EXTRA_PKG
+
+# create preload folder
+mkdir -p /usr/lib/openssl-1.0
+ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/openssl-1.0/libcrypto.so
+ln -s /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/openssl-1.0/libssl.so
 
 # install qpm
 curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm

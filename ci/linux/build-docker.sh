@@ -35,7 +35,7 @@ make INSTALL_ROOT="$rootdir/install" install
 if [[ -z "$NO_TESTS" ]]; then
 	make all
 
-	export LD_LIBRARY_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="/usr/lib/openssl-1.0:$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
 
 	if [[ -z "$TEST_DIR" ]]; then
 		export TEST_DIR=./tests/auto
