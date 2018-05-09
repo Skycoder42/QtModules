@@ -28,7 +28,7 @@ done
 
 # generate skip modules
 for mod in $(ls -d qt*/ | cut -f1 -d'/'); do
-	if [[ "qtbase $STATIC_QT_MODS $STATIC_EXTRA_MODS" != *"$mod"* ]]; then
+	if [[ "qtbase qttools $STATIC_QT_MODS $STATIC_EXTRA_MODS" != *"$mod"* ]]; then
 		skipPart="-skip $mod $skipPart"
 	fi
 done
