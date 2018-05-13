@@ -127,7 +127,17 @@ def pack_source(sdir, odir, mod_full_name, pkg_name):
 		archive.add(out_path, arcname=mod_full_name)
 
 
-def prepare_source(sdir, extra_conf, src_cmds):
+def patch_source(sdir, pdir, dist):
+	patch_file = pjoin(pdir, dist + ".patch")
+	pwd = os.path.dirname(sdir)
+	with open(patch_file) as infile:
+		subprocess.run(["patch", "-p0"], cwd=pwd, check=True, stderr=subprocess.PIPE, stdin=infile)
+
+
+def prepare_source(sdir, extra_conf, src_cmds, dist, patch):
+	# apply patches
+	if patch != "":
+		patch_source(sdir, patch, dist)
 	# install qpmx deps into a temporary cache
 	env = os.environ.copy()
 	env["HOME"] = pjoin(sdir, "src", "3rdparty")
@@ -150,7 +160,7 @@ def prepare_source(sdir, extra_conf, src_cmds):
 			raise Exception("Subcommand \"" + cmd + "\" failed")
 
 
-def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl=""):
+def prepare_dist_source(dist, dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl=""):
 	# generate the version to use in the url
 	if origurl == "":
 		if "urlrev" in dconf:
@@ -181,7 +191,7 @@ def prepare_dist_source(dconf, mconf, ddir, mod_name, pkg_name, baseurl, origurl
 		for path in os.listdir(ddir):
 			src_dir = pjoin(ddir, path)
 			if os.path.isdir(src_dir):
-				prepare_source(src_dir, qmake_conf, src_cmds)
+				prepare_source(src_dir, qmake_conf, src_cmds, dist, dconf["patch"] if "patch" in dconf else "")
 				pack_source(src_dir, ddir, mod_name, pkg_name)
 	else:
 		# download the sources
@@ -369,7 +379,8 @@ def main():
 			mod_fullname = config["module"] + "-" + mod_version
 
 			# step 1: generate sources
-			prepare_dist_source(dconf,
+			prepare_dist_source(distro,
+								dconf,
 								config["configs"],
 								dist_dir,
 								mod_fullname,
