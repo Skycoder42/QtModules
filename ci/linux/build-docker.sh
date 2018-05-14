@@ -56,8 +56,6 @@ if [[ -n "$BUILD_EXAMPLES" ]]; then
 	popd
 fi
 
-popd
-
 # build documentation
 if [[ -n "$BUILD_DOC" ]]; then
 	make doxygen
@@ -67,3 +65,4 @@ if [[ -n "$BUILD_DOC" ]]; then
 	popd
 fi
 
+popd
