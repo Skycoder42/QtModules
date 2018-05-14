@@ -11,8 +11,8 @@ cd build-%PLATFORM%
 C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
 mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
-:: skip translations until fixed: mingw32-make lrelease || exit /B 1
-mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install
+mingw32-make lrelease || exit /B 1
+mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
 :: build and run test
 if NOT "%NO_TESTS%" == "" goto no_tests
@@ -29,15 +29,23 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 		%%f || exit /B 1
 	)
 	endlocal
+	cd \projects\%CurrDirName%\build-%PLATFORM%
 :no_tests
+
+:: build examples
+if "%BUILD_EXAMPLES%" == "" goto no_examples
+	mingw32-make sub-examples || exit /B 1
+	
+	cd examples
+	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
+	cd \projects\%CurrDirName%\build-%qtplatform%
+:no_examples
 
 :: build documentation
 if "%BUILD_DOC%" == "" goto no_doc
-	cd \projects\%CurrDirName%
-	mkdir build-doc
-	cd build-doc
-
-	C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../doc/doc.pro || exit /B 1
 	mingw32-make doxygen || exit /B 1
+	
+	cd doc
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
+	cd \projects\%CurrDirName%\build-%qtplatform%
 :no_doc

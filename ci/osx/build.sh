@@ -29,7 +29,7 @@ make INSTALL_ROOT="$rootdir/install" install
 
 # build and run tests
 if [[ -z "$NO_TESTS" ]]; then
-	make all
+	make all # will also build examples (but not run them)
 
 	export LD_LIBRARY_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
 
@@ -46,7 +46,7 @@ fi
 
 # build examples
 if [[ -n "$BUILD_EXAMPLES" ]]; then
-	make all
+	make sub-examples #build only examples, no tests again
 
 	pushd examples
 	make INSTALL_ROOT="$rootdir/install" install
@@ -57,16 +57,9 @@ popd
 
 # build documentation
 if [[ -n "$BUILD_DOC" ]]; then
-	mkdir build-doc
-	pushd build-doc
-
-	/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=debug" $QMAKE_FLAGS ../
-	make qmake_all
-
-	pushd doc
 	make doxygen
+	
+	pushd doc
 	make INSTALL_ROOT="$rootdir/install" install
-	popd
-
 	popd
 fi
