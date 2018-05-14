@@ -8,6 +8,8 @@ scriptdir=$(dirname $0)
 
 export QT_VER=$1
 export TRAVIS_OS_NAME=linux
+export EXTRA_MODULES=".qtremoteobjects"
+#export STATIC_QT_MODS="qtwebsockets qtscxml qtremoteobjects"
 export IMAGE_TAG=$2
 #export IS_LTS=true
 
@@ -17,10 +19,10 @@ PLATFORMS=${@:-gcc_64 android_armv7 android_x86}
 
 case "$IMAGE_TAG" in
 	full)
-		export EXTRA_MODULES=".qtremoteobjects .skycoder42"
+		export EXTRA_MODULES=".skycoder42"
 		;;
 	datasync)
-		export EXTRA_MODULES=".qtremoteobjects .skycoder42.datasync"
+		export EXTRA_MODULES=".skycoder42.datasync"
 		;;
 	json)
 		export EXTRA_MODULES=".skycoder42.jsonserializer"
