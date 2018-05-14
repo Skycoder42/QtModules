@@ -11,7 +11,6 @@ export TRAVIS_OS_NAME=linux
 export EXTRA_MODULES=".qtremoteobjects"
 #export STATIC_QT_MODS="qtwebsockets qtscxml qtremoteobjects"
 export IMAGE_TAG=$2
-#export IS_LTS=true
 
 shift
 shift
@@ -29,6 +28,9 @@ case "$IMAGE_TAG" in
 		;;
 	base)
 		# no extra exports
+		;;
+	lts)
+		export IS_LTS=true
 		;;
 	*)
 		echo "INVALID suffix!"
