@@ -38,7 +38,7 @@ if "%BUILD_EXAMPLES%" == "" goto no_examples
 	
 	cd examples
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
-	cd \projects\%CurrDirName%\build-%qtplatform%
+	cd ..
 :no_examples
 
 :: build documentation
@@ -47,5 +47,5 @@ if "%BUILD_DOC%" == "" goto no_doc
 	
 	cd doc
 	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
-	cd \projects\%CurrDirName%\build-%qtplatform%
+	cd ..
 :no_doc
