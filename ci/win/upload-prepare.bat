@@ -8,3 +8,5 @@ if "%PLATFORM%" == "static" (
 	7z a build_%PLATFORM%_%QT_VER%.zip %PLATFORM% || exit \B 1
 	move build_%PLATFORM%_%QT_VER%.zip ..\..\..\ || exit \B 1
 )
+
+cd ..\..\..\..
