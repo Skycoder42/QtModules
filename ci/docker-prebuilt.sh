@@ -18,13 +18,13 @@ PLATFORMS=${@:-gcc_64 android_armv7 android_x86}
 
 case "$IMAGE_TAG" in
 	full)
-		export EXTRA_MODULES=".skycoder42"
+		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42"
 		;;
 	datasync)
-		export EXTRA_MODULES=".skycoder42.datasync"
+		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.datasync"
 		;;
 	json)
-		export EXTRA_MODULES=".skycoder42.jsonserializer"
+		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.jsonserializer"
 		;;
 	base)
 		# no extra exports
