@@ -25,6 +25,8 @@ from os.path import join as pjoin
 
 
 # workaround / hack to handle LTS releases
+is_lts = False
+lts_version = ""
 qt_prefix = "qt.qt5."
 
 pkg_base_xml = """<?xml version="1.0" encoding="UTF-8"?>
@@ -149,6 +151,8 @@ def url_extract(sdir, url, as_zip=False):
 
 def prepare_sources(tdir, repo, mod_name, vers):
 	print("  -> Downloading source tarball")
+	if is_lts:
+		vers = vers.split("-")[0]
 	# download sources
 	out_dir = pjoin(tdir, mod_name + "-" + vers)
 	mod_url = "https://github.com/" + repo + "/archive/" + vers + ".tar.gz"
@@ -443,7 +447,10 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 
 	# download sources
 	print("  -> Downloading and extracting data from github")
-	bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/build_" + arch + "_" + qt_version
+	if is_lts:
+		bin_url = "https://github.com/Skycoder42/QtModules-LTS/releases/download/" + lts_version + "/" + config["title"].lower() + "_build_" + arch + "_" + qt_version
+	else:
+		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/build_" + arch + "_" + qt_version
 	bin_url += ".zip" if as_zip else ".tar.xz"
 	if arch == "doc":
 		inst_dir = pjoin(pkg_data(pkg_dir), "Docs")
@@ -566,13 +573,6 @@ def repogen(repo_id, version, qt_version, dep_dir):
 			config = json.load(file)
 		prepare_headers(tmp_dir, src_dir, cfg_if(config, "modules", mod_name), version)
 
-		# workaround for LTS releases
-		url_version = version
-		if "lts" in version:
-			global qt_prefix
-			qt_prefix = "qt."
-			version = version.replace("lts", "")
-
 		# step 2: create the meta and src repositories
 		rep_dir = pjoin(tmp_dir, "pkg")
 		os.mkdir(rep_dir)
@@ -582,7 +582,7 @@ def repogen(repo_id, version, qt_version, dep_dir):
 			create_src_pkg(rep_dir, src_dir, pkg_base, config, version, qt_version)
 
 		# step 3: download and create binary repositories
-		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, url_version, qt_version)
+		create_all_pkgs(rep_dir, pkg_base, repo_id, config, version, version, qt_version)
 
 		# step 4: create the actual repositories (repogen)
 		# linux
@@ -603,5 +603,26 @@ def repogen(repo_id, version, qt_version, dep_dir):
 					"android_armv7", "android_x86")
 
 
+def repogen_lts(qt_version, dep_dir):
+	# set globals
+	global is_lts, lts_version, qt_prefix
+	is_lts = True
+	lts_version = qt_version + "-lts" + qt_version.split(".")[-1]  # TODO remove lts number suffix
+	qt_prefix = "qt."
+
+	mod_info = [
+		("QtJsonSerializer", "3.1.2"),
+		("QtRestClient", "1.2.6"),
+		("QtDataSync", "4.0.1"),
+		("QtAutoUpdater", "2.1.4")
+	]
+
+	for mod_name, version in mod_info:
+		repogen("Skycoder42/" + mod_name, version + "-" + qt_version.split(".")[-1], qt_version, dep_dir)
+
+
 if __name__ == '__main__':
-	repogen(*sys.argv[1:5])
+	if sys.argv[1] == "lts":
+		repogen_lts(*sys.argv[2:4])
+	else:
+		repogen(*sys.argv[1:5])
