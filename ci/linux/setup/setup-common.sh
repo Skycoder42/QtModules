@@ -18,7 +18,7 @@ ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/openssl-1.0/libcrypt
 ln -s /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/openssl-1.0/libssl.so
 
 # install qpm
-curl -Lo /tmp/qpm https://www.qpm.io/download/v0.10.0/linux_386/qpm
+curl -Lo /tmp/qpm https://www.qpm.io/download/v0.11.0/linux_386/qpm
 install -m 755 /tmp/qpm /usr/local/bin/
 
 # create installer script
