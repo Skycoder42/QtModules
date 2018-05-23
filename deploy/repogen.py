@@ -525,6 +525,9 @@ def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
 
 
 def prepare_hostbuilds(rdir, os_name, pkg_base, qt_version, hostbuilds, *arch_pkgs):
+	if len(hostbuilds) == 0:
+		return
+
 	os_tool_map = {
 		"linux": "android_armv7",
 		"windows": "win64_msvc2017_winrt_x64",
