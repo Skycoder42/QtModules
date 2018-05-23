@@ -496,11 +496,11 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 
 def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_version):
 	# tar packages
-	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "examples", "gcc_64", "ios", "static_linux", "static_osx"]:
+	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "examples", "gcc_64", "ios"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, False)
 	# zip packages
 	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
-				 "winrt_x86_msvc2017", "static_win"]:
+				 "winrt_x86_msvc2017"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, True)
 
 
@@ -524,59 +524,9 @@ def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
 	], check=True, stdout=subprocess.DEVNULL)
 
 
-def prepare_static_files(rdir, os_static, pkg_base, qt_version, *arch_pkgs):
-	inverse_pkg_keys = {
-		"win64_msvc2017_winrt_x86": "winrt_x86_msvc2017",
-		"win64_msvc2017_winrt_x64": "winrt_x64_msvc2017",
-		"win64_msvc2017_winrt_armv7": "winrt_armv7_msvc2017"
-	}
-
-	# fix static os
-	if os_static == "static_mac":
-		os_static = "static_osx"
-	if os_static == "static_windows":
-		os_static = "static_win"
-
-	# generate static copy paths
-	pkg_static = pkg_base + "." + os_static
-	static_kit_dir = pjoin(rdir, pkg_static)
-	if not os.path.exists(static_kit_dir):
-		return
-	static_kit_dir = pjoin(static_kit_dir, "data", qt_version, os_static)
-
-	for arch in arch_pkgs:
-		if arch.startswith("android") or arch == "ios" or "winrt" in arch:
-			print("  -> Preparing static tools for " + arch)
-			pkg_arch = pkg_base + "." + arch
-			pkg_data_dir = pjoin(rdir, pkg_arch, "data")
-			pkg_backup_dir = pkg_data_dir + ".bkp"
-
-			orig_arch = inverse_pkg_keys[arch] if arch in inverse_pkg_keys else arch
-			pkg_kit_dir = pjoin(pkg_data_dir, qt_version, orig_arch)
-			if not os.path.exists(pkg_kit_dir):
-				raise Exception("Missing path: " + pkg_kit_dir)
-
-			# create or restore original data
-			if not os.path.exists(pkg_backup_dir):
-				print("    >> Create original data backup")
-				shutil.copytree(pkg_data_dir, pkg_backup_dir, symlinks=True)
-			else:
-				print("    >> Restore original data backup")
-				shutil.rmtree(pkg_data_dir)
-				shutil.copytree(pkg_backup_dir, pkg_data_dir, symlinks=True)
-
-			# copy in the static stuff
-			print("    >> Copy static tools")
-			distutils.dir_util._path_created = {}  # clear copy dir-cache, because it was deleted before
-			distutils.dir_util.copy_tree(static_kit_dir, pkg_kit_dir, preserve_symlinks=True)
-
-
 def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pkgs):
 	dep_name = osname + "_" + arch
 	print("=> Deploying for " + dep_name)
-
-	# prepare static tools
-	prepare_static_files(rdir, "static_" + osname, pkg_base, qt_version, *arch_pkgs)
 
 	# create repo
 	print("  -> Creating repository")
