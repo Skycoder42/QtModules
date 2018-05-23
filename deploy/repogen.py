@@ -585,7 +585,45 @@ def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pk
 	create_repo(out_dir, rdir, pkg_base, *arch_pkgs)
 
 
-def repogen(repo_id, version, qt_version, dep_dir):
+def create_meta_pkgs(qt_version, mod_info, dep_dir):
+	with tempfile.TemporaryDirectory() as tmp_dir:
+		print("=> Generating platform packages")
+		mod_base = "{}{}.skycoder42".format(qt_prefix, qt_vid(qt_version))
+		os.mkdir(pjoin(tmp_dir, mod_base))
+
+		for platform in ["linux_x64", "windows_x86", "mac_x64"]:
+			print("  -> Creating platform package " + platform)
+			meta_dir = pjoin(dep_dir, "qt" + qt_vid(qt_version), platform)
+			if os.path.isdir(meta_dir):
+				continue
+
+			os.makedirs(meta_dir)
+
+			# add the 7z archive
+			data_dir = pjoin(meta_dir, mod_base)
+			os.mkdir(data_dir)
+			subprocess.run([
+				"7z", "a", pjoin(data_dir, "1.0.0meta.7z")
+			], cwd=tmp_dir, check=True, stdout=subprocess.DEVNULL)
+			hasher = hashlib.sha1()
+			with open(pjoin(data_dir, "1.0.0meta.7z"), "rb") as zfile:
+				hasher.update(zfile.read())
+			checksum = hasher.hexdigest()
+
+			# create xml file
+			with open(pjoin(meta_dir, "Updates.xml"), "w") as file:
+				file.write(pkg_platform_xml_pre.format(qt_prefix, qt_vid(qt_version),
+													   qt_version,
+													   qt_version,
+													   datetime.date.today(),
+													   checksum))
+				for mod_name, version in mod_info:
+					file.write(pkg_platform_xml_mid.format(qt_vid(qt_version), mod_name.lower(), platform,
+														   qt_version, mod_name, platform))
+				file.write(pkg_platform_xml_post)
+
+
+def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
 	user = repo_id.split("/")[0]
 	mod_name = repo_id.split("/")[1]
 	mod_title = mod_name[2:]
@@ -627,6 +665,10 @@ def repogen(repo_id, version, qt_version, dep_dir):
 					"ios",
 					"android_armv7", "android_x86")
 
+	# step 5 (optional): create the meta pkgs
+	if not no_metagen:
+		create_meta_pkgs(qt_version, [(mod_name, version)], dep_dir)
+
 
 def repogen_lts(qt_version, dep_dir):
 	# set globals
@@ -643,40 +685,9 @@ def repogen_lts(qt_version, dep_dir):
 	]
 
 	for mod_name, version in mod_info:
-		repogen("Skycoder42/" + mod_name, version + "-" + qt_version.split(".")[-1], qt_version, dep_dir)
+		repogen("Skycoder42/" + mod_name, version + "-" + qt_version.split(".")[-1], qt_version, dep_dir, True)
 
-	with tempfile.TemporaryDirectory() as tmp_dir:
-		print("=> Generating platform packages")
-		mod_base = "{}{}.skycoder42".format(qt_prefix, qt_vid(qt_version))
-		os.mkdir(pjoin(tmp_dir, mod_base))
-
-		for platform in ["linux_x64", "windows_x86", "mac_x64"]:
-			print("  -> Creating platform package " + platform)
-			meta_dir = pjoin(dep_dir, "qt" + qt_vid(qt_version), platform)
-			os.makedirs(meta_dir)
-
-			# add the 7z archive
-			data_dir = pjoin(meta_dir, mod_base)
-			os.mkdir(data_dir)
-			subprocess.run([
-				"7z", "a", pjoin(data_dir, "1.0.0meta.7z")
-			], cwd=tmp_dir, check=True, stdout=subprocess.DEVNULL)
-			hasher = hashlib.sha1()
-			with open(pjoin(data_dir, "1.0.0meta.7z"), "rb") as zfile:
-				hasher.update(zfile.read())
-			checksum = hasher.hexdigest()
-
-			# create xml file
-			with open(pjoin(meta_dir, "Updates.xml"), "w") as file:
-				file.write(pkg_platform_xml_pre.format(qt_prefix, qt_vid(qt_version),
-													   qt_version,
-													   qt_version,
-													   datetime.date.today(),
-													   checksum))
-				for mod_name, version in mod_info:
-					file.write(pkg_platform_xml_mid.format(qt_vid(qt_version), mod_name.lower(), platform,
-														   qt_version, mod_name, platform))
-				file.write(pkg_platform_xml_post)
+	create_meta_pkgs(qt_version, mod_info, dep_dir)
 
 
 if __name__ == '__main__':
