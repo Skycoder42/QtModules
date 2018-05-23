@@ -524,9 +524,75 @@ def create_repo(rdir, pdir, pkg_base, *arch_pkgs):
 	], check=True, stdout=subprocess.DEVNULL)
 
 
+def prepare_hostbuilds(rdir, os_name, pkg_base, qt_version, hostbuilds, *arch_pkgs):
+	os_tool_map = {
+		"linux": "android_armv7",
+		"windows": "win64_msvc2017_winrt_x64",
+		"mac": "ios"
+	}
+
+	inverse_pkg_keys = {
+		"win64_msvc2017_winrt_x86": "winrt_x86_msvc2017",
+		"win64_msvc2017_winrt_x64": "winrt_x64_msvc2017",
+		"win64_msvc2017_winrt_armv7": "winrt_armv7_msvc2017"
+	}
+
+	cross_packages = [
+		("android", "linux"),
+		("ios", "mac"),
+		("winrt", "windows")
+	]
+
+	for arch in arch_pkgs:
+		for crossarch, crosshost in cross_packages:
+			if crossarch in arch:
+				print("  -> Preparing host tools for " + arch)
+				pkg_arch = pkg_base + "." + arch
+				pkg_data_dir = pjoin(rdir, pkg_arch, "data")
+				pkg_backup_dir = pkg_data_dir + ".bkp"
+
+				orig_arch = inverse_pkg_keys[arch] if arch in inverse_pkg_keys else arch
+				pkg_kit_dir = pjoin(pkg_data_dir, qt_version, orig_arch)
+				if not os.path.exists(pkg_kit_dir):
+					raise Exception("Missing path: " + pkg_kit_dir)
+
+				os_tool_arch = os_tool_map[os_name]
+				os_orig_tool_arch = inverse_pkg_keys[os_tool_arch] if os_tool_arch in inverse_pkg_keys else os_tool_arch
+				src_kit_dir = pjoin(rdir, pkg_base + "." + os_tool_arch, "data", qt_version, os_orig_tool_arch)
+
+				# create or restore original data
+				if not os.path.exists(pkg_backup_dir):
+					print("    >> Create original data backup")
+					shutil.copytree(pkg_data_dir, pkg_backup_dir, symlinks=True)
+				else:
+					print("    >> Restore original data backup")
+					shutil.rmtree(pkg_data_dir)
+					shutil.copytree(pkg_backup_dir, pkg_data_dir, symlinks=True)
+
+				if os_name == crosshost:
+					print("    >> Using original host build")
+				else:
+					# copy over the builds
+					for hostbuild in hostbuilds:
+						for binary in glob.glob(pjoin(pkg_kit_dir, hostbuild)):
+							rel_path = os.path.relpath(binary, pkg_kit_dir)
+							os.remove(binary)
+							print("    >> Removed matching binary " + rel_path)
+						for binary in glob.glob(pjoin(src_kit_dir, hostbuild)):
+							rel_path = os.path.relpath(binary, src_kit_dir)
+							target_path = pjoin(pkg_kit_dir, rel_path)
+							shutil.copy2(binary, target_path, follow_symlinks=False)
+							print("    >> Copied matching binary " + rel_path)
+
+				# go to next arch
+				break
+
+
 def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pkgs):
 	dep_name = osname + "_" + arch
 	print("=> Deploying for " + dep_name)
+
+	prepare_hostbuilds(rdir, osname, pkg_base, qt_version, config["hostbuilds"] if "hostbuilds" in config else [], *arch_pkgs)
 
 	# create repo
 	print("  -> Creating repository")
@@ -542,11 +608,11 @@ def create_meta_pkgs(qt_version, mod_info, dep_dir):
 		os.mkdir(pjoin(tmp_dir, mod_base))
 
 		for platform in ["linux_x64", "windows_x86", "mac_x64"]:
-			print("  -> Creating platform package " + platform)
 			meta_dir = pjoin(dep_dir, "qt" + qt_vid(qt_version), platform)
 			if os.path.isdir(meta_dir):
 				continue
 
+			print("  -> Creating platform package " + platform)
 			os.makedirs(meta_dir)
 
 			# add the 7z archive
