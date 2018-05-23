@@ -21,7 +21,7 @@ if "%PLATFORM%" == "mingw53_32" (
 	if "%PLATFORM%" == "msvc2017_64" set VC_VARSALL=amd64
 	if "%PLATFORM%" == "winrt_x64_msvc2017" set VC_VARSALL=amd64
 	if "%PLATFORM%" == "winrt_x86_msvc2017" set VC_VARSALL=amd64_x86
-	if "%PLATFORM%" == "winrt_armv7_msvc2017" set VC_VARSALL=amd64_arm
+	if "%PLATFORM%" == "winrt_armv7_msvc2017" set VC_VARSALL=amd64
 	if "%PLATFORM%" == "msvc2015_64" set VC_VARSALL=amd64
 	if "%PLATFORM%" == "msvc2015" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "static" (
