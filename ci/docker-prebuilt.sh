@@ -10,7 +10,7 @@ export QT_VER=$1
 export TRAVIS_OS_NAME=linux
 export EXTRA_MODULES=".qtremoteobjects"
 export STATIC_QT_MODS="qtwebsockets qtscxml qtremoteobjects"
-export EXTRA_PKG="libsecret-1-dev"
+export EXTRA_PKG="libsecret-1-dev libsystemd-dev"
 export IMAGE_TAG=$2
 
 shift
