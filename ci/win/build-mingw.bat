@@ -20,6 +20,7 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 
 	setlocal
 	set PATH=C:\projects\Qt\%QT_VER%\%PLATFORM%\bin;%CD%\lib;%PATH%;
+	set QT_PLUGIN_PATH=%CD%\plugins;%QT_PLUGIN_PATH%;
 	if "%TEST_DIR%" == "" (
 		set TEST_DIR=.\tests\auto
 	)

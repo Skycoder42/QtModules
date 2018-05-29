@@ -19,7 +19,9 @@ nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 if NOT "%NO_TESTS%" == "" goto no_tests
 	nmake all || exit /B 1
 
+	setlocal
 	set PATH=C:\projects\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
+	set QT_PLUGIN_PATH=%CD%\plugins;%QT_PLUGIN_PATH%;
 	if "%TEST_DIR%" == "" (
 		set TEST_DIR=.\tests\auto
 	)
@@ -28,6 +30,7 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 	for /r %%f in (tst_*.exe) do (
 		%%f || exit /B 1
 	)
+	endlocal
 	cd \projects\%CurrDirName%\build-%qtplatform%
 :no_tests
 
