@@ -28,7 +28,7 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 	cd %TEST_DIR%
 	set QT_QPA_PLATFORM=minimal
 	for /r %%f in (tst_*.exe) do (
-		%%f || exit /B 1
+		start /w %%f || exit /B 1
 	)
 	endlocal
 	cd \projects\%CurrDirName%\build-%qtplatform%
