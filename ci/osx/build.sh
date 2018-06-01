@@ -31,7 +31,8 @@ make INSTALL_ROOT="$rootdir/install" install
 if [[ -z "$NO_TESTS" ]]; then
 	make all # will also build examples (but not run them)
 
-	export LD_LIBRARY_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
+	export DYLD_LIBRARY_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
+	export DYLD_FRAMEWORK_PATH="$(pwd)/lib:/opt/qt/$QT_VER/$PLATFORM/lib:$LD_LIBRARY_PATH"
 	export QT_PLUGIN_PATH="$(pwd)/plugins:$QT_PLUGIN_PATH"
 
 	if [[ -z "$TEST_DIR" ]]; then
