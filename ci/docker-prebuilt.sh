@@ -24,8 +24,8 @@ case "$IMAGE_TAG" in
 	datasync)
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.datasync"
 		;;
-	json)
-		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.jsonserializer"
+	common)
+		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.jsonserializer .skycoder42.service"
 		;;
 	base)
 		# no extra exports
