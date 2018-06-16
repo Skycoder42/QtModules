@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import xml.etree.ElementTree as ET
 
 from os.path import join as pjoin
 
@@ -130,30 +131,6 @@ Component.prototype.createOperations = function()
 							"QmakeOutputInstallerKey=" + resolveQt5EssentialsDependency(),
 							"{}");
 }}"""
-
-pkg_platform_xml_pre = """
-<Updates>
- <ApplicationName>{{AnyApplication}}</ApplicationName>
- <ApplicationVersion>1.0.0</ApplicationVersion>
- <Checksum>true</Checksum>
- <PackageUpdate>
-  <Name>{}{}.skycoder42</Name>
-  <DisplayName>Skycoder42 Qt {} modules</DisplayName>
-  <Description>
-   Contains all my Qt {} modules, for a simple installation.
-  </Description>
-  <Version>1.0.0</Version>
-  <ReleaseDate>{}</ReleaseDate>
-  <Default>true</Default>
-  <UpdateFile UncompressedSize="0" OS="Any" CompressedSize="0"/>
-  <SHA1>{}</SHA1>
- </PackageUpdate>
- <RepositoryUpdate>"""
-pkg_platform_xml_mid = """
-  <Repository action="add" url="https://install.skycoder42.de/qtmodules/qt{}/{}/{}" displayname="Qt {} {} {} Repository"/>"""
-pkg_platform_xml_post = """
- </RepositoryUpdate>
-</Updates>"""
 
 
 def cfg_if(config, key, default=None):
@@ -599,27 +576,25 @@ def deploy_repo(ddir, rdir, osname, arch, pkg_base, config, qt_version, *arch_pk
 
 	# create repo
 	print("  -> Creating repository")
-	out_dir = pjoin(ddir, "qt" + qt_vid(qt_version), config["title"].lower(), dep_name)
+	out_dir = pjoin(ddir, dep_name, "qt" + qt_vid(qt_version))
 	os.makedirs(out_dir, exist_ok=True)
 	create_repo(out_dir, rdir, pkg_base, *arch_pkgs)
 
 
-def create_meta_pkgs(qt_version, mod_info, dep_dir):
+def create_meta_pkgs(qt_version, dep_dir):
 	with tempfile.TemporaryDirectory() as tmp_dir:
 		print("=> Generating platform packages")
 		mod_base = "{}{}.skycoder42".format(qt_prefix, qt_vid(qt_version))
 		os.mkdir(pjoin(tmp_dir, mod_base))
 
 		for platform in ["linux_x64", "windows_x86", "mac_x64"]:
-			meta_dir = pjoin(dep_dir, "qt" + qt_vid(qt_version), platform)
-			if os.path.isdir(meta_dir):
+			meta_dir = pjoin(dep_dir, platform, "qt" + qt_vid(qt_version))
+			data_dir = pjoin(meta_dir, mod_base)
+			if os.path.isdir(data_dir):
 				continue
 
 			print("  -> Creating platform package " + platform)
-			os.makedirs(meta_dir)
-
 			# add the 7z archive
-			data_dir = pjoin(meta_dir, mod_base)
 			os.mkdir(data_dir)
 			subprocess.run([
 				"7z", "a", pjoin(data_dir, "1.0.0meta.7z")
@@ -629,17 +604,35 @@ def create_meta_pkgs(qt_version, mod_info, dep_dir):
 				hasher.update(zfile.read())
 			checksum = hasher.hexdigest()
 
-			# create xml file
-			with open(pjoin(meta_dir, "Updates.xml"), "w") as file:
-				file.write(pkg_platform_xml_pre.format(qt_prefix, qt_vid(qt_version),
-													   qt_version,
-													   qt_version,
-													   datetime.date.today(),
-													   checksum))
-				for mod_name, version in mod_info:
-					file.write(pkg_platform_xml_mid.format(qt_vid(qt_version), mod_name.lower(), platform,
-														   qt_version, mod_name, platform))
-				file.write(pkg_platform_xml_post)
+			# update xml file
+			ufile = pjoin(meta_dir, "Updates.xml")
+			uxml = ET.parse(ufile)
+
+			def createElem(tag: str, text: str, attribs=None, tail: str= "\n  "):
+				if attribs is None:
+					attribs = {}
+				elem = ET.Element(tag, attribs)
+				elem.text = text
+				elem.tail = tail
+				return elem
+
+			pelem = ET.Element("PackageUpdate")
+			pelem.text = "\n  "
+			pelem.append(createElem("Name", mod_base))
+			pelem.append(createElem("DisplayName", "Skycoder42 Qt {} modules".format(qt_version)))
+			pelem.append(createElem("Description", "Contains all my Qt {} modules, for a simple installation.".format(qt_version)))
+			pelem.append(createElem("Version", "1.0.0"))
+			pelem.append(createElem("ReleaseDate", str(datetime.date.today())))
+			pelem.append(createElem("Default", "true"))
+			pelem.append(createElem("UpdateFile", "", {
+				"CompressedSize": "0",
+				"OS": "Any",
+				"UncompressedSize": "0"
+			}))
+			pelem.append(createElem("SHA1", checksum, tail="\n "))
+			pelem.tail = "\n"
+			uxml.getroot().append(pelem)
+			uxml.write(ufile)
 
 
 def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
@@ -686,7 +679,7 @@ def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
 
 	# step 5 (optional): create the meta pkgs
 	if not no_metagen:
-		create_meta_pkgs(qt_version, [(mod_name, version)], dep_dir)
+		create_meta_pkgs(qt_version, dep_dir)
 
 
 def repogen_lts(qt_version, dep_dir):
@@ -706,7 +699,7 @@ def repogen_lts(qt_version, dep_dir):
 	for mod_name, version in mod_info:
 		repogen("Skycoder42/" + mod_name, version + "-" + qt_version.split(".")[-1], qt_version, dep_dir, True)
 
-	create_meta_pkgs(qt_version, mod_info, dep_dir)
+	create_meta_pkgs(qt_version, dep_dir)
 
 
 if __name__ == '__main__':
