@@ -42,6 +42,8 @@ esac
 for platform in $PLATFORMS; do
 	echo building $IMAGE_TAG for $platform
 	export PLATFORM=$platform
+	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
 	$scriptdir/linux/setup.sh
+	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
 done
