@@ -47,3 +47,6 @@ for platform in $PLATFORMS; do
 	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
 done
+
+paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
+sudo docker system prune -a
