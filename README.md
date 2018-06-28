@@ -5,6 +5,13 @@ A module for the Qt Maintenance-Tool to add my modules to your Qt installation.
 This How-To explains how to add a custom repository to the Qt MainetenanceTool. This gives the advantage of an easy installation and maintenance of custom modules, and allows clean installations, deinstallations and updates.
 
 ## Add the repository
+
+**Important:** Due to recent changes in the MaintenanceTool Version 3.0.5, the method below is broken. Instead, you must invoke the tool itself with as `/path/to/MaintenanceTool --addTempRepository https://install.skycoder42.de/qtmodules/<platform>`. This will add the repository for the current run the same way it should work via the GUI. Take the values for the path to the MaintenanceTool and the platform url from the part below.
+
+There exists a bug report for the problem. See [QTIFW-1156](https://bugreports.qt.io/browse/QTIFW-1156).
+
+-------
+
 The first step is to actually add the repository to the mainetancetool. This can be done by adding it in the settings, as shown below. The MaintenanceTool can be found in your Qt installation folder. For example:
 - Linux: `~/Qt/MaintenanceTool`
 - Windows: `C:/Qt/MaintenanceTool.exe`
