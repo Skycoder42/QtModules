@@ -1,3 +1,5 @@
+@echo off
+
 :: builds
 set PATH=C:\Python36-x64;C:\projects\;%PATH%
 

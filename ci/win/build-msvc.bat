@@ -1,23 +1,26 @@
 :: build
 setlocal
+@echo on
 
 set qtplatform=%PLATFORM%
 for %%* in (.) do set CurrDirName=%%~nx*
 
 call %VC_DIR% %VC_VARSALL% || exit /B 1
 
+set PATH=C:\Qt\Tools\QtCreator\bin\;%PATH%
+
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
 C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake ../ || exit /B 1
-nmake qmake_all || exit /B 1
-nmake || exit /B 1
-nmake lrelease || exit /B 1
-nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
+jom qmake_all || exit /B 1
+jom || exit /B 1
+jom lrelease || exit /B 1
+jom INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
 :: build and run test
 if NOT "%NO_TESTS%" == "" goto no_tests
-	nmake all || exit /B 1
+	jom all || exit /B 1
 
 	setlocal
 	set PATH=C:\projects\Qt\%QT_VER%\%qtplatform%\bin;%CD%\lib;%PATH%;
@@ -38,18 +41,18 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 
 :: build examples
 if "%BUILD_EXAMPLES%" == "" goto no_examples
-	nmake sub-examples || exit /B 1
+	jom sub-examples || exit /B 1
 	
 	cd examples
-	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
+	jom INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 	cd ..
 :no_examples
 
 :: build documentation
 if "%BUILD_DOC%" == "" goto no_doc
-	nmake doxygen || exit /B 1
+	jom doxygen || exit /B 1
 	
 	cd doc
-	nmake INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
+	jom INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 	cd ..
 :no_doc
