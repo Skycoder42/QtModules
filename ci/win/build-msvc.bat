@@ -18,6 +18,14 @@ jom || exit /B 1
 jom lrelease || exit /B 1
 jom INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1
 
+:: build examples
+if "%MAKE_RUN_TESTS%" == "" goto no_run_tests
+	set NO_TESTS=true
+
+	jom all || exit /B 1
+	jom /J 1 run-tests || exit /B 1
+:no_run_tests
+
 :: build and run test
 if NOT "%NO_TESTS%" == "" goto no_tests
 	jom all || exit /B 1

@@ -32,6 +32,16 @@ make lrelease
 make INSTALL_ROOT="$rootdir/install" install
 
 # build and run tests
+if [[ -n "$MAKE_RUN_TESTS" ]]; then
+	export NO_TESTS=true
+	
+	export LD_LIBRARY_PATH="/usr/lib/openssl-1.0:$LD_LIBRARY_PATH"
+	
+	make all # will also build examples (but not run them)
+	make -j1 run-tests
+fi
+
+# build and run tests (deprecated)
 if [[ -z "$NO_TESTS" ]]; then
 	make all # will also build examples (but not run them)
 
