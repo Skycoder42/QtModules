@@ -17,6 +17,7 @@ if "%PLATFORM%" == "mingw53_32" (
 	:: winrt: skip tests
 	echo %PLATFORM% | findstr /C:"winrt" > nul && (
 		set NO_TESTS=true
+		set MAKE_RUN_TESTS=
 	)
 
 	:: find the varsall parameters
@@ -29,6 +30,7 @@ if "%PLATFORM%" == "mingw53_32" (
 	if "%PLATFORM%" == "static" (
 		set VC_VARSALL=amd64
 		set NO_TESTS=true
+		set MAKE_RUN_TESTS=
 		echo CONFIG += static_host_build >> .qmake.conf
 	)
 

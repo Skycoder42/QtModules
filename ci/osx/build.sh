@@ -8,11 +8,13 @@ export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 # ios: no tests
 if [[ $PLATFORM == "ios" ]]; then
 	export NO_TESTS=true
+	export MAKE_RUN_TESTS=
 fi
 
 # static flag
 if [[ "$PLATFORM" == "static" ]]; then
 	export NO_TESTS=true
+	export MAKE_RUN_TESTS=
 	echo "CONFIG += static_host_build" >> .qmake.conf
 fi
 

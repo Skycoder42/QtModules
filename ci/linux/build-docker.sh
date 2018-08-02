@@ -13,10 +13,12 @@ if [[ $PLATFORM == "android_"* ]]; then
 	export ANDROID_NDK_ROOT=$ANDROID_NDK
 
 	export NO_TESTS=true
+	export MAKE_RUN_TESTS=
 fi
 
 if [[ $PLATFORM == "static" ]]; then
 	export NO_TESTS=true
+	export MAKE_RUN_TESTS=
 	echo "CONFIG += static_host_build" >> .qmake.conf
 fi
 
