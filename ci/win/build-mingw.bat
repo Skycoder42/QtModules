@@ -11,22 +11,22 @@ mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
 C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
-mingw32-make qmake_all || exit /B 1
-mingw32-make || exit /B 1
-mingw32-make lrelease || exit /B 1
-mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
+mingw32-make SHELL=cmd qmake_all || exit /B 1
+mingw32-make SHELL=cmd || exit /B 1
+mingw32-make SHELL=cmd lrelease || exit /B 1
+mingw32-make SHELL=cmd INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
 :: build and run tests
 if "%MAKE_RUN_TESTS%" == "" goto no_run_tests
 	set NO_TESTS=true
 
-	mingw32-make all || exit /B 1
-	mingw32-make -j1 run-tests || exit /B 1
+	mingw32-make SHELL=cmd all || exit /B 1
+	mingw32-make SHELL=cmd -j1 run-tests || exit /B 1
 :no_run_tests
 
 :: build and run tests (deprecated)
 if NOT "%NO_TESTS%" == "" goto no_tests
-	mingw32-make all || exit /B 1
+	mingw32-make SHELL=cmd all || exit /B 1
 
 	setlocal
 	set PATH=C:\projects\Qt\%QT_VER%\%PLATFORM%\bin;%CD%\lib;%PATH%;
@@ -47,18 +47,18 @@ if NOT "%NO_TESTS%" == "" goto no_tests
 
 :: build examples
 if "%BUILD_EXAMPLES%" == "" goto no_examples
-	mingw32-make sub-examples || exit /B 1
+	mingw32-make SHELL=cmd sub-examples || exit /B 1
 	
 	cd examples
-	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
+	mingw32-make SHELL=cmd INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 	cd ..
 :no_examples
 
 :: build documentation
 if "%BUILD_DOC%" == "" goto no_doc
-	mingw32-make doxygen || exit /B 1
+	mingw32-make SHELL=cmd doxygen || exit /B 1
 	
 	cd doc
-	mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
+	mingw32-make SHELL=cmd INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 	cd ..
 :no_doc
