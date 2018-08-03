@@ -5,6 +5,7 @@ for %%* in (.) do set CurrDirName=%%~nx*
 
 set PATH=C:\projects\Qt\Tools\mingw530_32\bin;%PATH%;
 set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
+set SHELL=cmd
 
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
