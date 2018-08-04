@@ -6,11 +6,13 @@ for %%* in (.) do set CurrDirName=%%~nx*
 set PATH=C:\projects\Qt\Tools\mingw530_32\bin;%PATH%;
 set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 set SHELL=cmd
+set QMAKE_SH=
 
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
-C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake QMAKE_SH= ../ || exit /B 1
+type Makefile
 mingw32-make SHELL=cmd qmake_all || exit /B 1
 mingw32-make SHELL=cmd || exit /B 1
 mingw32-make SHELL=cmd lrelease || exit /B 1
