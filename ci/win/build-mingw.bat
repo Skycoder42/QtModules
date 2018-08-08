@@ -9,7 +9,7 @@ set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
-C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake "CONFIG+=no_auto_lupdate" %QMAKE_FLAGS% ../ || exit /B 1
 mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make lrelease || exit /B 1
