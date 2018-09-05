@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-cd $(dirname $0)
+cd $(dirname $0)/../../..
 pwd
 
 git config --global alias.rm-symlink '!__git_rm_symlink(){
