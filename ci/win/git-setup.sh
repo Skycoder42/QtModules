@@ -1,4 +1,7 @@
 #!/bin/bash
+set -ex
+pwd
+
 git config --global alias.rm-symlink '!__git_rm_symlink(){
     git checkout -- "$1"
     link=$(echo "$1")
@@ -27,6 +30,6 @@ git config --global alias.rm-symlinks '!__git_rm_symlinks(){
 }; __git_rm_symlinks'
 
 git rm-symlinks
-cd qtmodules-travi
+cd qtmodules-travis
 git rm-symlinks
 cd ..
