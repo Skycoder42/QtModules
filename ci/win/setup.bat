@@ -1,4 +1,7 @@
 @echo off
+:: before anything else: restore git symlinks
+C:\msys64\usr\bin\sh.exe --login %CD%\qtmodules-travis\ci\win\git-setup.sh || exit /B 1
+
 :: install qpm
 powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
 
@@ -48,7 +51,7 @@ C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository
 
 :: build static qt
 if "%PLATFORM%" == "static" (
-	%~dp0\setup-qt-static.bat || exit \B 1
+	%~dp0\setup-qt-static.bat || exit /B 1
 )
 
 :: mingw32 make workaround
