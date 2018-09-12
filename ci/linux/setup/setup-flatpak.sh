@@ -3,7 +3,7 @@ set -e
 
 scriptdir=$(dirname $0)
 
-pacman --noconfirm -Syyu
+pacman --noconfirm -Syy
 pacman --noconfirm -S flatpak flatpak-builder
 
 export MAKEFLAGS="-j$(nproc)"
