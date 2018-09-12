@@ -3,15 +3,13 @@ set -e
 
 scriptdir=$(dirname $0)
 
-# flatpak: build that only, then return
-if [[ "$PLATFORM" == "flatpak" ]]; then
-	exec $scriptdir/setup/setup-flatpak.sh
-	exit 1
-fi
-
-
 if [ -z "$DOCKER_IMAGE" ]; then
-	echo FROM ubuntu:bionic > $scriptdir/Dockerfile
+	if [ -z "$DOCKER_IMAGE_BASE" ]; then
+		echo FROM ubuntu:bionic > $scriptdir/Dockerfile
+	else
+		echo FROM "$DOCKER_IMAGE_BASE" > $scriptdir/Dockerfile
+	fi
+	#TODO pass all known vars
 	echo ENV \
 		TRAVIS_OS_NAME=\"$TRAVIS_OS_NAME\" \
 		QT_VER_MINOR=\"$QT_VER_MINOR\" \
