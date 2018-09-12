@@ -7,7 +7,7 @@ if [ -z "$DOCKER_IMAGE" ]; then
 	if [ -z "$DOCKER_IMAGE_BASE" ]; then
 		echo FROM ubuntu:bionic > $scriptdir/Dockerfile
 	else
-		echo FROM "$DOCKER_IMAGE_VERSION" > $scriptdir/Dockerfile
+		echo FROM "$DOCKER_IMAGE_BASE" > $scriptdir/Dockerfile
 	fi
 	#TODO pass all known vars
 	echo ENV \
