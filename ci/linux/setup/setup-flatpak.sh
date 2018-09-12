@@ -4,7 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 pacman --noconfirm -Syyu
-pacman --noconfirm -S flatpak flatpak-builder qpmx qpmx-qpmsource
+pacman --noconfirm -S flatpak flatpak-builder
 
 export MAKEFLAGS="-j$(nproc)"
 
