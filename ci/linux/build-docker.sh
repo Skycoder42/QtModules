@@ -3,12 +3,6 @@ set -e
 
 scriptdir=$(dirname $0)
 
-# branch out for flatpak
-if [[ $PLATFORM == "flatpak" ]]; then
-	exec "$scriptdir/build-flatpak.sh"
-	exit 1
-fi
-
 # setup environment
 export MAKEFLAGS="-j$(nproc)"
 

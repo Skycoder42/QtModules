@@ -3,11 +3,13 @@ set -e
 
 scriptdir=$(dirname $0)
 
-pacman --noconfirm -Syy
-pacman --noconfirm -S flatpak flatpak-builder
+sudo add-apt-repository -y ppa:alexlarsson/flatpak
+sudo apt-get -qq update
+sudo apt-get -qq install flatpak flatpak-builder
 
 export MAKEFLAGS="-j$(nproc)"
 
+flatpak --version
 flatpak install -y flathub "org.kde.Platform//$QT_VER_MINOR"
 flatpak install -y flathub "org.kde.Sdk//$QT_VER_MINOR"
 

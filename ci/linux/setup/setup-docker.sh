@@ -3,12 +3,6 @@ set -e
 
 scriptdir=$(dirname $0)
 
-# flatpak: build that only, then return
-if [[ "$PLATFORM" == "flatpak" ]]; then
-	exec $scriptdir/setup-flatpak.sh
-	exit 1
-fi
-
 # gcc_64 only -> install qtifw
 if [[ $PLATFORM == "gcc_64" ]]; then
 	export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"

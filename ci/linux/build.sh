@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# branch out for flatpak
+if [[ $PLATFORM == "flatpak" ]]; then
+	exec "$scriptdir/build-flatpak.sh"
+	exit 1
+fi
+
 if [ -z "$DOCKER_IMAGE" ]; then
 	image=skycoder42/qt-build
 else
