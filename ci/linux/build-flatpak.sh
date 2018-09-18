@@ -7,5 +7,5 @@ scriptdir=$(dirname $0)
 
 cd flatpak-build
 flatpak-builder build "../$FLATPAK_MANIFEST" --force-clean
-mkdir -p install
-tar cJf install/flatpak_build.tar.xz build
+mkdir -p ../install
+tar cJf ../install/flatpak_build.tar.xz build
