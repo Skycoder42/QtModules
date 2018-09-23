@@ -9,6 +9,7 @@ brew tap Skycoder42/qt-modules
 brew upgrade coreutils || brew install coreutils
 brew upgrade python || brew install python3
 brew install qpmx qpm $EXTRA_PKG
+brew install --with-default-names make
 
 # clang only -> install qtifw
 if [[ $PLATFORM == "clang_64" ]]; then
