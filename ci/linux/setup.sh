@@ -3,6 +3,11 @@ set -e
 
 scriptdir=$(dirname $0)
 
+if [ "$PLATFORM" == "flatpak" ]; then
+	export DOCKER_IMAGE=
+    export DOCKER_IMAGE_BASE="base/archlinux:latest"
+fi
+
 if [ -z "$DOCKER_IMAGE" ]; then
 	if [ -z "$DOCKER_IMAGE_BASE" ]; then
 		echo FROM ubuntu:bionic > $scriptdir/Dockerfile
