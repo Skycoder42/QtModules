@@ -16,15 +16,14 @@ mingw32-make lrelease || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1
 
 :: build and run tests
+if NOT "%NO_TESTS%" == "" goto no_tests
 if "%MAKE_RUN_TESTS%" == "" goto no_run_tests
-	set NO_TESTS=true
-
 	mingw32-make all || exit /B 1
 	mingw32-make -j1 run-tests || exit /B 1
+	goto no_tests
 :no_run_tests
 
 :: build and run tests (deprecated)
-if NOT "%NO_TESTS%" == "" goto no_tests
 	mingw32-make all || exit /B 1
 
 	setlocal
