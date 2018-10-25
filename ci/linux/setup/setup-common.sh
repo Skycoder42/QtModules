@@ -25,11 +25,7 @@ install -m 755 /tmp/qpm /usr/local/bin/
 qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
 echo "qtVersion = \"$qtvid\";" > $scriptdir/qt-installer-script.qs
 
-if [[ "$IS_LTS" == "true" ]]; then
-	echo "prefix = \"qt.\";" >> $scriptdir/qt-installer-script.qs
-else
-	echo "prefix = \"qt.qt5.\";" >> $scriptdir/qt-installer-script.qs
-fi
+echo "prefix = \"qt.qt5.\";" >> $scriptdir/qt-installer-script.qs
 
 if [[ "$PLATFORM" == "static" ]]; then
 	echo "platform = \"src\";" >> $scriptdir/qt-installer-script.qs
