@@ -684,10 +684,9 @@ def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
 
 def repogen_lts(qt_version, dep_dir):
 	# set globals
-	global is_lts, lts_version, qt_prefix
+	global is_lts, lts_version
 	is_lts = True
 	lts_version = qt_version + "-lts"
-	qt_prefix = "qt."
 
 	mod_info = [
 		("QtJsonSerializer", "3.1.2"),
