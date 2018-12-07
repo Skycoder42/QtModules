@@ -1,5 +1,5 @@
 setlocal
-@echo off
+@echo on
 
 for %%* in (.) do set CurrDirName=%%~nx*
 

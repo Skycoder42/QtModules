@@ -1,4 +1,4 @@
-@echo off
+@echo on
 :: before anything else: restore git symlinks
 C:\msys64\usr\bin\sh.exe --login %CD%\qtmodules-travis\ci\win\git-setup.sh || exit /B 1
 
@@ -40,7 +40,7 @@ type %~dp0\qt-installer-script-base.qs >> %~dp0\qt-installer-script.qs
 :: update and install Qt modules
 powershell -Command "Invoke-WebRequest https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -OutFile C:\projects\qtinst.exe"
 C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/windows_x86 --verbose > C:\projects\installer.log || (
-	type C:\projects\installer.l
+	type C:\projects\installer.log
 	exit \B 1
 )
 
@@ -51,5 +51,5 @@ if "%PLATFORM%" == "static" (
 
 :: mingw make workaround
 if "%PLATFORM%" == "mingw73_64" (
-	copy C:\projects\Qt\Tools\mingw730_64\bin\mingw64-make.exe C:\projects\Qt\Tools\mingw730_64\bin\make.exe
+	copy C:\projects\Qt\Tools\mingw730_64\bin\mingw32-make.exe C:\projects\Qt\Tools\mingw730_64\bin\make.exe
 )
