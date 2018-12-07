@@ -1,11 +1,12 @@
 :: build
+@echo off
 setlocal
-@echo on
 
 set qtplatform=%PLATFORM%
 for %%* in (.) do set CurrDirName=%%~nx*
 
 call %VC_DIR% %VC_VARSALL% || exit /B 1
+@echo on
 
 set PATH=C:\Qt\Tools\QtCreator\bin\;%PATH%
 
