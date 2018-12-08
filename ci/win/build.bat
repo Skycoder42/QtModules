@@ -3,7 +3,7 @@
 :: builds
 set PATH=C:\Python36-x64;C:\projects\;%PATH%
 
-if "%PLATFORM%" == "mingw53_32" (
+if "%PLATFORM%" == "mingw73_64" (
 	call %~dp0\build-mingw.bat || exit /B 1
 ) else (
 	:: prepare vcvarsall
