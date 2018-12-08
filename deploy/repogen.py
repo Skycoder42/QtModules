@@ -312,6 +312,7 @@ def create_sample_meta(rdir, pkg_base, config, version, qt_version):
 
 def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 	embedded_keys = [
+		"android_arm64_v8a",
 		"android_armv7",
 		"android_x86",
 		"ios",
@@ -320,13 +321,12 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 		"winrt_armv7_msvc2017"
 	]
 	pkg_keys = {
-		"mingw53_32": "win32_mingw53",
+		"mingw73_64": "win64_mingw73",
 		"msvc2017_64": "win64_msvc2017_64",
 		"winrt_x86_msvc2017": "win64_msvc2017_winrt_x86",
 		"winrt_x64_msvc2017": "win64_msvc2017_winrt_x64",
 		"winrt_armv7_msvc2017": "win64_msvc2017_winrt_armv7",
-		"msvc2015_64": "win64_msvc2015_64",
-		"msvc2015": "win32_msvc2015",
+		"msvc2015_64": "win64_msvc2015_64"
 	}
 
 	qt_arch = pkg_keys[arch] if arch in pkg_keys else arch
@@ -473,10 +473,10 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 
 def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_version):
 	# tar packages
-	for arch in ["android_armv7", "android_x86", "clang_64", "doc", "examples", "gcc_64", "ios"]:
+	for arch in ["android_arm64_v8a", "android_armv7", "android_x86", "clang_64", "doc", "examples", "gcc_64", "ios"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, False)
 	# zip packages
-	for arch in ["mingw53_32", "msvc2015", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
+	for arch in ["mingw73_64", "msvc2015_64", "msvc2017_64", "winrt_armv7_msvc2017", "winrt_x64_msvc2017",
 				 "winrt_x86_msvc2017"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, True)
 
@@ -506,7 +506,7 @@ def prepare_hostbuilds(rdir, os_name, pkg_base, qt_version, hostbuilds, *arch_pk
 		return
 
 	os_tool_map = {
-		"linux": "android_armv7",
+		"linux": "android_arm64_v8a",
 		"windows": "win64_msvc2017_winrt_x64",
 		"mac": "ios"
 	}
@@ -663,19 +663,19 @@ def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
 		# linux
 		deploy_repo(dep_dir, rep_dir, "linux", "x64", pkg_base, config, qt_version,
 					"gcc_64",
-					"android_armv7", "android_x86")
+					"android_arm64_v8a", "android_armv7", "android_x86")
 		# windows
 		deploy_repo(dep_dir, rep_dir, "windows", "x86", pkg_base, config, qt_version,
-					"win32_mingw53",
+					"win64_mingw73",
 					"win64_msvc2017_64",
 					"win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "win64_msvc2017_winrt_armv7",
-					"win64_msvc2015_64", "win32_msvc2015",
-					"android_armv7", "android_x86")
+					"win64_msvc2015_64",
+					"android_arm64_v8a", "android_armv7", "android_x86")
 		# macos
 		deploy_repo(dep_dir, rep_dir, "mac", "x64", pkg_base, config, qt_version,
 					"clang_64",
 					"ios",
-					"android_armv7", "android_x86")
+					"android_arm64_v8a", "android_armv7", "android_x86")
 
 	# step 5 (optional): create the meta pkgs
 	if not no_metagen:
