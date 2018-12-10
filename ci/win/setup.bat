@@ -3,10 +3,11 @@
 C:\msys64\usr\bin\sh.exe --login %CD%\qtmodules-travis\ci\win\git-setup.sh || exit /B 1
 
 :: install qpm
-powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe"
+powershell -Command "Invoke-WebRequest https://storage.googleapis.com/www.qpm.io/download/latest/windows_amd64/qpm.exe -OutFile C:\projects\qpm.exe" || exit /B 1
 
 :: install qpmx
-choco install qpmx %EXTRA_PKG%
+choco install qpmx %EXTRA_PKG% || call :qpmx_fallback_install
+where qpmx && qpmx --version || exit /B 1
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
@@ -53,3 +54,12 @@ if "%PLATFORM%" == "static" (
 if "%PLATFORM%" == "mingw73_64" (
 	copy C:\projects\Qt\Tools\mingw730_64\bin\mingw32-make.exe C:\projects\Qt\Tools\mingw730_64\bin\make.exe
 )
+
+:qpmx_fallback_install
+	echo initiating qpmx fallback install
+	powershell -Command "Invoke-WebRequest https://github.com/Skycoder42/qpmx/releases/download/1.6.0/qpmx-1.6.0_msvc2017_64.zip -OutFile C:\projects\qpmx.zip" || exit \B 1
+	mkdir C:\projects\qpmx-fallback-install
+	7z x C:\projects\qpmx.zip -oC:\projects\qpmx-fallback-install || exit /B 1
+	set PATH=C:\projects\qpmx-fallback-install;%PATH%
+	exit /B 0
+:: end qpmx_fallback_install
