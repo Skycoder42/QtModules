@@ -21,6 +21,7 @@ if "%PLATFORM%" == "mingw73_64" (
 
 	:: find the varsall parameters
 	if "%PLATFORM%" == "msvc2017_64" set VC_VARSALL=amd64
+	if "%PLATFORM%" == "msvc2017" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "winrt_x64_msvc2017" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "winrt_x86_msvc2017" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "winrt_armv7_msvc2017" set VC_VARSALL=amd64_x86

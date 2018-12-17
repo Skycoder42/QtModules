@@ -26,6 +26,7 @@ powershell -File %~dp0\replace.ps1 %~dp0\tmp.qs %~dp0\qt-installer-script.qs
 echo prefix = "qt.qt5."; >> %~dp0\qt-installer-script.qs
 
 if "%PLATFORM%" == "msvc2017_64" set PACKAGE=win64_msvc2017_64
+if "%PLATFORM%" == "msvc2017" set PACKAGE=win32_msvc2017
 if "%PLATFORM%" == "winrt_x64_msvc2017" set PACKAGE=win64_msvc2017_winrt_x64
 if "%PLATFORM%" == "winrt_x86_msvc2017" set PACKAGE=win64_msvc2017_winrt_x86
 if "%PLATFORM%" == "winrt_armv7_msvc2017" set PACKAGE=win64_msvc2017_winrt_armv7
