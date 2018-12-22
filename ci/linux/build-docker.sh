@@ -21,6 +21,10 @@ if [[ $PLATFORM == "android_"* ]]; then
 	export NO_TESTS=true
 fi
 
+if [[ $PLATFORM == "emscripten" ]]; then
+	source /opt/emscripten-sdk/emsdk_env.sh
+fi
+
 if [[ $PLATFORM == "static" ]]; then
 	export NO_TESTS=true
 	echo "CONFIG += static_host_build" >> .qmake.conf

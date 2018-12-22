@@ -15,20 +15,24 @@ if [[ $PLATFORM == "gcc_64" ]]; then
 fi
 
 ## common setup
-$scriptdir/setup-common.sh
+if [[ $PLATFORM == "emscripten" ]]; then
+	$scriptdir/setup-wasm.sh
+else
+	$scriptdir/setup-common.sh
 
-## platform-specific setup
-export MAKEFLAGS="-j$(nproc)"
-if [[ $PLATFORM == "gcc_64" ]]; then
-	$scriptdir/setup-gcc.sh
-fi
+	## platform-specific setup
+	export MAKEFLAGS="-j$(nproc)"
+	if [[ $PLATFORM == "gcc_64" ]]; then
+		$scriptdir/setup-gcc.sh
+	fi
 
-if [[ $PLATFORM == "android_"* ]]; then
-	$scriptdir/setup-android.sh
-fi
+	if [[ $PLATFORM == "android_"* ]]; then
+		$scriptdir/setup-android.sh
+	fi
 
-if [[ $PLATFORM == "static" ]]; then
-	$scriptdir/setup-static.sh
+	if [[ $PLATFORM == "static" ]]; then
+		$scriptdir/setup-static.sh
+	fi
 fi
 
 rm -rf /tmp/*
