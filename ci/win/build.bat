@@ -1,7 +1,7 @@
 @echo off
 
 :: builds
-set PATH=C:\Python36-x64;C:\projects\;%PATH%
+set PATH=C:\Python37-x64;C:\projects\;%PATH%
 
 if "%PLATFORM%" == "mingw73_64" (
 	call %~dp0\build-mingw.bat || exit /B 1
