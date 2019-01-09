@@ -1,13 +1,13 @@
 #!/bin/bash
-set -e
+set -ex
 
 export XZ_OPT=-9
 
 scriptdir=$(dirname $0)
 
-FLATDEP_DIR="${FLATDEP_DIR:-"deployment/flatpak"}"
-if [ -f "$FLATDEP_DIR/flatdep.py" ]; then
-	"$FLATDEP_DIR/flatdep.py" "$FLATPAK_MANIFEST"
+if [[ -z "$NO_FLATDEP" ]]; then
+	flat_dir="${FLATDEP_DIR:-"deployment/flatpak"}"
+	"$flat_dir/flatdep.py" "$FLATPAK_MANIFEST"
 fi
 
 cd flatpak-build
