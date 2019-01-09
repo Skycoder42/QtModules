@@ -3,9 +3,6 @@ set -ex
 
 export XZ_OPT=-9
 
-echo $PWD
-find .
-
 scriptdir=$(dirname $0)
 
 if [[ -z "$NO_FLATDEP" ]]; then
