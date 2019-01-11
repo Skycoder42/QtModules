@@ -10,6 +10,7 @@ brew upgrade coreutils || brew install coreutils
 brew upgrade python || brew install python3
 brew install qpmx qpm $EXTRA_PKG
 brew install --with-default-names make
+export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
 
 # clang only -> install qtifw
 if [[ $PLATFORM == "clang_64" ]]; then

@@ -3,6 +3,7 @@ set -e
 
 scriptdir=$(dirname $0)
 
+export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
 export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
 
 # ios: no tests
