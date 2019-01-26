@@ -34,14 +34,16 @@ pushd src
 # WASM FIX
 if [ "$QT_VER" == "5.12.0" ]; then
 	pushd qtbase
-	git fetch https://codereview.qt-project.org/qt/qtbase refs/changes/33/250433/2 && git format-patch -1 --stdout FETCH_HEAD
+	git config user.email "Skycoder42@users.noreply.github.com"
+	git config user.name "Skycoder42"
+	git fetch https://codereview.qt-project.org/qt/qtbase refs/changes/33/250433/2 && git cherry-pick FETCH_HEAD
 	popd
 fi
 
 popd
 mkdir build
 pushd build
-../src/configure -xplatform wasm-emscripten -opensource -confirm-license -make libs -make tools -prefix "$PREFIX" || bash
+../src/configure -xplatform wasm-emscripten -opensource -confirm-license -make libs -make tools -prefix "$PREFIX" || (cat config.log && false)
 make > /dev/null
 make install
 cp config.summary $PREFIX/config.summary

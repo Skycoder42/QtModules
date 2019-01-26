@@ -23,6 +23,7 @@ fi
 
 if [[ $PLATFORM == "emscripten" ]]; then
 	source /opt/emscripten-sdk/emsdk_env.sh
+	export NO_TESTS=true
 fi
 
 if [[ $PLATFORM == "static" ]]; then
