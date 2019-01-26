@@ -11,7 +11,7 @@ if [ -z "$NO_DOCKER_RM" ]; then
 	drm=--rm
 fi
 
-
+mkdir -p "$QPMX_CACHE_DIR"
 sudo docker run $drm --name docker-qt-build --device /dev/fuse --cap-add ALL \
 	-e QMAKE_FLAGS \
 	-e BUILD_DOC \
