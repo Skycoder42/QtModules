@@ -11,7 +11,7 @@ if [ -z "$NO_DOCKER_RM" ]; then
 	drm=--rm
 fi
 
-mkdir -p "$QPMX_CACHE_DIR"
+mkdir -p "$QDEP_CACHE_DIR"
 sudo docker run $drm --name docker-qt-build --device /dev/fuse --cap-add ALL \
 	-e QMAKE_FLAGS \
 	-e BUILD_DOC \
@@ -24,6 +24,6 @@ sudo docker run $drm --name docker-qt-build --device /dev/fuse --cap-add ALL \
 	-e FLATPAK_MANIFEST \
 	-e "QDEP_CACHE_DIR=/root/.qdep-cache" \
 	-v "$(pwd):/root/project" \
-	-v "$QPMX_CACHE_DIR:/root/.qdep-cache" "$image"
+	-v "$QDEP_CACHE_DIR:/root/.qdep-cache" "$image"
 sudo chown -R $USER $(pwd)
-sudo chown -R $USER $QPMX_CACHE_DIR
+sudo chown -R $USER $QDEP_CACHE_DIR
