@@ -5,13 +5,16 @@ services:
 
 sudo: required
 dist: trusty
-osx_image: xcode9.2
+osx_image: xcode10.1
 
 env:
   global:
-    - QPMX_CACHE_DIR=$HOME/.qpmx-cache
-    - QT_VER=5.10.0
+    - QDEP_CACHE_DIR=$HOME/.qdep-cache
+    - QT_VER=5.12.0
     - EXTRA_MODULES=.skycoder42
+    - DOCKER_IMAGE=base
+    - MAKE_RUN_TESTS=true
+    - TARGET_NAME=
 
 matrix:
   include:
@@ -19,29 +22,29 @@ matrix:
       env:
         - PLATFORM=gcc_64
         - BUILD_DOC=true
+        - BUILD_EXAMPLES=true
+    - os: linux
+      env:
+        - PLATFORM=android_arm64_v8a
     - os: linux
       env:
         - PLATFORM=android_armv7
     - os: linux
       env:
         - PLATFORM=android_x86
+    - os: linux
+      env:
+        - PLATFORM=emscripten
     - os: osx
       env:
         - PLATFORM=clang_64
     - os: osx
       env:
         - PLATFORM=ios
-    # only when using static tools
-    - os: linux
-      env:
-        - PLATFORM=static
-    - os: osx
-      env:
-        - PLATFORM=static
 
 before_install:
   - git clone https://github.com/Skycoder42/QtModules.git ./qtmodules-travis
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then travis_wait 40 ./qtmodules-travis/ci/$TRAVIS_OS_NAME/setup.sh; else ./qtmodules-travis/ci/$TRAVIS_OS_NAME/setup.sh; fi
+  - travis_wait 40 ./qtmodules-travis/ci/$TRAVIS_OS_NAME/setup.sh
 
 script:
   - ./qtmodules-travis/ci/$TRAVIS_OS_NAME/build.sh
@@ -54,7 +57,7 @@ deploy:
   api_key:
     secure: <travis encrypted key>
   file_glob: true
-  file: install/opt/build_*_$QT_VER.tar.xz
+  file: install/${TARGET_NAME}_*_${QT_VER}.tar.xz
   on:
     repo: <user/repository>
     tags: true
@@ -62,7 +65,6 @@ deploy:
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-  - rm -fr $QPMX_CACHE_DIR/locks
 cache:
   directories:
     - $HOME/.gradle/caches/

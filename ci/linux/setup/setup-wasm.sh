@@ -5,18 +5,12 @@ scriptdir=$(dirname $0)
 
 export MAKEFLAGS="-j$(nproc)"
 
-# add ppas
-apt-get -qq update
-apt-get -qq install software-properties-common
-add-apt-repository -y ppa:skycoder42/qt-modules
-
 # install prequisites
 apt-get -qq update
-apt-get -qq install python nodejs cmake default-jre git make ca-certificates curl python3 python3-pip doxygen doxyqml qpmx $EXTRA_PKG
+apt-get -qq install software-properties-common python nodejs cmake default-jre git make ca-certificates curl python3 python3-pip doxygen doxyqml qpmx $EXTRA_PKG
 
-# install qpm
-curl -Lo /tmp/qpm https://www.qpm.io/download/v0.11.0/linux_386/qpm
-install -m 755 /tmp/qpm /usr/local/bin/
+# install qdep
+pip3 install qdep
 
 # install emsdk
 git clone https://github.com/juj/emsdk.git /opt/emscripten-sdk
@@ -46,4 +40,8 @@ cp config.summary $PREFIX/config.summary
 popd
 popd
 
+# prepare qdep
+qdep prfgen --qmake "/opt/qt/$QT_VER/$PLATFORM/bin/qmake"
+
+# cleanup
 rm -rf /opt/emscripten-sdk/.git

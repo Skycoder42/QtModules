@@ -10,17 +10,17 @@ if [[ $PLATFORM == "static" ]]; then
 	mv static "$PLATFORM"
 fi
 
-tar cJf build_${PLATFORM}_${QT_VER}.tar.xz $PLATFORM
-mv build_${PLATFORM}_${QT_VER}.tar.xz ../../../
+tar cJf ${TARGET_NAME}_${PLATFORM}_${QT_VER}.tar.xz $PLATFORM
+mv ${TARGET_NAME}_${PLATFORM}_${QT_VER}.tar.xz ../../../
 
 if [[ -n "$BUILD_DOC" ]]; then
 	cd ../Docs
-	tar cJf build_doc_$QT_VER.tar.xz ./*
-	mv build_doc_$QT_VER.tar.xz ../../../
+	tar cJf ${TARGET_NAME}_doc_$QT_VER.tar.xz ./*
+	mv ${TARGET_NAME}_doc_$QT_VER.tar.xz ../../../
 fi
 
 if [[ -n "$BUILD_EXAMPLES" ]]; then
 	cd ../Examples
-	tar cJf build_examples_$QT_VER.tar.xz ./*
-	mv build_examples_$QT_VER.tar.xz ../../../
+	tar cJf ${TARGET_NAME}_examples_$QT_VER.tar.xz ./*
+	mv ${TARGET_NAME}_examples_$QT_VER.tar.xz ../../../
 fi

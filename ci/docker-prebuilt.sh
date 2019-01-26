@@ -15,7 +15,7 @@ export IMAGE_TAG=$2
 
 shift
 shift
-PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
+PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 
 case "$IMAGE_TAG" in
 	full)

@@ -22,8 +22,8 @@ sudo docker run $drm --name docker-qt-build --device /dev/fuse --cap-add ALL \
 	-e NO_FLATDEP \
 	-e FLATDEP_DIR \
 	-e FLATPAK_MANIFEST \
-	-e "QPMX_CACHE_DIR=/root/.qpmx-cache" \
+	-e "QDEP_CACHE_DIR=/root/.qdep-cache" \
 	-v "$(pwd):/root/project" \
-	-v "$QPMX_CACHE_DIR:/root/.qpmx-cache" "$image"
+	-v "$QPMX_CACHE_DIR:/root/.qdep-cache" "$image"
 sudo chown -R $USER $(pwd)
 sudo chown -R $USER $QPMX_CACHE_DIR

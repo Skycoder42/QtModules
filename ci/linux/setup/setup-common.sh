@@ -3,23 +3,17 @@ set -e
 
 scriptdir=$(dirname $0)
 
-# add ppas
-apt-get -qq update
-apt-get -qq install software-properties-common
-add-apt-repository -y ppa:skycoder42/qt-modules
-
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml qpmx libssl1.0.0 $EXTRA_PKG
+apt-get -qq install --no-install-recommends software-properties-common libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml libssl1.0.0 $EXTRA_PKG
 
 # create preload folder
 mkdir -p /usr/lib/openssl-1.0
 ln -s /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0 /usr/lib/openssl-1.0/libcrypto.so
 ln -s /usr/lib/x86_64-linux-gnu/libssl.so.1.0.0 /usr/lib/openssl-1.0/libssl.so
 
-# install qpm
-curl -Lo /tmp/qpm https://www.qpm.io/download/v0.11.0/linux_386/qpm
-install -m 755 /tmp/qpm /usr/local/bin/
+# install qdep
+pip3 install qdep
 
 # create installer script
 qtvid=$(echo $QT_VER | sed -e "s/\\.//g")
@@ -50,13 +44,10 @@ if ! /tmp/installer.run --script $scriptdir/qt-installer-script.qs --addTempRepo
 	exit $exitCode
 fi
 
-# update gcc for linux
-if [[ "$PLATFORM" == "static" ]]; then
-	TPLATFORM="Src/qtbase"
-else
-	TPLATFORM=$PLATFORM
-fi
+# prepare qdep
+qdep prfgen --qmake "/opt/qt/$QT_VER/$PLATFORM/bin/qmake"
 
+# cleanup
 rm -rf /opt/qt/Examples
 rm -rf /opt/qt/Docs
 rm -rf /opt/qt/Tools/QtCreator
