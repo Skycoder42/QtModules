@@ -23,7 +23,7 @@ popd
 # build Qt for wasm
 QT_BRANCH=v$QT_VER
 PREFIX=/opt/qt/$QT_VER/$PLATFORM
-QT_MODS="qtbase,qtwebsockets,qtdeclarative,qtremoteobjects,qtimageformats,qtsvg,qtquickcontrols2,qtgraphicaleffects,qtscxml,qtnetworkauth,qttranslations,qtxmlpatterns"
+QT_MODS="qtbase,qtwebsockets,qtdeclarative,qtremoteobjects,qtimageformats,qtsvg,qtquickcontrols2,qtgraphicaleffects,qtscxml,qtnetworkauth,qttranslations,qtxmlpatterns,qttools"
 
 tdir=$(mktemp -d)
 pushd $tdir
@@ -32,7 +32,7 @@ pushd src
 ./init-repository --module-subset="$QT_MODS"
 
 # WASM FIX
-if [ "$QT_VER" == "5.12.0" ]; then
+if [ "$QT_VER" == "5.12.1" ]; then
 	pushd qtbase
 	git config user.email "Skycoder42@users.noreply.github.com"
 	git config user.name "Skycoder42"
@@ -43,7 +43,7 @@ fi
 popd
 mkdir build
 pushd build
-../src/configure -xplatform wasm-emscripten -opensource -confirm-license -make libs -make tools -prefix "$PREFIX" || (cat config.log && false)
+../src/configure -xplatform wasm-emscripten -opensource -confirm-license -make libs -prefix "$PREFIX" || (cat config.log && false)
 make > /dev/null
 make install
 cp config.summary $PREFIX/config.summary
