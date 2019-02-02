@@ -8,8 +8,10 @@ brew update
 brew tap Skycoder42/qt-modules
 brew upgrade coreutils || brew install coreutils
 brew upgrade python || brew install python3
-brew install --with-default-names make
+brew install make
 export PATH="/usr/local/opt/make/libexec/gnubin:$PATH"
+which make
+make --version
 
 # install qdep
 sudo pip3 install qdep
