@@ -453,7 +453,7 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 	if is_lts:
 		bin_url = "https://github.com/Skycoder42/QtModules-LTS/releases/download/" + lts_version + "/" + config["title"].lower() + "_build_" + arch + "_" + qt_version
 	else:
-		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/build_" + arch + "_" + qt_version
+		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/" + config["title"].lower() + "_" + arch + "_" + qt_version
 	bin_url += ".zip" if as_zip else ".tar.xz"
 	if arch == "doc":
 		inst_dir = pjoin(pkg_data(pkg_dir), "Docs")
