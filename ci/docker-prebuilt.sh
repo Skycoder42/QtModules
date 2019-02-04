@@ -9,7 +9,7 @@ scriptdir=$(dirname $0)
 export QT_VER=$1
 export TRAVIS_OS_NAME=linux
 export EXTRA_MODULES=""
-export STATIC_QT_MODS="qtwebsockets qtscxml qtremoteobjects"
+export EMSCRIPTEN_EXTRA_MODULES=""
 export EXTRA_PKG="libsecret-1-dev libsystemd-dev"
 export IMAGE_TAG=$2
 
@@ -20,21 +20,21 @@ PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 case "$IMAGE_TAG" in
 	full)
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42"
-		EMSCRIPTEN_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-emscripten-datasync"
-		export EMSCRIPTEN_EXTRA_MODS="$EMSCRIPTEN_EXTRA_MODS qtrestclient qtmvvm qtapng"
+		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtrestclient qtmvvm qtapng"
+		IMAGE_BASE=datasync
 		;;
 	datasync)
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.datasync"
-		EMSCRIPTEN_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-emscripten-common"
-		export EMSCRIPTEN_EXTRA_MODS="$EMSCRIPTEN_EXTRA_MODS datasync"
+		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES datasync"
+		IMAGE_BASE=common
 		;;
 	common)
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.jsonserializer .skycoder42.service"
-		EMSCRIPTEN_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-emscripten-base"
-		export EMSCRIPTEN_EXTRA_MODS="$EMSCRIPTEN_EXTRA_MODS qtjsonserializer qtservice"
+		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtjsonserializer qtservice"
+		IMAGE_BASE=base
 		;;
 	base)
-		# no extra exports
+		export BASE_IMAGE=true
 		;;
 	lts)
 		export IS_LTS=true
@@ -49,8 +49,8 @@ for platform in $PLATFORMS; do
 	echo building $IMAGE_TAG for $platform
 	
 	export PLATFORM=$platform
-	if [ "$platform" == "emscripten" ]; then
-		export DOCKER_IMAGE_BASE=$EMSCRIPTEN_IMAGE_BASE
+	if [ -n "$IMAGE_BASE" ]; then
+		export DOCKER_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_BASE}"
 	else
 		export DOCKER_IMAGE_BASE=
 	fi
@@ -62,5 +62,7 @@ for platform in $PLATFORMS; do
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
 done
 
-paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
-sudo docker system prune -a
+if [[ "$IMAGE_TAG" == "full" ]]; then
+	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
+	sudo docker system prune -a
+fi

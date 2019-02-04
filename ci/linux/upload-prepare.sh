@@ -3,6 +3,10 @@ set -e
 
 export XZ_OPT=-9
 
+if [ -n "$SKIP_UPLOAD" ]; then
+	exit 0
+fi
+
 cd install/opt/qt/$QT_VER
 
 if [[ $PLATFORM == "static" ]]; then

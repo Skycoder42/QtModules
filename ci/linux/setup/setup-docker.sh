@@ -9,15 +9,15 @@ if [[ "$PLATFORM" == "flatpak" ]]; then
 	exit 1
 fi
 
-# gcc_64 only -> install qtifw
-if [[ $PLATFORM == "gcc_64" ]]; then
-	export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"
-fi
-
 ## common setup
 if [[ $PLATFORM == "emscripten" ]]; then
 	$scriptdir/setup-wasm.sh
-else
+elif [ -n "$BASE_IMAGE" ]; then
+	# gcc_64 only -> install qtifw
+	if [[ $PLATFORM == "gcc_64" ]]; then
+		export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"
+	fi
+
 	$scriptdir/setup-common.sh
 
 	## platform-specific setup
@@ -29,10 +29,8 @@ else
 	if [[ $PLATFORM == "android_"* ]]; then
 		$scriptdir/setup-android.sh
 	fi
-
-	if [[ $PLATFORM == "static" ]]; then
-		$scriptdir/setup-static.sh
-	fi
+else
+	$scriptdir/setup-modules.sh
 fi
 
 rm -rf /tmp/*

@@ -6,7 +6,7 @@ scriptdir=$(dirname $0)
 export MAKEFLAGS="-j$(nproc)"
 export QDEP_CACHE_DIR="/tmp/qdep-cache"
 
-if [ ! -f "/opt/qt/$QT_VER/$PLATFORM/bin/qmake" ]; then 
+if [ -n "$BASE_IMAGE" ]; then 
 	# install prequisites
 	apt-get -qq update
 	apt-get -qq install software-properties-common python nodejs cmake default-jre git make ca-certificates curl python3 python3-pip doxygen doxyqml $EXTRA_PKG
@@ -58,10 +58,10 @@ else
 	source /opt/emscripten-sdk/emsdk_env.sh
 fi
 
-if [ -n "$EMSCRIPTEN_EXTRA_MODS" ]; then
+if [ -n "$EMSCRIPTEN_EXTRA_MODULES" ]; then
 	tdir=$(mktemp -d)
 	pushd $tdir
-	for extra_mod in $EMSCRIPTEN_EXTRA_MODS; do
+	for extra_mod in $EMSCRIPTEN_EXTRA_MODULES; do
 		git clone https://github.com/Skycoder42/${extra_mod}.git
 		pushd "$extra_mod"
 		git checkout $(git describe --tags)

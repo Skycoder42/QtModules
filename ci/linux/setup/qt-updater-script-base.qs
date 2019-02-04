@@ -17,39 +17,32 @@ Controller.prototype.CredentialsPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
-// skip the introduction page
+// select updates
 Controller.prototype.IntroductionPageCallback = function() {
-	gui.clickButton(buttons.NextButton, 1000);
-}
-
-// set the installation target directory
-Controller.prototype.TargetDirectoryPageCallback = function() {
-    gui.currentPageWidget().TargetDirectoryLineEdit.setText("/opt/qt/");
+	var widget = gui.currentPageWidget();
+	widget.findChild("PackageManagerRadioButton").checked = true;
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // select the components to install
 Controller.prototype.ComponentSelectionPageCallback = function() {
-    var widget = gui.currentPageWidget();
-	widget.deselectAll();
-	widget.selectComponent(prefix + qtVersion + "." + platform);
+	var widget = gui.currentPageWidget();
+	
 	extraMods.forEach(function(element){
 		if(element.startsWith("."))
 			element = prefix + qtVersion + element;
 		widget.selectComponent(element);
 	});
 
-	gui.clickButton(buttons.NextButton, 1000);
+	if(gui.isButtonEnabled(buttons.NextButton))
+		gui.clickButton(buttons.NextButton, 1000);
+	else
+		gui.rejectWithoutPrompt();
 }
 
 // accept the license agreement
 Controller.prototype.LicenseAgreementPageCallback = function() {
-    gui.currentPageWidget().AcceptLicenseRadioButton.setChecked(true);
-	gui.clickButton(buttons.NextButton, 1000);
-}
-
-// leave the start menu as it is
-Controller.prototype.StartMenuDirectoryPageCallback = function() {
+	gui.currentPageWidget().AcceptLicenseRadioButton.setChecked(true);
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
@@ -65,4 +58,3 @@ Controller.prototype.FinishedPageCallback = function() {
 		checkBoxForm.launchQtCreatorCheckBox.checked = false;
 	gui.clickButton(buttons.FinishButton, 1000);
 }
-
