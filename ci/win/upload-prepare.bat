@@ -11,6 +11,6 @@ if "%PLATFORM%" == "static" (
 	move %TARGET_NAME%_%PLATFORM%_%QT_VER%.zip ..\..\..\ || exit \B 1
 )
 
-no_upload:
+:no_upload
 
 cd ..\..\..\..
