@@ -1,5 +1,7 @@
 cd install\projects\Qt\%QT_VER%
 
+if "%SKIP_UPLOAD%" == "" goto no_upload
+
 if "%PLATFORM%" == "static" (
 	rename static static_win || exit \B 1
 	7z a %TARGET_NAME%_static_win_%QT_VER%.zip static_win || exit \B 1
@@ -8,5 +10,7 @@ if "%PLATFORM%" == "static" (
 	7z a %TARGET_NAME%_%PLATFORM%_%QT_VER%.zip %PLATFORM% || exit \B 1
 	move %TARGET_NAME%_%PLATFORM%_%QT_VER%.zip ..\..\..\ || exit \B 1
 )
+
+no_upload:
 
 cd ..\..\..\..
