@@ -10,7 +10,7 @@ export QT_VER=$1
 export TRAVIS_OS_NAME=linux
 export EXTRA_MODULES=""
 export EMSCRIPTEN_EXTRA_MODULES=""
-export EXTRA_PKG="libsecret-1-dev libsystemd-dev"
+export EXTRA_PKG=""
 export IMAGE_TAG=$2
 
 shift

@@ -5,7 +5,7 @@ scriptdir=$(dirname $0)
 
 # install build deps
 apt-get -qq update
-apt-get -qq install --no-install-recommends software-properties-common libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 python3 python3-pip doxygen doxyqml libssl1.0.0 $EXTRA_PKG
+apt-get -qq install --no-install-recommends software-properties-common libgl1-mesa-dev libglib2.0-0 libpulse-dev make g++ git ca-certificates curl xauth libx11-xcb1 libfontconfig1 libdbus-1-3 libpq5 libsecret-1-dev libsystemd-dev python3 python3-pip doxygen doxyqml libssl1.0.0 $EXTRA_PKG
 
 # create preload folder
 mkdir -p /usr/lib/openssl-1.0
