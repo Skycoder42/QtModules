@@ -1,6 +1,6 @@
 cd install\projects\Qt\%QT_VER%
 
-if "%SKIP_UPLOAD%" == "" goto no_upload
+if "%SKIP_UPLOAD%" != "" goto no_upload
 
 if "%PLATFORM%" == "static" (
 	rename static static_win || exit \B 1
