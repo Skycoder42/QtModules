@@ -62,7 +62,7 @@ if [ -n "$EMSCRIPTEN_EXTRA_MODULES" ]; then
 	tdir=$(mktemp -d)
 	pushd $tdir
 	for extra_mod in $EMSCRIPTEN_EXTRA_MODULES; do
-		git clone https://github.com/Skycoder42/${extra_mod}.git
+		git clone --recurse-submodules "-j$(nproc)" https://github.com/Skycoder42/${extra_mod}.git
 		pushd "$extra_mod"
 		git checkout $(git describe --tags)
 		mkdir build

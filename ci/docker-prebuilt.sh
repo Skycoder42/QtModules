@@ -15,28 +15,32 @@ export IMAGE_TAG=$2
 
 shift
 shift
-PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 
 case "$IMAGE_TAG" in
 	full)
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42"
 		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtrestclient qtmvvm qtapng"
 		IMAGE_BASE=datasync
 		;;
 	datasync)
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.datasync"
-		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES datasync"
+		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtdatasync"
 		IMAGE_BASE=common
 		;;
 	common)
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42.jsonserializer .skycoder42.service"
 		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtjsonserializer qtservice"
 		IMAGE_BASE=base
 		;;
 	base)
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 		export BASE_IMAGE=true
 		;;
 	lts)
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
 		export IS_LTS=true
 		;;
 	*)
