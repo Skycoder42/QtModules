@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # $1 Qt Version
 # $2 suffix
 # $3.. platforms (optional)
@@ -18,7 +18,7 @@ shift
 
 case "$IMAGE_TAG" in
 	full)
-		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
 		export EXTRA_MODULES="$EXTRA_MODULES .skycoder42"
 		export EMSCRIPTEN_EXTRA_MODULES="$EMSCRIPTEN_EXTRA_MODULES qtrestclient qtmvvm qtapng"
 		IMAGE_BASE=datasync
@@ -54,7 +54,11 @@ for platform in $PLATFORMS; do
 	
 	export PLATFORM=$platform
 	if [ -n "$IMAGE_BASE" ]; then
-		export DOCKER_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_BASE}"
+		if [ "$IMAGE_TAG" == "full" ] && [ "$platform" == "emscripten" ]; then  # for use of different base image for emscripten build
+			export DOCKER_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-${PLATFORM}-common"
+		else
+			export DOCKER_IMAGE_BASE="skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_BASE}"
+		fi
 	else
 		export DOCKER_IMAGE_BASE=
 	fi
@@ -66,7 +70,7 @@ for platform in $PLATFORMS; do
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
 done
 
-if [[ "$IMAGE_TAG" == "full" ]]; then
+if [ "$IMAGE_TAG" == "full" ]; then
 	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
 	sudo docker system prune -a
 fi
