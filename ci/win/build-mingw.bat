@@ -3,7 +3,10 @@ setlocal
 
 for %%* in (.) do set CurrDirName=%%~nx*
 
-set PATH=C:\projects\Qt\Tools\mingw730_64\bin;%PATH%;
+if "%PLATFORM%" == "mingw73_64" set MINGW_ARCH=64
+if "%PLATFORM%" == "mingw73_32" set MINGW_ARCH=32
+
+set PATH=C:\projects\Qt\Tools\mingw730_%MINGW_ARCH%\bin;%PATH%;
 set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 
 mkdir build-%PLATFORM%

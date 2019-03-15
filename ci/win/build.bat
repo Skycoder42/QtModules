@@ -3,9 +3,9 @@
 :: builds
 set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;C:\projects\;%PATH%
 
-if "%PLATFORM%" == "mingw73_64" (
+echo %PLATFORM% | findstr /C:"mingw" > nul && (
 	call %~dp0\build-mingw.bat || exit /B 1
-) else (
+) || (
 	:: prepare vcvarsall
 	if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" (
 		set VC_DIR="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
