@@ -28,6 +28,10 @@ if "%PLATFORM%" == "mingw73_64" (
 	set PACKAGE=win64_mingw73
 	set EXTRA_MODULES=qt.tools.win64_mingw73;%EXTRA_MODULES%
 )
+if "%PLATFORM%" == "mingw73_32" (
+	set PACKAGE=win32_mingw73
+	set EXTRA_MODULES=qt.tools.win32_mingw73;%EXTRA_MODULES%
+)
 if "%PLATFORM%" == "static" set PACKAGE=src
 
 echo platform = "%PACKAGE%"; >> %~dp0\qt-installer-script.qs
