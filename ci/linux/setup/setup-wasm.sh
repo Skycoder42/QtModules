@@ -37,6 +37,7 @@ if [ -n "$BASE_IMAGE" ]; then
 	pushd qtbase
 	git config user.email "Skycoder42@users.noreply.github.com"
 	git config user.name "Skycoder42"
+	curl https://code.qt.io/cgit/qt/qtbase.git/patch/?id=960af0d64de576321db91ccbe426891465b24540 | git apply -v --index
 	curl https://code.qt.io/cgit/qt/qtbase.git/patch/?id=078cc302cb4f03ffdcee3696338385c33427c716 | git apply -v --index
 	popd
 
