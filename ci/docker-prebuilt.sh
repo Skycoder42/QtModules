@@ -40,7 +40,8 @@ case "$IMAGE_TAG" in
 		export BASE_IMAGE=true
 		;;
 	lts)
-		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
+		PLATFORMS=${@:-gcc_64 android_armv7 android_x86}
+		export BASE_IMAGE=true
 		export IS_LTS=true
 		;;
 	*)
@@ -70,7 +71,7 @@ for platform in $PLATFORMS; do
 	sudo docker push "skycoder42/qt-build:${QT_VER}-${PLATFORM}-${IMAGE_TAG}"
 done
 
-if [ "$IMAGE_TAG" == "full" ]; then
+if [ "$IMAGE_TAG" == "full" ] || [ "$IMAGE_TAG" == "lts" ]; then
 	paplay /usr/share/sounds/Oxygen-Sys-App-Message.ogg || true
 	sudo docker system prune -a
 fi
