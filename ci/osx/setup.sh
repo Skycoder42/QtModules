@@ -40,13 +40,18 @@ done
 cat $scriptdir/qt-installer-script-base.qs >> $scriptdir/qt-installer-script.qs
 
 # install Qt
-curl -Lo /tmp/installer.dmg https://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
-hdiutil attach /tmp/installer.dmg
-export QT_QPA_PLATFORM=minimal
-if ! sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents/MacOS/qt-unified-mac-* --script $scriptdir/qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/mac_x64/ --verbose &> /tmp/install-log.txt; then
-	exitCode=$?
-	cat /tmp/install-log.txt
-	exit $exitCode
+if [[ -n "$QT_INSTALL_URL" ]]; then
+	curl -Lo /tmp/install.tar.xz https://github.com/Skycoder42/QtModules-LTS/releases/download/ios-build-${QT_VER}/ios_${QT_VER}_setup.tar.xz
+	tar xf /tmp/install.tar.xz -C /opt
+else
+	curl -Lo /tmp/installer.dmg https://download.qt.io/official_releases/online_installers/qt-unified-mac-x64-online.dmg
+	hdiutil attach /tmp/installer.dmg
+	export QT_QPA_PLATFORM=minimal
+	if ! sudo /Volumes/qt-unified-mac-*/qt-unified-mac-*/Contents/MacOS/qt-unified-mac-* --script $scriptdir/qt-installer-script.qs --addTempRepository https://install.skycoder42.de/qtmodules/mac_x64/ --verbose &> /tmp/install-log.txt; then
+		exitCode=$?
+		cat /tmp/install-log.txt
+		exit $exitCode
+	fi
 fi
 
 # prepare qdep
@@ -56,9 +61,3 @@ sudo qdep prfgen --qmake "/opt/qt/$QT_VER/$PLATFORM/bin/qmake"
 sudo rm -rf /opt/qt/Examples
 sudo rm -rf /opt/qt/Docs
 sudo rm -rf /opt/qt/Tools/QtCreator
-
-if [[ "$PLATFORM" == "static" ]]; then
-	export MAKEFLAGS="-j$(sysctl -n hw.ncpu)"
-	export SUDO=sudo #because of symlink
-	$scriptdir/setup-static.sh
-fi
