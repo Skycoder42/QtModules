@@ -19,6 +19,7 @@ sudo docker run $drm --name docker-qt-build --device /dev/fuse --cap-add ALL \
 	-e TEST_DIR \
 	-e NO_TESTS \
 	-e MAKE_RUN_TESTS \
+	-e LTS_MODS \
 	-e NO_FLATDEP \
 	-e FLATDEP_DIR \
 	-e FLATPAK_MANIFEST \

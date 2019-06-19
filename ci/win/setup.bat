@@ -50,8 +50,3 @@ C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addTempRepository
 
 :: prepare qdep
 qdep.exe prfgen --qmake "C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake.exe"
-
-:: build static qt
-if "%PLATFORM%" == "static" (
-	%~dp0\setup-qt-static.bat || exit /B 1
-)

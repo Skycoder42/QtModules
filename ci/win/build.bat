@@ -26,13 +26,6 @@ echo %PLATFORM% | findstr /C:"mingw" > nul && (
 	if "%PLATFORM%" == "winrt_x86_msvc2017" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "winrt_armv7_msvc2017" set VC_VARSALL=amd64_x86
 	if "%PLATFORM%" == "msvc2015_64" set VC_VARSALL=amd64
-	if "%PLATFORM%" == "msvc2015" set VC_VARSALL=amd64_x86
-	if "%PLATFORM%" == "static" (
-		set VC_VARSALL=amd64
-		set NO_TESTS=true
-		set MAKE_RUN_TESTS=
-		echo CONFIG += static_host_build >> .qmake.conf
-	)
 
 	:: build
 	call %~dp0\build-msvc.bat || exit /B 1
