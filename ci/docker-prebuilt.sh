@@ -40,7 +40,7 @@ case "$IMAGE_TAG" in
 		export BASE_IMAGE=true
 		;;
 	lts)
-		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86 emscripten}
+		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
 		export BASE_IMAGE=true
 		export IS_LTS=true
 		;;
