@@ -452,10 +452,10 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 	# download sources
 	print("  -> Downloading and extracting data from github")
 	if is_lts:
-		bin_url = "https://github.com/Skycoder42/QtModules-LTS/releases/download/" + lts_version + "/" + config["title"].lower() + "_build_" + arch + "_" + qt_version
+		bin_url = "https://github.com/Skycoder42/QtModules-LTS/releases/download/" + lts_version
 	else:
-		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version + "/" + config["title"].lower() + "_" + arch + "_" + qt_version
-	bin_url += ".zip" if as_zip else ".tar.xz"
+		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version
+	bin_url += "/" + config["title"].lower() + "_" + arch + "_" + qt_version + (".zip" if as_zip else ".tar.xz")
 	if arch == "doc":
 		inst_dir = pjoin(pkg_data(pkg_dir), "Docs")
 	elif arch == "examples":
@@ -690,10 +690,13 @@ def repogen_lts(qt_version, dep_dir):
 	lts_version = qt_version + "-lts"
 
 	mod_info = [
-		("QtJsonSerializer", "3.1.2"),
-		("QtRestClient", "1.2.6"),
-		("QtDataSync", "4.0.1"),
-		("QtAutoUpdater", "2.1.4")
+		("QtJsonSerializer", "3.3.1"),
+		("QtService", "2.0.1"),
+		("QtRestClient", "2.1.1"),
+		("QtDataSync", "4.2.3"),
+		("QtMvvm", "1.1.5"),
+		("QtAutoUpdater", "2.1.5"),
+		("QtApng", "1.1.2")
 	]
 
 	for mod_name, version in mod_info:
