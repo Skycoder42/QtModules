@@ -20,7 +20,7 @@ for package in "platform-tools" "platforms;android-28" "build-tools;28.0.3"; do
 	echo y | $HOME/android/sdk/tools/bin/sdkmanager "$package" > /dev/null
 done
 
-NDK_REVISION=r19c
+#NDK_REVISION=r19c
 if [ -n "$NDK_REVISION" ]; then
 	echo "installing android ndk-bundle $NDK_REVISION"
 	NDK_SHASUM=fd94d0be6017c6acbd193eb95e09cf4b6f61b834
