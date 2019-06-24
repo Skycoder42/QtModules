@@ -21,7 +21,7 @@ if [[ $PLATFORM == "android_"* ]]; then
 	export NO_TESTS=true
 fi
 
-if [[ $PLATFORM == "emscripten" ]]; then
+if [[ $PLATFORM == "wasm_"* ]]; then
 	source /opt/emscripten-sdk/emsdk_env.sh
 	export NO_TESTS=true
 fi
