@@ -3,6 +3,9 @@ set -e
 
 scriptdir=$(dirname $0)
 
+# update qdep
+pip install -U qdep
+
 # branch out for flatpak
 if [[ $PLATFORM == "flatpak" ]]; then
 	exec "$scriptdir/build-flatpak.sh"
