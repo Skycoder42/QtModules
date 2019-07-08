@@ -5,6 +5,7 @@ scriptdir=$(dirname $0)
 
 # update qdep
 pip3 install -U qdep
+qdep prfgen --qmake "/opt/qt/$QT_VER/$PLATFORM/bin/qmake"
 
 # branch out for flatpak
 if [[ $PLATFORM == "flatpak" ]]; then
