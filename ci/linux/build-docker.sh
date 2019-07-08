@@ -4,7 +4,7 @@ set -e
 scriptdir=$(dirname $0)
 
 # update qdep
-pip install -U qdep
+pip3 install -U qdep
 
 # branch out for flatpak
 if [[ $PLATFORM == "flatpak" ]]; then
