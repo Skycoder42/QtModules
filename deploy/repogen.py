@@ -327,8 +327,7 @@ def create_arch_meta(rdir, pkg_base, arch, config, version, qt_version):
 		"msvc2017": "win32_msvc2017",
 		"winrt_x86_msvc2017": "win64_msvc2017_winrt_x86",
 		"winrt_x64_msvc2017": "win64_msvc2017_winrt_x64",
-		"winrt_armv7_msvc2017": "win64_msvc2017_winrt_armv7",
-		"msvc2015_64": "win64_msvc2015_64"
+		"winrt_armv7_msvc2017": "win64_msvc2017_winrt_armv7"
 	}
 
 	qt_arch = pkg_keys[arch] if arch in pkg_keys else arch
@@ -478,7 +477,7 @@ def create_all_pkgs(rdir, pkg_base, repo, config, version, url_version, qt_versi
 	for arch in ["android_arm64_v8a", "android_x86_64", "android_armv7", "android_x86", "wasm_32", "clang_64", "doc", "examples", "gcc_64", "ios"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, False)
 	# zip packages
-	for arch in ["mingw73_64", "mingw73_32", "msvc2015_64", "msvc2017_64", "msvc2017", "winrt_armv7_msvc2017", "winrt_x64_msvc2017", "winrt_x86_msvc2017"]:
+	for arch in ["mingw73_64", "mingw73_32", "msvc2017_64", "msvc2017", "winrt_armv7_msvc2017", "winrt_x64_msvc2017", "winrt_x86_msvc2017"]:
 		create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, True)
 
 
@@ -672,7 +671,6 @@ def repogen(repo_id, version, qt_version, dep_dir, no_metagen=False):
 					"win64_mingw73", "win32_mingw73",
 					"win64_msvc2017_64", "win32_msvc2017",
 					"win64_msvc2017_winrt_x86", "win64_msvc2017_winrt_x64", "win64_msvc2017_winrt_armv7",
-					"win64_msvc2015_64",
 					"android_arm64_v8a", "android_x86_64", "android_armv7", "android_x86")
 		# macos
 		deploy_repo(dep_dir, rep_dir, "mac", "x64", pkg_base, config, qt_version,
