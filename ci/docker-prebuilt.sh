@@ -8,7 +8,7 @@ scriptdir=$(dirname $0)
 
 export QT_VER=$1
 export TRAVIS_OS_NAME=linux
-export EXTRA_MODULES=""
+export EXTRA_MODULES=".qtnetworkauth"
 export EXTRA_PKG=""
 export IMAGE_TAG=$2
 
