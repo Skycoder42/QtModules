@@ -13,7 +13,7 @@ fi
 if [ -n "$BASE_IMAGE" ]; then
 	# gcc_64 only -> install qtifw
 	if [[ $PLATFORM == "gcc_64" ]]; then
-		export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"
+		export EXTRA_MODULES="qt.tools.ifw.31 $EXTRA_MODULES"
 	fi
 
 	$scriptdir/setup-common.sh

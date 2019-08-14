@@ -9,7 +9,7 @@ pip3.exe install qdep
 
 :: except winrt -> qtifw
 echo %PLATFORM% | findstr /C:"winrt" > nul || (
-	set EXTRA_MODULES=qt.tools.ifw.30;%EXTRA_MODULES%
+	set EXTRA_MODULES=qt.tools.ifw.31;%EXTRA_MODULES%
 )
 
 :: prepare installer script

@@ -18,7 +18,7 @@ sudo pip3 install qdep
 
 # clang only -> install qtifw
 if [[ $PLATFORM == "clang_64" ]]; then
-	export EXTRA_MODULES="qt.tools.ifw.30 $EXTRA_MODULES"
+	export EXTRA_MODULES="qt.tools.ifw.31 $EXTRA_MODULES"
 fi
 
 # prepare installer script
