@@ -12,7 +12,7 @@ set MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
 mkdir build-%PLATFORM%
 cd build-%PLATFORM%
 
-C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake "CONFIG+=no_auto_lupdate" "QT_PLATFORM=%PLATFORM%" %QMAKE_FLAGS% ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake "CONFIG+=no_auto_lupdate" "CONFIG+=install_ok" "QT_PLATFORM=%PLATFORM%" %QMAKE_FLAGS% ../ || exit /B 1
 mingw32-make qmake_all || exit /B 1
 mingw32-make || exit /B 1
 mingw32-make INSTALL_ROOT=/projects/%CurrDirName%/install install || exit /B 1

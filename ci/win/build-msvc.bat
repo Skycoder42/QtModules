@@ -13,7 +13,7 @@ set PATH=C:\Qt\Tools\QtCreator\bin\;%PATH%
 mkdir build-%qtplatform%
 cd build-%qtplatform%
 
-C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake "CONFIG+=no_auto_lupdate" "QT_PLATFORM=%qtplatform%" %QMAKE_FLAGS% ../ || exit /B 1
+C:\projects\Qt\%QT_VER%\%qtplatform%\bin\qmake "CONFIG+=no_auto_lupdate" "CONFIG+=install_ok" "QT_PLATFORM=%qtplatform%" %QMAKE_FLAGS% ../ || exit /B 1
 jom qmake_all || exit /B 1
 jom || exit /B 1
 jom INSTALL_ROOT=\projects\%CurrDirName%\install install || exit /B 1

@@ -22,7 +22,7 @@ rootdir=$(pwd)
 mkdir build-$PLATFORM
 pushd build-$PLATFORM
 
-/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=no_auto_lupdate" "QT_PLATFORM=$PLATFORM" $QMAKE_FLAGS ../
+/opt/qt/$QT_VER/$PLATFORM/bin/qmake "CONFIG+=no_auto_lupdate" "CONFIG+=install_ok" "QT_PLATFORM=$PLATFORM" $QMAKE_FLAGS ../
 make qmake_all
 make
 make INSTALL_ROOT="$rootdir/install" install
