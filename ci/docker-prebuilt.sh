@@ -34,7 +34,7 @@ case "$IMAGE_TAG" in
 	base)
 		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_x86_64 android_armv7 android_x86 wasm_32}
 		export BASE_IMAGE=true
-		export EMSDK_VERSION=1.38.16
+		export EMSDK_VERSION=1.38.27
 		;;
 	lts)
 		PLATFORMS=${@:-gcc_64 android_arm64_v8a android_armv7 android_x86}
