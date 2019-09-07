@@ -366,19 +366,6 @@ def fix_lines(idir, arch, pattern, fix_fn):
 
 
 def fix_arch_paths(idir, arch):
-	def fix_prl(lines):
-		# remove the first element
-		lines[0] = "\n"
-		# replace the QMAKE_PRL_LIBS
-		for i in range(1, len(lines), 1):
-			if lines[i].startswith("QMAKE_PRL_LIBS"):
-				args = ["-L/home/qt/work/install/lib"]
-				for arg in lines[i].split("=")[1].strip().split(" "):
-					if not arg.startswith("-L"):
-						args.append(arg)
-				lines[i] = "QMAKE_PRL_LIBS = " + " ".join(args) + "\n"
-		return lines
-
 	def fix_la(lines):
 		# replace the dependency_libs and libdir
 		for i in range(0, len(lines), 1):
@@ -398,8 +385,6 @@ def fix_arch_paths(idir, arch):
 			lines[0] = "prefix=/home/qt/work/install\n"
 		return lines
 
-	# fix prl files
-	fix_lines(idir, arch, "*.prl", fix_prl)
 	# fix la files
 	fix_lines(idir, arch, "*.la", fix_la)
 	# fix pc files
