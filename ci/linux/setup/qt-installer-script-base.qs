@@ -22,15 +22,26 @@ Controller.prototype.IntroductionPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
+// skip the telemetry page
+Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
+	gui.pageWidgetByObjectName("DynamicTelemetryPluginForm").statisticGroupBox.disableStatisticRadioButton.setChecked(true);
+	gui.clickButton(buttons.NextButton, 1000);
+}
+
 // set the installation target directory
 Controller.prototype.TargetDirectoryPageCallback = function() {
-    gui.currentPageWidget().TargetDirectoryLineEdit.setText("/opt/qt/");
+	gui.currentPageWidget().TargetDirectoryLineEdit.setText("/tmp/opt/qt/");
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
 // select the components to install
 Controller.prototype.ComponentSelectionPageCallback = function() {
-    var widget = gui.currentPageWidget();
+	var widget = gui.currentPageWidget();
+	widget.deselectAll();
+	var groupBox = gui.findChild(widget, "CategoryGroupBox");
+	gui.findChild(groupBox, "LTS").setChecked(true);
+	gui.findChild(groupBox, "Latest releases").setChecked(true);
+	gui.findChild(groupBox, "FetchCategoryButton").click();
 	widget.deselectAll();
 	widget.selectComponent(prefix + qtVersion + "." + platform);
 	extraMods.forEach(function(element){
@@ -55,6 +66,11 @@ Controller.prototype.StartMenuDirectoryPageCallback = function() {
 
 // install
 Controller.prototype.ReadyForInstallationPageCallback = function() {
+	gui.clickButton(buttons.NextButton, 1000);
+}
+
+// install
+Controller.prototype.PerformInstallationPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 

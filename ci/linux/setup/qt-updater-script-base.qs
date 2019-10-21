@@ -17,6 +17,12 @@ Controller.prototype.CredentialsPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
+// skip the telemetry page
+Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
+	gui.pageWidgetByObjectName("DynamicTelemetryPluginForm").statisticGroupBox.disableStatisticRadioButton.setChecked(true);
+	gui.clickButton(buttons.NextButton, 1000);
+}
+
 // select updates
 Controller.prototype.IntroductionPageCallback = function() {
 	var widget = gui.currentPageWidget();
