@@ -43,7 +43,10 @@ type %~dp0\qt-installer-script-base.qs >> %~dp0\qt-installer-script.qs
 
 :: install Qt
 powershell -Command "Invoke-WebRequest https://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe -OutFile C:\projects\qtinst.exe"
-C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 --verbose || exit \B 1
+C:\projects\qtinst.exe --script %~dp0\qt-installer-script.qs --addRepository https://install.skycoder42.de/qtmodules/windows_x86 --verbose > C:\projects\installer.log || (
+	type C:\projects\installer.log
+	exit \B 1
+)
 
 :: prepare qdep
 qdep.exe prfgen --qmake "C:\projects\Qt\%QT_VER%\%PLATFORM%\bin\qmake.exe"

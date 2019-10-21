@@ -30,7 +30,7 @@ Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
 
 // set the installation target directory
 Controller.prototype.TargetDirectoryPageCallback = function() {
-	gui.currentPageWidget().TargetDirectoryLineEdit.setText("/tmp/opt/qt/");
+	gui.currentPageWidget().TargetDirectoryLineEdit.setText("/opt/qt/");
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
