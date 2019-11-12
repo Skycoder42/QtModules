@@ -161,8 +161,7 @@ def prepare_sources(tdir, repo, mod_name, vers):
 	url_extract(tdir, mod_url)
 
 	# prepare sources
-	os.remove(pjoin(out_dir, ".travis.yml"))
-	os.remove(pjoin(out_dir, "appveyor.yml"))
+	shutil.rmtree(pjoin(out_dir, ".github"))
 	shutil.move(pjoin(out_dir, "deploy.json"), pjoin(tdir, "deploy.json"))
 
 	return out_dir
@@ -366,6 +365,11 @@ def fix_lines(idir, arch, pattern, fix_fn):
 
 
 def fix_arch_paths(idir, arch):
+	def fix_prl(lines):
+		# remove the first line
+		lines[0] = "\n"
+		return lines
+
 	def fix_la(lines):
 		# replace the dependency_libs and libdir
 		for i in range(0, len(lines), 1):
@@ -385,36 +389,12 @@ def fix_arch_paths(idir, arch):
 			lines[0] = "prefix=/home/qt/work/install\n"
 		return lines
 
+	# fix prl files
+	fix_lines(idir, arch, "*.prl", fix_prl)
 	# fix la files
 	fix_lines(idir, arch, "*.la", fix_la)
 	# fix pc files
 	fix_lines(idir, arch, "*.pc", fix_pc)
-
-
-def fix_sample_paths(idir):
-	patterns = [
-		re.compile("^.*\\.la$"),
-		re.compile("^.*\\.prl$"),
-		re.compile("^.*\\.a$"),
-		re.compile("^.*\\.so$"),
-		re.compile("^.*\\.la$"),
-		re.compile("^.*\\.so(\\.\\d+)+$")
-	]
-
-	for root, dirs, files in os.walk(idir):
-		for file in files:
-			ma = magic.detect_from_filename(pjoin(root, file))
-			if ma.mime_type == "application/x-executable":
-				print("    >> Removing sample binary " + file)
-				os.remove(pjoin(root, file))
-			elif ma.mime_type == "application/x-sharedlib":
-				print("    >> Removing sample binary " + file)
-				os.remove(pjoin(root, file))
-			else:
-				for pattern in patterns:
-					if pattern.fullmatch(file):
-						print("    >> Removing sample binary " + file)
-						os.remove(pjoin(root, file))
 
 
 def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_version, as_zip):
@@ -439,7 +419,7 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 		bin_url = "https://github.com/Skycoder42/QtModules-LTS/releases/download/" + lts_version
 	else:
 		bin_url = "https://github.com/" + repo + "/releases/download/" + url_version
-	bin_url += "/" + config["title"].lower() + "_" + arch + "_" + qt_version + (".zip" if as_zip else ".tar.xz")
+	bin_url += "/" + config["title"].lower() + "-" + arch + "-" + qt_version + (".zip" if as_zip else ".tar.xz")
 	if arch == "doc":
 		inst_dir = pjoin(pkg_data(pkg_dir), "Docs")
 	elif arch == "examples":
@@ -449,10 +429,7 @@ def create_bin_pkg(rdir, pkg_base, repo, arch, config, version, url_version, qt_
 	url_extract(inst_dir, bin_url, as_zip)
 
 	# fiuxp prl and la files, clean samples etc.
-	if arch == "examples":
-		print("  -> Removing binaries from documentation")
-		fix_sample_paths(inst_dir)
-	elif arch != "doc":
+	if arch != "doc":
 		print("  -> Fixing up build paths")
 		fix_arch_paths(inst_dir, arch)
 
