@@ -370,14 +370,6 @@ def fix_arch_paths(idir, arch):
 	def fix_prl(lines):
 		# remove the first element
 		lines[0] = "\n"
-		# replace the QMAKE_PRL_LIBS
-		for i in range(1, len(lines), 1):
-			if lines[i].startswith("QMAKE_PRL_LIBS"):
-				args = ["-L/home/qt/work/install/lib"]
-				for arg in lines[i].split("=")[1].strip().split(" "):
-					if not arg.startswith("-L"):
-						args.append(arg)
-				lines[i] = "QMAKE_PRL_LIBS = " + " ".join(args) + "\n"
 		return lines
 
 	def fix_la(lines):

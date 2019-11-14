@@ -1,10 +1,10 @@
 // http://stackoverflow.com/questions/25105269/silent-install-qt-run-installer-on-ubuntu-server
 
 function Controller() {
-    installer.autoRejectMessageBoxes();
-    installer.installationFinished.connect(function() {
+	installer.autoRejectMessageBoxes();
+	installer.installationFinished.connect(function() {
 		gui.clickButton(buttons.NextButton, 1000);
-    })
+	});
 }
 
 // Skip the welcome page
@@ -22,6 +22,12 @@ Controller.prototype.IntroductionPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
+// skip the telemetry page
+Controller.prototype.DynamicTelemetryPluginFormCallback = function() {
+	gui.pageWidgetByObjectName("DynamicTelemetryPluginForm").statisticGroupBox.disableStatisticRadioButton.setChecked(true);
+	gui.clickButton(buttons.NextButton, 1000);
+}
+
 // set the installation target directory
 Controller.prototype.TargetDirectoryPageCallback = function() {
 	gui.currentPageWidget().TargetDirectoryLineEdit.setText("C:/projects/Qt");
@@ -30,7 +36,12 @@ Controller.prototype.TargetDirectoryPageCallback = function() {
 
 // select the components to install
 Controller.prototype.ComponentSelectionPageCallback = function() {
-    var widget = gui.currentPageWidget();
+	var widget = gui.currentPageWidget();
+	widget.deselectAll();
+	var groupBox = gui.findChild(widget, "CategoryGroupBox");
+	gui.findChild(groupBox, "LTS").setChecked(true);
+	gui.findChild(groupBox, "Latest releases").setChecked(true);
+	gui.findChild(groupBox, "FetchCategoryButton").click();
 	widget.deselectAll();
 	widget.selectComponent(prefix + qtVersion + "." + platform);
 	extraMods.forEach(function(element){
@@ -58,12 +69,16 @@ Controller.prototype.ReadyForInstallationPageCallback = function() {
 	gui.clickButton(buttons.NextButton, 1000);
 }
 
+// install
+Controller.prototype.PerformInstallationPageCallback = function() {
+	gui.clickButton(buttons.NextButton, 1000);
+}
+
 Controller.prototype.FinishedPageCallback = function() {
-    // do not launch QtCreator
-    var checkBoxForm = gui.currentPageWidget().LaunchQtCreatorCheckBoxForm
-    if (checkBoxForm && checkBoxForm.launchQtCreatorCheckBox) {
-        checkBoxForm.launchQtCreatorCheckBox.checked = false;
-    }
-    gui.clickButton(buttons.FinishButton, 1000);
+	// do not launch QtCreator
+	var checkBoxForm = gui.currentPageWidget().LaunchQtCreatorCheckBoxForm
+	if (checkBoxForm && checkBoxForm.launchQtCreatorCheckBox)
+		checkBoxForm.launchQtCreatorCheckBox.checked = false;
+	gui.clickButton(buttons.FinishButton, 1000);
 }
 
