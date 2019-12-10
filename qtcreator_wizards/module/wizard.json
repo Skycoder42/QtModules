@@ -23,7 +23,7 @@
 		{ "key": "GUARD", "value": "%{JS: Cpp.headerGuard('%{HdrFileName}')}" },
 		{ "key": "ModHdrFileName", "value": "%{JS: Cpp.classToFileName('qt_%{QtModuleName}_module', '%{JS: Util.preferredSuffix('text/x-c++hdr')}')}" },
 		{ "key": "MODGUARD", "value": "%{JS: Cpp.headerGuard('%{ModHdrFileName}')}" },
-		{ "key": "GlobalHeaderName", "value": "%{JS: '%{ClassName}_global.h'.toLowerCase()}" },
+		{ "key": "GlobalHeaderName", "value": "%{JS: '%{QtModuleName}_global.h'.toLowerCase()}" },
 		{ "key": "GLOBGUARD", "value": "%{JS: Cpp.headerGuard('%{GlobalHeaderName}')}" }
 	],
 
@@ -155,14 +155,12 @@
 					"condition": "%{JS: %{IsTopLevelProject} && '%{VersionControl}' === 'G.Git'}"
 				},
 				{
-					"source": "travis.yml",
-					"target": ".travis.yml",
-					"condition": "%{JS: '%{CI}' !== ''}",
-					"isBinary": true
+					"source": "deploy.json",
+					"target": "deploy.json"
 				},
 				{
-					"source": "appveyor.yml",
-					"target": "appveyor.yml",
+					"source": "build.yml",
+					"target": ".github/workflows/build.yml",
 					"condition": "%{JS: '%{CI}' !== ''}",
 					"isBinary": true
 				},
@@ -173,10 +171,6 @@
 				{
 					"source": "module_src.pro",
 					"target": "src/%{ModuleBase}/%{ModuleBase}.pro"
-				},
-				{
-					"source": "qpmx.json",
-					"target": "src/%{ModuleBase}/qpmx.json"
 				},
 				{
 					"source": "module_global.h",
@@ -203,6 +197,11 @@
 					"condition": "%{JS: '%{UseQDoc}' !== ''}"
 				},
 				{
+					"source": "translations.pro",
+					"target": "src/translations/translations.pro",
+					"condition": "%{JS: '%{Translations}' !== ''}"
+				},
+				{
 					"source": "doc.pro",
 					"target": "doc/doc.pro",
 					"condition": "%{JS: '%{UseQDoc}' === ''}"
@@ -220,7 +219,8 @@
 				{
 					"source": "doxme.py",
 					"target": "doc/doxme.py",
-					"condition": "%{JS: '%{UseQDoc}' === ''}"
+					"condition": "%{JS: '%{UseQDoc}' === ''}",
+					"isBinary": true
 				},
 				{
 					"source": "GitHub_Logo.png",
@@ -244,6 +244,10 @@
 				{
 					"source": "auto.pro",
 					"target": "tests/auto/auto.pro"
+				},
+				{
+					"source": "testrun.pri",
+					"target": "tests/auto/testrun.pri"
 				},
 				{
 					"source": "cmake.pro",

@@ -1,9 +1,8 @@
 TEMPLATE = subdirs
-CONFIG += ordered
 
 SUBDIRS += %{ModuleBase}
-
 @if '%{Translations}' !== ''
-prepareRecursiveTarget(lrelease)
-QMAKE_EXTRA_TARGETS += lrelease
+SUBDIRS += translations
 @endif
+
+QMAKE_EXTRA_TARGETS += run-tests

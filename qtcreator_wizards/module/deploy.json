@@ -1,0 +1,13 @@
+{
+	"title": "%{ModuleName}",
+	"description": "",
+	"modules": [ "%{QtModuleName}" ],
+	"dependencies": [],
+	"excludes": [],
+	"license": {
+		"name": "BSD-3-Clause",
+		"path": "LICENSE"
+	},
+	"installs": {},
+	"hostbuilds": []
+}
